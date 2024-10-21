@@ -37,6 +37,7 @@ internal class SoulEvents(
         }
         val droppedXp = event.droppedExp.times(soulsConfig.retainedXp).toInt()
         event.droppedExp = 0
+        if (soulItems.isEmpty() && droppedXp <= 0) return
 
         val itemStackSoul = ItemStackSoul(
             items = soulItems,
