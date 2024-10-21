@@ -16,5 +16,7 @@ internal interface SoulsDao {
 
     suspend fun deleteSoul(soul: Soul): Result<Unit>
 
+    suspend fun updateSoul(itemStackSoul: ItemStackSoul): Result<Unit>
+
     suspend fun toItemStackSoul(soul: Soul): Result<ItemStackSoul>
 }

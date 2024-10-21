@@ -4,6 +4,7 @@ import ru.astrainteractive.aspekt.di.CoreModule
 import ru.astrainteractive.aspekt.module.souls.database.SoulsDbModule
 import ru.astrainteractive.aspekt.module.souls.event.SoulEvents
 import ru.astrainteractive.aspekt.module.souls.worker.ParticleWorker
+import ru.astrainteractive.aspekt.module.souls.worker.PickUpWorker
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 
 interface SoulsModule {
@@ -23,10 +24,23 @@ interface SoulsModule {
         )
 
         private val particleWorker = ParticleWorker(
-            soulsDbModule.soulsDao,
-            coreModule.dispatchers
+            soulsDao = soulsDbModule.soulsDao,
+            dispatchers = coreModule.dispatchers,
+            soulsConfigKrate = soulsConfigModule.soulsConfigKrate
         )
-        private val event = SoulEvents(soulsDbModule.soulsDao)
+        private val pickUpWorker = PickUpWorker(
+            soulsDao = soulsDbModule.soulsDao,
+            dispatchers = coreModule.dispatchers,
+            soulsConfigKrate = soulsConfigModule.soulsConfigKrate,
+            onPickUp = {
+                particleWorker.onDisable()
+                particleWorker.onEnable()
+            }
+        )
+        private val event = SoulEvents(
+            soulsDao = soulsDbModule.soulsDao,
+            soulsConfigKrate = soulsConfigModule.soulsConfigKrate
+        )
 
         override val lifecycle: Lifecycle = Lifecycle.Lambda(
             onEnable = {
@@ -34,6 +48,7 @@ interface SoulsModule {
                 soulsDbModule.lifecycle.onEnable()
                 event.onEnable(coreModule.plugin)
                 particleWorker.onEnable()
+                pickUpWorker.onEnable()
             },
             onReload = {
                 soulsConfigModule.lifecycle.onReload()
@@ -44,6 +59,7 @@ interface SoulsModule {
                 soulsDbModule.lifecycle.onDisable()
                 event.onDisable()
                 particleWorker.onDisable()
+                pickUpWorker.onDisable()
             }
         )
     }

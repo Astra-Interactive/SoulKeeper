@@ -10,6 +10,8 @@ internal object SoulTable : LongIdTable(name = "SOUL") {
     val created_at = timestamp("created_at")
 
     val isFree = bool("is_free")
+    val hasXp = bool("has_xp")
+    val hasItems = bool("has_items")
 
     val locationWorld = text("location_world")
     val locationX = double("location_x")

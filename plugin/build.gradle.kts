@@ -16,7 +16,6 @@ dependencies {
     implementation(libs.minecraft.bstats)
     // AstraLibs
     implementation(libs.minecraft.astralibs.core)
-    implementation(libs.minecraft.astralibs.orm)
     implementation(libs.klibs.mikro.core)
     implementation(libs.minecraft.astralibs.menu.bukkit)
     implementation(libs.minecraft.astralibs.core.bukkit)
@@ -31,7 +30,6 @@ dependencies {
     // Test
     testImplementation(libs.bundles.testing.kotlin)
     testImplementation(libs.tests.kotlin.test)
-    testImplementation(libs.minecraft.mockbukkit)
     implementation(projects.modules.core)
     implementation(projects.modules.menu)
     implementation(projects.modules.broadcast)
@@ -47,7 +45,7 @@ dependencies {
     implementation(projects.modules.economy)
     implementation(projects.modules.souls)
 }
-val destination = File(")/home/makeevrserg/Desktop/server/data/plugins")
+val destination = File("/media/makeevrserg/WDGOLD2TB/Minecraft Servers/server-docker/data/plugins")
     .takeIf(File::exists)
     ?: File(rootDir, "jars")
 

@@ -13,9 +13,9 @@ import org.jetbrains.exposed.sql.Slf4jSqlDebugLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
-import ru.astrainteractive.aspekt.module.souls.database.dao.SoulFileEditor
 import ru.astrainteractive.aspekt.module.souls.database.dao.SoulsDao
 import ru.astrainteractive.aspekt.module.souls.database.dao.SoulsDaoImpl
+import ru.astrainteractive.aspekt.module.souls.database.dao.editor.SoulFileEditor
 import ru.astrainteractive.aspekt.module.souls.database.table.SoulTable
 import ru.astrainteractive.astralibs.exposed.factory.DatabaseFactory
 import ru.astrainteractive.astralibs.exposed.model.DatabaseConfiguration

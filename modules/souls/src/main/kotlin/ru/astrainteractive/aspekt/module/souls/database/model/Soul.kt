@@ -4,10 +4,12 @@ import org.bukkit.Location
 import java.time.Instant
 import java.util.UUID
 
-internal class Soul(
+internal data class Soul(
     val ownerUUID: UUID,
     val ownerName: String,
     val createdAt: Instant,
     val isFree: Boolean,
-    val location: Location
+    val location: Location,
+    val hasItems: Boolean,
+    val hasXp: Boolean
 )

@@ -15,6 +15,8 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
+import ru.astrainteractive.aspekt.module.souls.database.dao.editor.SoulFileEditor
 import ru.astrainteractive.aspekt.module.souls.database.model.ItemStackSoul
 import ru.astrainteractive.aspekt.module.souls.database.model.Soul
 import ru.astrainteractive.aspekt.module.souls.database.table.SoulTable
@@ -34,6 +36,8 @@ internal class SoulsDaoImpl(
             ownerName = it[SoulTable.ownerLastName],
             createdAt = it[SoulTable.created_at],
             isFree = it[SoulTable.isFree],
+            hasXp = it[SoulTable.hasXp],
+            hasItems = it[SoulTable.hasItems],
             location = Location(
                 Bukkit.getServer().getWorld(it[SoulTable.locationWorld]),
                 it[SoulTable.locationX],
@@ -77,6 +81,8 @@ internal class SoulsDaoImpl(
                     it[SoulTable.created_at] = soul.createdAt
                     it[SoulTable.isFree] = soul.isFree
                     it[SoulTable.locationWorld] = soul.location.world.name
+                    it[SoulTable.hasXp] = soul.hasXp
+                    it[SoulTable.hasItems] = soul.hasItems
                     it[SoulTable.locationX] = soul.location.x
                     it[SoulTable.locationY] = soul.location.y
                     it[SoulTable.locationZ] = soul.location.z
@@ -124,6 +130,25 @@ internal class SoulsDaoImpl(
                     SoulTable.created_at.eq(soul.createdAt)
                         .and(SoulTable.ownerUUID.eq(soul.ownerUUID.toString()))
                 }
+            }
+        }
+    }.logFailure("deleteSoul").map { Unit }
+
+    override suspend fun updateSoul(itemStackSoul: ItemStackSoul): Result<Unit> = runCatching {
+        mutex.withLock {
+            soulFileEditor.write(itemStackSoul)
+            transaction(databaseFlow.first()) {
+                SoulTable.update(
+                    where = {
+                        SoulTable.created_at.eq(itemStackSoul.soul.createdAt)
+                            .and(SoulTable.ownerUUID.eq(itemStackSoul.soul.ownerName))
+                    },
+                    body = {
+                        it[SoulTable.isFree] = itemStackSoul.soul.isFree
+                        it[SoulTable.hasXp] = itemStackSoul.soul.hasXp
+                        it[SoulTable.hasItems] = itemStackSoul.soul.hasItems
+                    }
+                )
             }
         }
     }.logFailure("deleteSoul").map { Unit }

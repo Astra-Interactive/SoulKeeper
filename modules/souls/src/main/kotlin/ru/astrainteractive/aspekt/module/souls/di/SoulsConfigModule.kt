@@ -16,7 +16,7 @@ internal interface SoulsConfigModule {
         dataFolder: File
     ) : SoulsConfigModule {
         override val soulsConfigKrate = ConfigKrateFactory.create<SoulsConfig>(
-            fileNameWithoutExtension = "db",
+            fileNameWithoutExtension = "souls_config",
             stringFormat = coreModule.yamlFormat,
             dataFolder = dataFolder,
             factory = ::SoulsConfig

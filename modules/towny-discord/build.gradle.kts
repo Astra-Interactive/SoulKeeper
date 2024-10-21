@@ -6,24 +6,24 @@ plugins {
 dependencies {
     // Kotlin
     implementation(libs.bundles.kotlin)
-    implementation(libs.bundles.exposed)
     // Spigot dependencies
     compileOnly(libs.minecraft.paper.api)
-    compileOnly(libs.minecraft.vaultapi)
-    compileOnly(libs.minecraft.papi)
+    implementation(libs.minecraft.bstats)
     // AstraLibs
     implementation(libs.minecraft.astralibs.core)
-    implementation(libs.minecraft.astralibs.exposed)
-    implementation(libs.minecraft.astralibs.command)
-    implementation(libs.minecraft.astralibs.command.bukkit)
-    implementation(libs.klibs.kstorage)
     implementation(libs.klibs.mikro.core)
     implementation(libs.minecraft.astralibs.menu.bukkit)
     implementation(libs.minecraft.astralibs.core.bukkit)
-    implementation(libs.cache4k)
+    compileOnly(libs.minecraft.vaultapi)
+    // Spigot
+    compileOnly(libs.minecraft.luckperms)
+    compileOnly(libs.minecraft.discordsrv)
+    compileOnly(libs.minecraft.essentialsx)
+    compileOnly(libs.minecraft.towny)
     // Test
     testImplementation(libs.bundles.testing.kotlin)
     testImplementation(libs.tests.kotlin.test)
-    // Local
     implementation(projects.modules.core)
+    // Local
+    implementation(projects.modules.discordlink)
 }

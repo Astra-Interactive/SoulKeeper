@@ -2,7 +2,8 @@ package ru.astrainteractive.aspekt.module.souls.database.model
 
 import org.bukkit.inventory.ItemStack
 
-internal class ItemStackSoul(
+internal data class ItemStackSoul(
+    val exp: Int,
     val items: List<ItemStack>,
     val soul: Soul
 )
