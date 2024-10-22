@@ -39,23 +39,10 @@ dependencyResolutionManagement {
 }
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-rootProject.name = "AspeKt"
+rootProject.name = "SoulKeeper"
 
 // Spigot
 include("plugin")
-include("velocity")
 // Modules
 include(":modules:core")
-include(":modules:menu")
-include(":modules:broadcast")
-include(":modules:adminprivate")
-include(":modules:discordlink")
-include(":modules:towny-discord")
-include(":modules:moneydrop")
-include(":modules:money-advancements")
-include(":modules:autocrop")
-include(":modules:newbee")
-include(":modules:antiswear")
-include(":modules:chatgame")
-include(":modules:economy")
 include(":modules:souls")
