@@ -35,8 +35,8 @@ internal class PickUpSoulUseCase(
 
             if (!isAllItemsPickedUp) return@withContext Output.SomethingRest
             soulsDao.deleteSoul(itemStackSoul.soul)
-            soulDisappearSoundProvider.invoke().playSound(itemStackSoul.soul.location)
-            soulGoneParticleProvider.invoke().spawnParticle(itemStackSoul.soul.location)
+            itemStackSoul.soul.location.playSound(soulDisappearSoundProvider.invoke())
+            itemStackSoul.soul.location.spawnParticle(soulGoneParticleProvider.invoke())
             return@withContext Output.AllPickedUp
         }
     }

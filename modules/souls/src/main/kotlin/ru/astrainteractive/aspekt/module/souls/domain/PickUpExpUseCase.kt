@@ -21,7 +21,7 @@ internal class PickUpExpUseCase(
         if (itemStackSoul.exp <= 0) {
             return Output.NoExpPresent
         }
-        collectXpSoundProvider.invoke().playSound(itemStackSoul.soul.location)
+        itemStackSoul.soul.location.playSound(collectXpSoundProvider.invoke())
         player.giveExp(itemStackSoul.exp)
         soulsDao.updateSoul(
             itemStackSoul.copy(

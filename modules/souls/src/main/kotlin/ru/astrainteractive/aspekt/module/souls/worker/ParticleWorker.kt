@@ -2,11 +2,8 @@ package ru.astrainteractive.aspekt.module.souls.worker
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
@@ -14,10 +11,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
-import org.bukkit.entity.Player
 import ru.astrainteractive.aspekt.job.ScheduledJob
 import ru.astrainteractive.aspekt.module.souls.database.dao.SoulsDao
-import ru.astrainteractive.aspekt.module.souls.database.model.Soul
 import ru.astrainteractive.aspekt.module.souls.model.SoulsConfig
 import ru.astrainteractive.aspekt.module.souls.util.playSound
 import ru.astrainteractive.aspekt.module.souls.util.spawnParticle
@@ -47,45 +42,32 @@ internal class ParticleWorker(
     private val mutex = Mutex()
     private var lastJob: Job? = null
 
-    private suspend fun playSounds(souls: List<Soul>) {
-        withContext(dispatchers.Main) {
-            souls.forEach { soul ->
-                soulsConfig.sounds.calling.playSound(soul.location)
-            }
-        }
-    }
-
-    private suspend fun showParticles(souls: List<Soul>) = coroutineScope {
-        val delay = 1000L
-        souls.map { soul ->
-            async {
-                repeat(delayMillis.div(delay).toInt()) { i ->
-                    delay(delay)
-
-                    withContext(dispatchers.Main) {
-                        if (soul.hasXp) {
-                            soulsConfig.particles.soulXp.spawnParticle(soul.location)
-                        }
-                        if (soul.hasItems) {
-                            soulsConfig.particles.soulItems.spawnParticle(soul.location)
-                        }
-                    }
-                }
-            }
-        }.awaitAll()
-    }
-
     override fun execute() {
         scope.launch {
             mutex.withLock {
                 lastJob?.cancelAndJoin()
                 lastJob = coroutineContext.job
-
-                val souls = Bukkit.getOnlinePlayers()
-                    .map(Player::getLocation)
-                    .flatMap { soulsDao.getSoulsNear(it, soulsConfig.soulCallRadius).getOrNull().orEmpty() }
-                playSounds(souls)
-                showParticles(souls)
+                Bukkit.getOnlinePlayers()
+                    .onEach { player ->
+                        soulsDao.getSoulsNear(location = player.location, radius = soulsConfig.soulCallRadius)
+                            .getOrNull()
+                            .orEmpty()
+                            .filter { it.isFree || it.ownerUUID == player.uniqueId }
+                            .onEach { soul ->
+                                withContext(dispatchers.Main) {
+                                    player.playSound(soul.location, soulsConfig.sounds.calling)
+                                }
+                                repeat(delayMillis.div(1000L).toInt()) {
+                                    delay(1000L)
+                                    if (soul.hasXp) {
+                                        player.spawnParticle(soul.location, soulsConfig.particles.soulXp)
+                                    }
+                                    if (soul.hasItems) {
+                                        player.spawnParticle(soul.location, soulsConfig.particles.soulItems)
+                                    }
+                                }
+                            }
+                    }
             }
         }
     }

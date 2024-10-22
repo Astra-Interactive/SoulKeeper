@@ -23,7 +23,7 @@ internal class PickUpItemsUseCase(
 
         val notAddedItems = player.inventory.addItem(*itemStackSoul.items.toTypedArray()).values.toList()
         if (notAddedItems != itemStackSoul.items) {
-            collectItemSoundProvider.invoke().playSound(itemStackSoul.soul.location)
+            itemStackSoul.soul.location.playSound(collectItemSoundProvider.invoke())
         }
         soulsDao.updateSoul(
             itemStackSoul.copy(
