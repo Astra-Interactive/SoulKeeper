@@ -1,6 +1,7 @@
 package ru.astrainteractive.aspekt.module.souls.di
 
 import ru.astrainteractive.aspekt.di.CoreModule
+import ru.astrainteractive.aspekt.module.souls.command.SoulsCommandRegistry
 import ru.astrainteractive.aspekt.module.souls.database.SoulsDbModule
 import ru.astrainteractive.aspekt.module.souls.domain.GetNearestSoulUseCase
 import ru.astrainteractive.aspekt.module.souls.domain.PickUpExpUseCase
@@ -64,14 +65,22 @@ interface SoulsModule {
                 soulsDao = soulsDbModule.soulsDao
             ),
             onPickUp = {
-                particleWorker.onDisable()
-                particleWorker.onEnable()
+                particleWorker.onReload()
             }
         )
 
         private val event = SoulEvents(
             soulsDao = soulsDbModule.soulsDao,
             soulsConfigKrate = soulsConfigModule.soulsConfigKrate
+        )
+        private val soulsCommandRegistry = SoulsCommandRegistry(
+            plugin = coreModule.plugin,
+            scope = coreModule.scope,
+            dispatchers = coreModule.dispatchers,
+            soulsDao = soulsDbModule.soulsDao,
+            soulsConfigKrate = soulsConfigModule.soulsConfigKrate,
+            kyoriKrate = coreModule.kyoriComponentSerializer,
+            translationKrate = coreModule.translation
         )
 
         override val lifecycle: Lifecycle = Lifecycle.Lambda(
@@ -83,6 +92,7 @@ interface SoulsModule {
                 pickUpWorker.onEnable()
                 deleteSoulWorker.onEnable()
                 freeSoulWorker.onEnable()
+                soulsCommandRegistry.register()
             },
             onReload = {
                 soulsConfigModule.lifecycle.onReload()

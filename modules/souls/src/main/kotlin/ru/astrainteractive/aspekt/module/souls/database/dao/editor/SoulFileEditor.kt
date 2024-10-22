@@ -18,10 +18,10 @@ internal class SoulFileEditor(
         get() = YamlConfiguration.loadConfiguration(file)
 
     override fun write(soul: ItemStackSoul) = runCatching {
-        val configuration = soul.soul.configuration
+        val configuration = soul.configuration
         configuration.set("items", soul.items)
         configuration.set("exp", soul.exp)
-        configuration.save(soul.soul.file)
+        configuration.save(soul.file)
     }.onFailure { "#read ${it.message}. ${it.cause}" }
 
     override fun delete(soul: Soul) {
@@ -31,8 +31,12 @@ internal class SoulFileEditor(
     override fun read(soul: Soul) = kotlin.runCatching {
         ItemStackSoul(
             items = soul.configuration.getList("items") as List<ItemStack>,
-            soul = soul,
-            exp = soul.configuration.getInt("exp")
+            exp = soul.configuration.getInt("exp"),
+            ownerUUID = soul.ownerUUID,
+            ownerLastName = soul.ownerLastName,
+            createdAt = soul.createdAt,
+            isFree = soul.isFree,
+            location = soul.location,
         )
     }.onFailure { "#read ${it.message}. ${it.cause}" }
 }

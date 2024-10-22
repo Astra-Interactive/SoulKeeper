@@ -1,0 +1,32 @@
+main: '${main}'
+prefix: '${prefix}'
+description: '${description}'
+name: '${name}'
+version: '${version}'
+authors: [ "${authors}" ]
+author: "${author}"
+website: "${url}"
+api-version: 1.18
+softdepend: [ DiscordSRV, LuckPerms, Vault, Esssentials, Towny, PlaceholderAPI, packetevents ]
+depend: [ ]
+loadbefore: [ Towny ]
+libraries:
+  - "org.xerial:sqlite-jdbc:3.46.1.0"
+  - "mysql:mysql-connector-java:8.0.33"
+  - "com.h2database:h2:2.2.224"
+commands:
+  swearfilter:
+  rtpbypass:
+  quiz:
+  sit:
+  tellchat:
+  rtp:
+  atemframe:
+  maxonline:
+  entities:
+  aesreload:
+  adminprivate:
+  menu:
+  invclose:
+  ekon:
+  souls:

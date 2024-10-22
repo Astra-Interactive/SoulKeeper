@@ -8,7 +8,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
 import ru.astrainteractive.aspekt.module.souls.database.dao.SoulsDao
 import ru.astrainteractive.aspekt.module.souls.database.model.ItemStackSoul
-import ru.astrainteractive.aspekt.module.souls.database.model.Soul
 import ru.astrainteractive.aspekt.module.souls.model.SoulsConfig
 import ru.astrainteractive.aspekt.module.souls.util.playSound
 import ru.astrainteractive.aspekt.module.souls.util.spawnParticle
@@ -52,18 +51,14 @@ internal class SoulEvents(
         val itemStackSoul = ItemStackSoul(
             items = soulItems,
             exp = droppedXp,
-            soul = Soul(
-                ownerUUID = event.player.uniqueId,
-                ownerName = event.player.name,
-                createdAt = Instant.now(),
-                isFree = false,
-                location = event.player.location,
-                hasItems = soulItems.isNotEmpty(),
-                hasXp = droppedXp > 0
-            )
+            ownerUUID = event.player.uniqueId,
+            ownerLastName = event.player.name,
+            createdAt = Instant.now(),
+            isFree = false,
+            location = event.player.location,
         )
-        itemStackSoul.soul.location.spawnParticle(soulsConfig.particles.soulCreated, soulsConfig.soulCallRadius)
-        itemStackSoul.soul.location.playSound(soulsConfig.sounds.soulDropped)
+        itemStackSoul.location.spawnParticle(soulsConfig.particles.soulCreated, soulsConfig.soulCallRadius)
+        itemStackSoul.location.playSound(soulsConfig.sounds.soulDropped)
         scope.launch { soulsDao.insertSoul(itemStackSoul) }
     }
 

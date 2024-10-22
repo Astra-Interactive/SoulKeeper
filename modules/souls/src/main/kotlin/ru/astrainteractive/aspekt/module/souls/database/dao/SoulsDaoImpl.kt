@@ -8,6 +8,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.andWhere
@@ -17,6 +18,7 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import ru.astrainteractive.aspekt.module.souls.database.dao.editor.SoulFileEditor
+import ru.astrainteractive.aspekt.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.aspekt.module.souls.database.model.ItemStackSoul
 import ru.astrainteractive.aspekt.module.souls.database.model.Soul
 import ru.astrainteractive.aspekt.module.souls.database.table.SoulTable
@@ -30,10 +32,11 @@ internal class SoulsDaoImpl(
 ) : SoulsDao, Logger by JUtiltLogger("AspeKt-SoulsDaoImpl") {
     private val mutex = Mutex()
 
-    private fun toSoul(it: ResultRow): Soul {
-        return Soul(
+    private fun toDatabaseSoul(it: ResultRow): DatabaseSoul {
+        return DatabaseSoul(
+            id = it[SoulTable.id].value,
             ownerUUID = UUID.fromString(it[SoulTable.ownerUUID]),
-            ownerName = it[SoulTable.ownerLastName],
+            ownerLastName = it[SoulTable.ownerLastName],
             createdAt = it[SoulTable.created_at],
             isFree = it[SoulTable.isFree],
             hasXp = it[SoulTable.hasXp],
@@ -52,32 +55,33 @@ internal class SoulsDaoImpl(
         return this
     }
 
-    override suspend fun getSouls(): Result<List<Soul>> = runCatching {
+    override suspend fun getSouls(): Result<List<DatabaseSoul>> = runCatching {
         mutex.withLock {
             transaction(databaseFlow.first()) {
-                SoulTable.selectAll().map(::toSoul)
+                SoulTable.selectAll()
+                    .orderBy(SoulTable.created_at to SortOrder.DESC)
+                    .map(::toDatabaseSoul)
             }
         }
     }.logFailure("getSouls")
 
-    override suspend fun getPlayerSouls(uuid: UUID): Result<List<Soul>> = runCatching {
+    override suspend fun getPlayerSouls(uuid: UUID): Result<List<DatabaseSoul>> = runCatching {
         mutex.withLock {
             transaction(databaseFlow.first()) {
                 SoulTable.selectAll()
                     .where { SoulTable.ownerUUID.eq(uuid.toString()) }
-                    .map(::toSoul)
+                    .map(::toDatabaseSoul)
             }
         }
     }.logFailure("getPlayerSouls")
 
-    override suspend fun insertSoul(itemStackSoul: ItemStackSoul): Result<Unit> = runCatching {
+    override suspend fun insertSoul(soul: ItemStackSoul): Result<Unit> = runCatching {
         mutex.withLock {
-            val soul = itemStackSoul.soul
-            soulFileEditor.write(itemStackSoul)
+            soulFileEditor.write(soul)
             transaction(databaseFlow.first()) {
                 SoulTable.insert {
                     it[SoulTable.ownerUUID] = soul.ownerUUID.toString()
-                    it[SoulTable.ownerLastName] = soul.ownerName
+                    it[SoulTable.ownerLastName] = soul.ownerLastName
                     it[SoulTable.created_at] = soul.createdAt
                     it[SoulTable.isFree] = soul.isFree
                     it[SoulTable.locationWorld] = soul.location.world.name
@@ -89,9 +93,10 @@ internal class SoulsDaoImpl(
                 }
             }
         }
-    }.logFailure("insertSoul").map { Unit }
+        Unit
+    }.logFailure("insertSoul")
 
-    override suspend fun getSoulsNear(location: Location, radius: Int): Result<List<Soul>> = runCatching {
+    override suspend fun getSoulsNear(location: Location, radius: Int): Result<List<DatabaseSoul>> = runCatching {
         mutex.withLock {
             transaction(databaseFlow.first()) {
                 SoulTable.selectAll()
@@ -116,7 +121,7 @@ internal class SoulsDaoImpl(
 //                        val sqrt = SqrtFunction(expression = x.plus(y).plus(z))
 //                        sqrt.less(radius.toBigDecimal())
 //                    }
-                    .map(::toSoul)
+                    .map(::toDatabaseSoul)
                     .filter { it.location.distance(location) < radius }
             }
         }
@@ -132,7 +137,8 @@ internal class SoulsDaoImpl(
                 }
             }
         }
-    }.logFailure("deleteSoul").map { Unit }
+        Unit
+    }.logFailure("deleteSoul")
 
     override suspend fun updateSoul(soul: Soul): Result<Unit> = runCatching {
         mutex.withLock {
@@ -140,7 +146,7 @@ internal class SoulsDaoImpl(
                 SoulTable.update(
                     where = {
                         SoulTable.created_at.eq(soul.createdAt)
-                            .and(SoulTable.ownerUUID.eq(soul.ownerName))
+                            .and(SoulTable.ownerUUID.eq(soul.ownerLastName))
                     },
                     body = {
                         it[SoulTable.isFree] = soul.isFree
@@ -150,14 +156,16 @@ internal class SoulsDaoImpl(
                 )
             }
         }
-    }.logFailure("deleteSoul").map { Unit }
+        Unit
+    }.logFailure("deleteSoul")
 
-    override suspend fun updateSoul(itemStackSoul: ItemStackSoul): Result<Unit> = runCatching {
-        updateSoul(soul = itemStackSoul.soul).getOrThrow()
+    override suspend fun updateSoul(soul: ItemStackSoul): Result<Unit> = runCatching {
+        updateSoul(soul = soul as Soul).getOrThrow()
         mutex.withLock {
-            soulFileEditor.write(itemStackSoul)
+            soulFileEditor.write(soul)
         }
-    }.logFailure("deleteSoul").map { Unit }
+        Unit
+    }.logFailure("deleteSoul")
 
     override suspend fun toItemStackSoul(soul: Soul): Result<ItemStackSoul> {
         return soulFileEditor.read(soul)

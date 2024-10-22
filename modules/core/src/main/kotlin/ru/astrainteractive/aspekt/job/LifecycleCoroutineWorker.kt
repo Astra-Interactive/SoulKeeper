@@ -53,5 +53,6 @@ abstract class LifecycleCoroutineWorker(val key: String) : Lifecycle {
     override fun onReload() {
         stopTimer()
         scope.coroutineContext.cancelChildren()
+        startTimer()
     }
 }
