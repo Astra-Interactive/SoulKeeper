@@ -14,13 +14,12 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
-import org.bukkit.Color
-import org.bukkit.Particle
 import org.bukkit.entity.Player
 import ru.astrainteractive.aspekt.job.ScheduledJob
 import ru.astrainteractive.aspekt.module.souls.database.dao.SoulsDao
 import ru.astrainteractive.aspekt.module.souls.database.model.Soul
 import ru.astrainteractive.aspekt.module.souls.model.SoulsConfig
+import ru.astrainteractive.aspekt.module.souls.util.spawnParticle
 import ru.astrainteractive.aspekt.util.getValue
 import ru.astrainteractive.astralibs.async.CoroutineFeature
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
@@ -50,12 +49,7 @@ internal class ParticleWorker(
     private suspend fun playSounds(souls: List<Soul>) {
         withContext(dispatchers.Main) {
             souls.forEach { soul ->
-                soul.location.world.playSound(
-                    soul.location,
-                    soulsConfig.sounds.soulCalling,
-                    soulsConfig.sounds.soulCallVolume,
-                    0.75f
-                )
+                soulsConfig.sounds.calling.spawnParticle(soul.location)
             }
         }
     }
@@ -69,32 +63,10 @@ internal class ParticleWorker(
 
                     withContext(dispatchers.Main) {
                         if (soul.hasXp) {
-                            soul.location.world.spawnParticle(
-                                Particle.DUST,
-                                soul.location,
-                                30,
-                                0.1,
-                                0.1,
-                                0.1,
-                                Particle.DustOptions(
-                                    Color.fromRGB(soulsConfig.colors.soulXp),
-                                    2f
-                                )
-                            )
+                            soulsConfig.particles.soulXp.spawnParticle(soul.location)
                         }
                         if (soul.hasItems) {
-                            soul.location.world.spawnParticle(
-                                Particle.DUST,
-                                soul.location,
-                                30,
-                                0.1,
-                                0.1,
-                                0.1,
-                                Particle.DustOptions(
-                                    Color.fromRGB(soulsConfig.colors.soulItems),
-                                    2f
-                                )
-                            )
+                            soulsConfig.particles.soulItems.spawnParticle(soul.location)
                         }
                     }
                 }

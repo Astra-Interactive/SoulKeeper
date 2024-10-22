@@ -28,6 +28,7 @@ interface SoulsModule {
             dispatchers = coreModule.dispatchers,
             soulsConfigKrate = soulsConfigModule.soulsConfigKrate
         )
+
         private val pickUpWorker = PickUpWorker(
             soulsDao = soulsDbModule.soulsDao,
             dispatchers = coreModule.dispatchers,
@@ -37,6 +38,7 @@ interface SoulsModule {
                 particleWorker.onEnable()
             }
         )
+
         private val event = SoulEvents(
             soulsDao = soulsDbModule.soulsDao,
             soulsConfigKrate = soulsConfigModule.soulsConfigKrate

@@ -1,9 +1,8 @@
 package ru.astrainteractive.aspekt.module.souls.event
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import org.bukkit.Color
-import org.bukkit.Particle
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
@@ -11,6 +10,7 @@ import ru.astrainteractive.aspekt.module.souls.database.dao.SoulsDao
 import ru.astrainteractive.aspekt.module.souls.database.model.ItemStackSoul
 import ru.astrainteractive.aspekt.module.souls.database.model.Soul
 import ru.astrainteractive.aspekt.module.souls.model.SoulsConfig
+import ru.astrainteractive.aspekt.module.souls.util.spawnParticle
 import ru.astrainteractive.aspekt.util.getValue
 import ru.astrainteractive.astralibs.async.CoroutineFeature
 import ru.astrainteractive.astralibs.event.EventListener
@@ -35,8 +35,17 @@ internal class SoulEvents(
                 drops
             }
         }
-        val droppedXp = event.droppedExp.times(soulsConfig.retainedXp).toInt()
-        event.droppedExp = 0
+
+        val droppedXp = when {
+            event.keepLevel -> 0
+
+            else -> {
+                val exp = event.droppedExp.times(soulsConfig.retainedXp).toInt()
+                event.droppedExp = 0
+                exp
+            }
+        }
+
         if (soulItems.isEmpty() && droppedXp <= 0) return
 
         val itemStackSoul = ItemStackSoul(
@@ -52,24 +61,13 @@ internal class SoulEvents(
                 hasXp = droppedXp > 0
             )
         )
-        itemStackSoul.soul.location.world.spawnParticle(
-            Particle.DUST,
-            itemStackSoul.soul.location,
-            128,
-            0.1,
-            0.1,
-            0.1,
-            Particle.DustOptions(
-                Color.fromRGB(soulsConfig.colors.soulCreated),
-                64f
-            )
-        )
-        itemStackSoul.soul.location.world.playSound(
-            itemStackSoul.soul.location,
-            soulsConfig.sounds.soulDropped,
-            1f,
-            0.75f
-        )
+        soulsConfig.particles.soulCreated.spawnParticle(itemStackSoul.soul.location)
+        soulsConfig.sounds.soulDropped.spawnParticle(itemStackSoul.soul.location)
         scope.launch { soulsDao.insertSoul(itemStackSoul) }
+    }
+
+    override fun onDisable() {
+        scope.cancel()
+        super.onDisable()
     }
 }

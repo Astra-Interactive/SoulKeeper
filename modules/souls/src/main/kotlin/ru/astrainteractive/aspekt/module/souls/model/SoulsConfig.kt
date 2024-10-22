@@ -34,33 +34,90 @@ internal data class SoulsConfig(
     val retainedXp: Float = 1f,
     @SerialName("sounds")
     val sounds: Sounds = Sounds(),
-    @SerialName("colors")
-    val colors: Colors = Colors()
+    @SerialName("particles")
+    val particles: Particles = Particles()
 
 ) {
     @Serializable
-    data class Colors(
-        val soulItems: Int = 0xFFFFFF,
-        val soulXp: Int = 0x00FFFF,
-        val soulGone: Int = 0xFFFF00,
-        val soulCreated: Int = 0xeb3437
-    )
+    data class Particles(
+        val soulItems: Particle = Particle(
+            key = "dust",
+            count = 30,
+            dustOptions = Particle.DustOptions(
+                color = 0xFFFFFF,
+                size = 2f
+            )
+        ),
+        val soulXp: Particle = Particle(
+            key = "dust",
+            count = 30,
+            dustOptions = Particle.DustOptions(
+                color = 0x00FFFF,
+                size = 2f
+            )
+        ),
+        val soulGone: Particle = Particle(
+            key = "dust",
+            count = 128,
+            dustOptions = Particle.DustOptions(
+                color = 0xFFFF00,
+                size = 32f
+            )
+        ),
+        val soulCreated: Particle = Particle(
+            key = "dust",
+            count = 128,
+            dustOptions = Particle.DustOptions(
+                color = 0xeb3437,
+                size = 64f
+            )
+        )
+    ) {
+        @Serializable
+        data class Particle(
+            val key: String,
+            val count: Int,
+            val dustOptions: DustOptions? = null
+        ) {
+            @Serializable
+            data class DustOptions(
+                val color: Int,
+                val size: Float
+            )
+        }
+    }
 
     @Serializable
     data class Sounds(
         @SerialName("collect_xp")
-        val collectXp: String = "entity.experience_orb.pickup",
+        val collectXp: SoundConfig = SoundConfig(
+            id = "entity.experience_orb.pickup"
+        ),
         @SerialName("collect_item")
-        val collectItem: String = "item.trident.return",
+        val collectItem: SoundConfig = SoundConfig(
+            id = "item.trident.return"
+        ),
         @SerialName("soul_disappear")
-        val soulDisappear: String = "entity.generic.extinguish_fire",
-        @SerialName("soul_calling")
-        val soulCalling: String = "block.beacon.ambient",
+        val soulDisappear: SoundConfig = SoundConfig(
+            id = "entity.generic.extinguish_fire"
+        ),
         @SerialName("soul_dropped")
-        val soulDropped: String = "block.bell.resonate",
-        @SerialName("soul_call_volume")
-        val soulCallVolume: Float = 16f
-    )
+        val soulDropped: SoundConfig = SoundConfig(
+            id = "block.bell.resonate"
+        ),
+        @SerialName("soul_calling")
+        val calling: SoundConfig = SoundConfig(
+            id = "block.beacon.ambient",
+            volume = 16f
+        ),
+    ) {
+        @Serializable
+        data class SoundConfig(
+            val id: String,
+            val volume: Float = 1f,
+            val pitch: Float = 0.75f
+        )
+    }
 
     @Serializable
     enum class PvpBehaviour {

@@ -7,14 +7,12 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
-import org.bukkit.Color
-import org.bukkit.Particle
 import org.bukkit.entity.Player
-import org.jetbrains.exposed.sql.not
 import ru.astrainteractive.aspekt.job.ScheduledJob
 import ru.astrainteractive.aspekt.module.souls.database.dao.SoulsDao
 import ru.astrainteractive.aspekt.module.souls.database.model.ItemStackSoul
 import ru.astrainteractive.aspekt.module.souls.model.SoulsConfig
+import ru.astrainteractive.aspekt.module.souls.util.spawnParticle
 import ru.astrainteractive.aspekt.util.getValue
 import ru.astrainteractive.astralibs.async.CoroutineFeature
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
@@ -64,12 +62,7 @@ internal class PickUpWorker(
             info { "#pickUpExp don't need pick up xp ${itemStackSoul.exp} ${itemStackSoul.soul.hasXp}" }
             return true
         }
-        itemStackSoul.soul.location.world.playSound(
-            itemStackSoul.soul.location,
-            soulsConfig.sounds.collectXp,
-            1f,
-            0.75f
-        )
+        soulsConfig.sounds.collectXp.spawnParticle(itemStackSoul.soul.location)
         player.giveExp(itemStackSoul.exp)
         info { "#pickUpExp gave xp now updating" }
         soulsDao.updateSoul(
@@ -91,12 +84,7 @@ internal class PickUpWorker(
 
         val notAddedItems = player.inventory.addItem(*itemStackSoul.items.toTypedArray()).values.toList()
         if (notAddedItems != itemStackSoul.items) {
-            itemStackSoul.soul.location.world.playSound(
-                itemStackSoul.soul.location,
-                soulsConfig.sounds.collectItem,
-                1f,
-                0.75f
-            )
+            soulsConfig.sounds.collectItem.spawnParticle(itemStackSoul.soul.location)
         }
         soulsDao.updateSoul(
             itemStackSoul.copy(
@@ -114,24 +102,8 @@ internal class PickUpWorker(
 
             if (!isExpPickedUp || !isAllItemsPickedUp) return@withContext
             soulsDao.deleteSoul(itemStackSoul.soul)
-            itemStackSoul.soul.location.world.playSound(
-                itemStackSoul.soul.location,
-                soulsConfig.sounds.soulDisappear,
-                1f,
-                0.75f
-            )
-            itemStackSoul.soul.location.world.spawnParticle(
-                Particle.DUST,
-                itemStackSoul.soul.location,
-                128,
-                0.1,
-                0.1,
-                0.1,
-                Particle.DustOptions(
-                    Color.fromRGB(soulsConfig.colors.soulGone),
-                    32f
-                )
-            )
+            soulsConfig.sounds.soulDisappear.spawnParticle(itemStackSoul.soul.location)
+            soulsConfig.particles.soulGone.spawnParticle(itemStackSoul.soul.location)
             onPickUp.invoke()
         }
     }
