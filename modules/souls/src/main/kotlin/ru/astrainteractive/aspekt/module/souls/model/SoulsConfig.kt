@@ -3,6 +3,7 @@ package ru.astrainteractive.aspekt.module.souls.model
 import com.charleskorn.kaml.YamlComment
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import ru.astrainteractive.aspekt.module.souls.model.SoulsConfig.Sounds.SoundConfig
 import ru.astrainteractive.astralibs.exposed.model.DatabaseConfiguration
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -40,6 +41,7 @@ internal data class SoulsConfig(
 ) {
     @Serializable
     data class Particles(
+        @SerialName("soul_items")
         val soulItems: Particle = Particle(
             key = "dust",
             count = 30,
@@ -48,6 +50,7 @@ internal data class SoulsConfig(
                 size = 2f
             )
         ),
+        @SerialName("soul_xp")
         val soulXp: Particle = Particle(
             key = "dust",
             count = 30,
@@ -56,6 +59,7 @@ internal data class SoulsConfig(
                 size = 2f
             )
         ),
+        @SerialName("soul_gone")
         val soulGone: Particle = Particle(
             key = "dust",
             count = 128,
@@ -64,6 +68,7 @@ internal data class SoulsConfig(
                 size = 32f
             )
         ),
+        @SerialName("soul_created")
         val soulCreated: Particle = Particle(
             key = "dust",
             count = 128,
@@ -71,12 +76,22 @@ internal data class SoulsConfig(
                 color = 0xeb3437,
                 size = 64f
             )
-        )
+        ),
+        @SerialName("soul_content_left")
+        val soulContentLeft: Particle = Particle(
+            key = "dust",
+            count = 32,
+            dustOptions = Particle.DustOptions(
+                color = 0xa103fc,
+                size = 32f
+            )
+        ),
     ) {
         @Serializable
         data class Particle(
             val key: String,
             val count: Int,
+            @SerialName("dust_options")
             val dustOptions: DustOptions? = null
         ) {
             @Serializable
@@ -108,6 +123,11 @@ internal data class SoulsConfig(
         @SerialName("soul_calling")
         val calling: SoundConfig = SoundConfig(
             id = "block.beacon.ambient",
+            volume = 16f
+        ),
+        @SerialName("soul_content_left")
+        val soulContentLeft: SoundConfig = SoundConfig(
+            id = "minecraft:block.anvil.place",
             volume = 16f
         ),
     ) {

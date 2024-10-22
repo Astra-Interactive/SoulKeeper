@@ -59,7 +59,13 @@ interface SoulsModule {
                 ),
                 soulsDao = soulsDbModule.soulsDao,
                 soulGoneParticleProvider = { soulsConfigModule.soulsConfigKrate.cachedValue.particles.soulGone },
-                soulDisappearSoundProvider = { soulsConfigModule.soulsConfigKrate.cachedValue.sounds.soulDisappear }
+                soulDisappearSoundProvider = { soulsConfigModule.soulsConfigKrate.cachedValue.sounds.soulDisappear },
+                soulContentLeftParticleProvider = {
+                    soulsConfigModule.soulsConfigKrate.cachedValue.particles.soulContentLeft
+                },
+                soulContentLeftSoundProvider = {
+                    soulsConfigModule.soulsConfigKrate.cachedValue.sounds.soulContentLeft
+                }
             ),
             getNearestSoulUseCase = GetNearestSoulUseCase(
                 soulsDao = soulsDbModule.soulsDao

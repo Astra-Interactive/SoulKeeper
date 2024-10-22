@@ -11,6 +11,7 @@ import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
+@Suppress("LongParameterList")
 internal class PickUpSoulUseCase(
     private val dispatchers: KotlinDispatchers,
     private val pickUpExpUseCase: PickUpExpUseCase,
@@ -18,6 +19,8 @@ internal class PickUpSoulUseCase(
     private val soulsDao: SoulsDao,
     private val soulDisappearSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
     private val soulGoneParticleProvider: () -> SoulsConfig.Particles.Particle,
+    private val soulContentLeftSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
+    private val soulContentLeftParticleProvider: () -> SoulsConfig.Particles.Particle,
 ) : Logger by JUtiltLogger("AspeKt-PickUpSoulUseCase") {
     sealed interface Output {
         data object SomethingRest : Output
@@ -33,7 +36,11 @@ internal class PickUpSoulUseCase(
                 itemStackSoul = itemStackSoul
             ) !is PickUpItemsUseCase.Output.SomeItemsRemain
 
-            if (!isAllItemsPickedUp) return@withContext Output.SomethingRest
+            if (!isAllItemsPickedUp) {
+                itemStackSoul.location.playSound(soulContentLeftSoundProvider.invoke())
+                itemStackSoul.location.spawnParticle(soulContentLeftParticleProvider.invoke())
+                return@withContext Output.SomethingRest
+            }
             soulsDao.deleteSoul(itemStackSoul)
             itemStackSoul.location.playSound(soulDisappearSoundProvider.invoke())
             itemStackSoul.location.spawnParticle(soulGoneParticleProvider.invoke())
