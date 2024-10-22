@@ -2,11 +2,12 @@ package ru.astrainteractive.aspekt.module.souls.di
 
 import ru.astrainteractive.aspekt.di.CoreModule
 import ru.astrainteractive.aspekt.module.souls.command.SoulsCommandRegistry
-import ru.astrainteractive.aspekt.module.souls.database.SoulsDbModule
+import ru.astrainteractive.aspekt.module.souls.database.di.SoulsDbModule
 import ru.astrainteractive.aspekt.module.souls.domain.GetNearestSoulUseCase
 import ru.astrainteractive.aspekt.module.souls.domain.PickUpExpUseCase
 import ru.astrainteractive.aspekt.module.souls.domain.PickUpItemsUseCase
 import ru.astrainteractive.aspekt.module.souls.domain.PickUpSoulUseCase
+import ru.astrainteractive.aspekt.module.souls.domain.di.factory.ShowArmorStandUseCaseFactory
 import ru.astrainteractive.aspekt.module.souls.event.SoulEvents
 import ru.astrainteractive.aspekt.module.souls.worker.DeleteSoulWorker
 import ru.astrainteractive.aspekt.module.souls.worker.FreeSoulWorker
@@ -43,7 +44,8 @@ interface SoulsModule {
         private val particleWorker = ParticleWorker(
             soulsDao = soulsDbModule.soulsDao,
             dispatchers = coreModule.dispatchers,
-            soulsConfigKrate = soulsConfigModule.soulsConfigKrate
+            soulsConfigKrate = soulsConfigModule.soulsConfigKrate,
+            showArmorStandUseCase = ShowArmorStandUseCaseFactory(coreModule).create()
         )
 
         private val pickUpWorker = PickUpWorker(

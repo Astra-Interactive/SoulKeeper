@@ -1,4 +1,4 @@
-package ru.astrainteractive.aspekt.module.souls.database
+package ru.astrainteractive.aspekt.module.souls.database.di
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -34,6 +34,7 @@ internal interface SoulsDbModule {
         scope: CoroutineScope
     ) : SoulsDbModule {
         override val databaseFlow: Flow<Database> = flow {
+            if (!dataFolder.exists()) dataFolder.mkdirs()
             val database = DatabaseFactory(dataFolder).create(DatabaseConfiguration.H2("souls"))
             TransactionManager.manager.defaultIsolationLevel = java.sql.Connection.TRANSACTION_SERIALIZABLE
             transaction(database) {

@@ -20,6 +20,7 @@ dependencies {
     implementation(libs.klibs.mikro.core)
     implementation(libs.minecraft.astralibs.menu.bukkit)
     implementation(libs.minecraft.astralibs.core.bukkit)
+    compileOnly(libs.minecraft.packetevents)
     implementation(libs.cache4k)
     // Test
     testImplementation(libs.bundles.testing.kotlin)

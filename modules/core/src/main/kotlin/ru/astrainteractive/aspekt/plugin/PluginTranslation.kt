@@ -51,6 +51,7 @@ class PluginTranslation(
         val couldNotFreeSoul: StringDesc.Raw = StringDesc.Raw("&#db2c18Не удалось освободить душу!"),
         val nextPage: StringDesc.Raw = StringDesc.Raw("&#42f596[>>ДАЛЬШЕ>>]"),
         val prevPage: StringDesc.Raw = StringDesc.Raw("&#42f596[<<РАНЬШЕ<<]"),
+        private val soulOf: StringDesc.Raw = StringDesc.Raw("&#317dd4Душа игрока &#31d43c%player%")
     ) {
         fun listingFormat(
             index: Int,
@@ -71,6 +72,9 @@ class PluginTranslation(
 
         fun noSoulsOnPage(page: Int) = noSoulsOnPage
             .replace("%page%", page.toString())
+
+        fun soulOf(player: String) = soulOf
+            .replace("%player%", player)
 
         fun daysAgoFormat(time: Duration) = daysAgoFormat
             .replace("%time%", time.inWholeDays.toString())

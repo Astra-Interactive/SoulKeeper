@@ -11,8 +11,11 @@ import java.io.File
 internal class SoulFileEditor(
     private val folder: File
 ) : SoulReader, SoulWriter, Logger by JUtiltLogger("AspeKt-SoulFileEditor") {
-    private val Soul.file
-        get() = folder.resolve("${ownerUUID}_${createdAt.toEpochMilli()}.yml")
+    private val Soul.file: File
+        get() {
+            if (!folder.exists()) folder.mkdirs()
+            return folder.resolve("${ownerUUID}_${createdAt.toEpochMilli()}.yml")
+        }
 
     private val Soul.configuration
         get() = YamlConfiguration.loadConfiguration(file)
