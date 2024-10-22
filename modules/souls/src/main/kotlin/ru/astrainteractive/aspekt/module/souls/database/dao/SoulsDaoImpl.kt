@@ -146,7 +146,7 @@ internal class SoulsDaoImpl(
                 SoulTable.update(
                     where = {
                         SoulTable.created_at.eq(soul.createdAt)
-                            .and(SoulTable.ownerUUID.eq(soul.ownerLastName))
+                            .and(SoulTable.ownerUUID.eq(soul.ownerUUID.toString()))
                     },
                     body = {
                         it[SoulTable.isFree] = soul.isFree

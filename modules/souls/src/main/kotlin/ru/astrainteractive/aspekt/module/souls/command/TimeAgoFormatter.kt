@@ -7,7 +7,7 @@ import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
-object TimeAgoFormatter {
+internal object TimeAgoFormatter {
     sealed interface Format {
         val duration: Duration
 
