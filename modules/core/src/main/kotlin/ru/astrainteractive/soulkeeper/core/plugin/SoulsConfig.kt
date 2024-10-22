@@ -35,7 +35,14 @@ data class SoulsConfig(
     @SerialName("sounds")
     val sounds: Sounds = Sounds(),
     @SerialName("particles")
-    val particles: Particles = Particles()
+    val particles: Particles = Particles(),
+    @SerialName("display_soul_titles")
+    @YamlComment(
+        "[EXPERIMENTAL]",
+        "This feature will display titles above souls via translations.yml -> souls.soul_of",
+        "Need packet events"
+    )
+    val displaySoulTitles: Boolean = true
 
 ) {
     @Serializable

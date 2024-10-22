@@ -17,22 +17,37 @@ class PluginTranslation(
 ) {
     @Serializable
     data class Souls(
+        @SerialName("days_ago_format")
         private val daysAgoFormat: StringDesc.Raw = StringDesc.Raw("%time% дней назад"),
+        @SerialName("hours_ago_format")
         private val hoursAgoFormat: StringDesc.Raw = StringDesc.Raw("%time% часов назад"),
+        @SerialName("minutes_ago_format")
         private val minutesAgoFormat: StringDesc.Raw = StringDesc.Raw("%time% минут назад"),
+        @SerialName("months_ago_format")
         private val monthsAgoFormat: StringDesc.Raw = StringDesc.Raw("%time% месяцеев назад"),
+        @SerialName("seconds_ago_format")
         private val secondsAgoFormat: StringDesc.Raw = StringDesc.Raw("%time% секунд назад"),
+        @SerialName("no_souls_on_page")
         private val noSoulsOnPage: StringDesc.Raw = StringDesc.Raw("&#db2c18Нет душ на странице %page%"),
+        @SerialName("listing_format")
         private val listingFormat: StringDesc.Raw = StringDesc.Raw(
             "&#b8b8b8%index%. &#d1a71d%owner% &#b8b8b8(%time_ago%) &#b8b8b8(%x%; %y%; %z%) %dist%m"
         ),
+        @SerialName("list_souls_title")
         val listSoulsTitle: StringDesc.Raw = StringDesc.Raw("&#42f596Список видимых вам душ:"),
+        @SerialName("free_soul")
         val freeSoul: StringDesc.Raw = StringDesc.Raw("&#b50b05[FREE]"),
+        @SerialName("teleport_to_soul")
         val teleportToSoul: StringDesc.Raw = StringDesc.Raw("&#1db2b8[TP]"),
+        @SerialName("soul_freed")
         val soulFreed: StringDesc.Raw = StringDesc.Raw("&#42f596Душа теперь свободна!"),
+        @SerialName("could_not_free_soul")
         val couldNotFreeSoul: StringDesc.Raw = StringDesc.Raw("&#db2c18Не удалось освободить душу!"),
+        @SerialName("next_page")
         val nextPage: StringDesc.Raw = StringDesc.Raw("&#42f596[>>ДАЛЬШЕ>>]"),
+        @SerialName("prev_page")
         val prevPage: StringDesc.Raw = StringDesc.Raw("&#42f596[<<РАНЬШЕ<<]"),
+        @SerialName("soul_of")
         private val soulOf: StringDesc.Raw = StringDesc.Raw("&#317dd4Душа игрока &#31d43c%player%")
     ) {
         fun listingFormat(

@@ -10,7 +10,7 @@ class SoulKeeper :
     JavaPlugin(),
     Logger by JUtiltLogger("SoulKeeper"),
     Lifecycle {
-    private val rootModule = RootModule.RootModuleImpl(this)
+    private val rootModule by lazy { RootModule.RootModuleImpl(this) }
 
     override fun onEnable() {
         rootModule.lifecycle.onEnable()

@@ -10,7 +10,7 @@ internal class ShowArmorStandUseCaseFactory(
     private val coreModule: CoreModule
 ) {
     fun create(): ShowArmorStandUseCase {
-        if (!Bukkit.getPluginManager().isPluginEnabled("PacketEvents")) {
+        if (!Bukkit.getPluginManager().isPluginEnabled("packetevents")) {
             return ShowArmorStandStubUseCase
         }
         return ShowArmorStandUseCaseImpl(
