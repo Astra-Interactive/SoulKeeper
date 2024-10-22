@@ -47,7 +47,7 @@ dependencyResolutionManagement {
 }
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-rootProject.name = "AstraTemplate"
+rootProject.name = "SoulKeeper"
 
 // Shared
 include("modules:core")
