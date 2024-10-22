@@ -22,8 +22,6 @@ dependencies {
     compileOnly(libs.minecraft.paper.api)
     implementation(libs.minecraft.bstats)
     // Local
-    implementation(projects.modules.apiLocal)
-    implementation(projects.modules.apiRemote)
     implementation(projects.modules.core)
 }
 
