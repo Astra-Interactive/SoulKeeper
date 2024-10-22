@@ -42,7 +42,7 @@ class PluginTranslation(
         private val secondsAgoFormat: StringDesc.Raw = StringDesc.Raw("%time% секунд назад"),
         private val noSoulsOnPage: StringDesc.Raw = StringDesc.Raw("&#db2c18Нет душ на странице %page%"),
         private val listingFormat: StringDesc.Raw = StringDesc.Raw(
-            "&#b8b8b8%index%. &#d1a71d%owner% &#b8b8b8(%time_ago%) &#b8b8b8(%x%; %y%; %z%)"
+            "&#b8b8b8%index%. &#d1a71d%owner% &#b8b8b8(%time_ago%) &#b8b8b8(%x%; %y%; %z%) %dist%m"
         ),
         val listSoulsTitle: StringDesc.Raw = StringDesc.Raw("&#42f596Список видимых вам душ:"),
         val freeSoul: StringDesc.Raw = StringDesc.Raw("&#b50b05[ОСВОБОДИТЬ]"),
@@ -56,12 +56,14 @@ class PluginTranslation(
             index: Int,
             owner: String,
             timeAgo: String,
+            distance: Int,
             x: Int,
             y: Int,
             z: Int
         ) = listingFormat
             .replace("%index%", "$index")
             .replace("%owner%", owner)
+            .replace("%dist%", "$distance")
             .replace("%time_ago%", timeAgo)
             .replace("%x%", "$x")
             .replace("%y%", "$y")

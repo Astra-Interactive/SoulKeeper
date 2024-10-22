@@ -166,7 +166,12 @@ internal class SoulsCommandRegistry(
                                 timeAgo = timeAgoFormatted.raw,
                                 x = soul.location.x.toInt(),
                                 y = soul.location.y.toInt(),
-                                z = soul.location.z.toInt()
+                                z = soul.location.z.toInt(),
+                                distance = (input.sender as? Player)
+                                    ?.location
+                                    ?.distance(soul.location)
+                                    ?.toInt()
+                                    ?: 0
                             ).component
                             input.sender.sendMessage(listingComponent)
 
