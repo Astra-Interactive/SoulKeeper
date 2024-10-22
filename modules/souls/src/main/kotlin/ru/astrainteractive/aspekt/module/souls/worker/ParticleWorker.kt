@@ -19,6 +19,7 @@ import ru.astrainteractive.aspekt.job.ScheduledJob
 import ru.astrainteractive.aspekt.module.souls.database.dao.SoulsDao
 import ru.astrainteractive.aspekt.module.souls.database.model.Soul
 import ru.astrainteractive.aspekt.module.souls.model.SoulsConfig
+import ru.astrainteractive.aspekt.module.souls.util.playSound
 import ru.astrainteractive.aspekt.module.souls.util.spawnParticle
 import ru.astrainteractive.aspekt.util.getValue
 import ru.astrainteractive.astralibs.async.CoroutineFeature
@@ -49,7 +50,7 @@ internal class ParticleWorker(
     private suspend fun playSounds(souls: List<Soul>) {
         withContext(dispatchers.Main) {
             souls.forEach { soul ->
-                soulsConfig.sounds.calling.spawnParticle(soul.location)
+                soulsConfig.sounds.calling.playSound(soul.location)
             }
         }
     }

@@ -2,6 +2,10 @@ package ru.astrainteractive.aspekt.module.souls.di
 
 import ru.astrainteractive.aspekt.di.CoreModule
 import ru.astrainteractive.aspekt.module.souls.database.SoulsDbModule
+import ru.astrainteractive.aspekt.module.souls.domain.GetNearestSoulUseCase
+import ru.astrainteractive.aspekt.module.souls.domain.PickUpExpUseCase
+import ru.astrainteractive.aspekt.module.souls.domain.PickUpItemsUseCase
+import ru.astrainteractive.aspekt.module.souls.domain.PickUpSoulUseCase
 import ru.astrainteractive.aspekt.module.souls.event.SoulEvents
 import ru.astrainteractive.aspekt.module.souls.worker.ParticleWorker
 import ru.astrainteractive.aspekt.module.souls.worker.PickUpWorker
@@ -30,9 +34,23 @@ interface SoulsModule {
         )
 
         private val pickUpWorker = PickUpWorker(
-            soulsDao = soulsDbModule.soulsDao,
-            dispatchers = coreModule.dispatchers,
-            soulsConfigKrate = soulsConfigModule.soulsConfigKrate,
+            pickUpSoulUseCase = PickUpSoulUseCase(
+                dispatchers = coreModule.dispatchers,
+                pickUpExpUseCase = PickUpExpUseCase(
+                    collectXpSoundProvider = { soulsConfigModule.soulsConfigKrate.cachedValue.sounds.collectXp },
+                    soulsDao = soulsDbModule.soulsDao
+                ),
+                pickUpItemsUseCase = PickUpItemsUseCase(
+                    collectItemSoundProvider = { soulsConfigModule.soulsConfigKrate.cachedValue.sounds.collectItem },
+                    soulsDao = soulsDbModule.soulsDao
+                ),
+                soulsDao = soulsDbModule.soulsDao,
+                soulGoneParticleProvider = { soulsConfigModule.soulsConfigKrate.cachedValue.particles.soulGone },
+                soulDisappearSoundProvider = { soulsConfigModule.soulsConfigKrate.cachedValue.sounds.soulDisappear }
+            ),
+            getNearestSoulUseCase = GetNearestSoulUseCase(
+                soulsDao = soulsDbModule.soulsDao
+            ),
             onPickUp = {
                 particleWorker.onDisable()
                 particleWorker.onEnable()

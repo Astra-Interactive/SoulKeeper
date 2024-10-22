@@ -10,6 +10,7 @@ import ru.astrainteractive.aspekt.module.souls.database.dao.SoulsDao
 import ru.astrainteractive.aspekt.module.souls.database.model.ItemStackSoul
 import ru.astrainteractive.aspekt.module.souls.database.model.Soul
 import ru.astrainteractive.aspekt.module.souls.model.SoulsConfig
+import ru.astrainteractive.aspekt.module.souls.util.playSound
 import ru.astrainteractive.aspekt.module.souls.util.spawnParticle
 import ru.astrainteractive.aspekt.util.getValue
 import ru.astrainteractive.astralibs.async.CoroutineFeature
@@ -62,7 +63,7 @@ internal class SoulEvents(
             )
         )
         soulsConfig.particles.soulCreated.spawnParticle(itemStackSoul.soul.location)
-        soulsConfig.sounds.soulDropped.spawnParticle(itemStackSoul.soul.location)
+        soulsConfig.sounds.soulDropped.playSound(itemStackSoul.soul.location)
         scope.launch { soulsDao.insertSoul(itemStackSoul) }
     }
 

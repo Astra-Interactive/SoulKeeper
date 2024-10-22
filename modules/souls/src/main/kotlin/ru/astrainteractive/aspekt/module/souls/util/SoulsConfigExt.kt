@@ -5,7 +5,7 @@ import org.bukkit.Location
 import org.bukkit.Particle
 import ru.astrainteractive.aspekt.module.souls.model.SoulsConfig
 
-internal fun SoulsConfig.Sounds.SoundConfig.spawnParticle(location: Location) {
+internal fun SoulsConfig.Sounds.SoundConfig.playSound(location: Location) {
     location.world.playSound(
         location,
         this.id,
