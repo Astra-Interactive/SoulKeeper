@@ -1,6 +1,7 @@
 # root
 .gradle
 .idea
+.kotlin
 astra.properties
 local.properties
 build

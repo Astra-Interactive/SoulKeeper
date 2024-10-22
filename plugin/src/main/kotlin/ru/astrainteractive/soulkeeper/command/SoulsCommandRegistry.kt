@@ -193,7 +193,7 @@ internal class SoulsCommandRegistry(
 
     fun register() {
         plugin.registerCommand(
-            alias = "souls",
+            alias = "sk",
             commandParser = CommandParserImpl(),
             commandExecutor = CommandExecutorImpl(),
             errorHandler = { context, throwable ->

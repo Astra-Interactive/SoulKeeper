@@ -15,18 +15,4 @@ libraries:
   - "mysql:mysql-connector-java:8.0.33"
   - "com.h2database:h2:2.2.224"
 commands:
-  swearfilter:
-  rtpbypass:
-  quiz:
-  sit:
-  tellchat:
-  rtp:
-  atemframe:
-  maxonline:
-  entities:
-  aesreload:
-  adminprivate:
-  menu:
-  invclose:
-  ekon:
-  souls:
+  sk:
