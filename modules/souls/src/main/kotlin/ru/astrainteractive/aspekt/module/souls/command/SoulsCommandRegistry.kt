@@ -48,7 +48,7 @@ internal class SoulsCommandRegistry(
                         index = 0,
                         type = PrimitiveArgumentType.Int,
                         default = { 1 }
-                    ).minus(1)
+                    ).coerceAtLeast(1).minus(1)
                     Intent.List(sender = commandContext.sender, page = page)
                 }
             }
