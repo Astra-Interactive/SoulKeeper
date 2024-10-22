@@ -48,7 +48,9 @@ class PluginTranslation(
         val freeSoul: StringDesc.Raw = StringDesc.Raw("&#b50b05[ОСВОБОДИТЬ]"),
         val teleportToSoul: StringDesc.Raw = StringDesc.Raw("&#1db2b8[ТЕЛЕПОРТИРОВАТЬСЯ]"),
         val soulFreed: StringDesc.Raw = StringDesc.Raw("&#42f596Душа теперь свободна!"),
-        val couldNotFreeSoul: StringDesc.Raw = StringDesc.Raw("&#db2c18Не удалось освободить душу!")
+        val couldNotFreeSoul: StringDesc.Raw = StringDesc.Raw("&#db2c18Не удалось освободить душу!"),
+        val nextPage: StringDesc.Raw = StringDesc.Raw("&#42f596[ДАЛЬШЕ]"),
+        val prevPage: StringDesc.Raw = StringDesc.Raw("&#42f596[РАНЬШЕ]"),
     ) {
         fun listingFormat(
             index: Int,

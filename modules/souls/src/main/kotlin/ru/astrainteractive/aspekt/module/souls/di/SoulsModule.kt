@@ -76,9 +76,7 @@ interface SoulsModule {
         private val soulsCommandRegistry = SoulsCommandRegistry(
             plugin = coreModule.plugin,
             scope = coreModule.scope,
-            dispatchers = coreModule.dispatchers,
             soulsDao = soulsDbModule.soulsDao,
-            soulsConfigKrate = soulsConfigModule.soulsConfigKrate,
             kyoriKrate = coreModule.kyoriComponentSerializer,
             translationKrate = coreModule.translation
         )

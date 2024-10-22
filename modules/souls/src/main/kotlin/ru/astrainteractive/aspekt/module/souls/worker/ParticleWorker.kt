@@ -1,6 +1,8 @@
 package ru.astrainteractive.aspekt.module.souls.worker
 
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.job
@@ -45,26 +47,28 @@ internal class ParticleWorker(
                 lastJob?.cancelAndJoin()
                 lastJob = coroutineContext.job
                 Bukkit.getOnlinePlayers()
-                    .onEach { player ->
+                    .flatMap { player ->
                         soulsDao.getSoulsNear(location = player.location, radius = soulsConfig.soulCallRadius)
                             .getOrNull()
                             .orEmpty()
                             .filter { it.isFree || it.ownerUUID == player.uniqueId }
-                            .onEach { soul ->
+                            .map { soul ->
                                 withContext(dispatchers.Main) {
                                     player.playSound(soul.location, soulsConfig.sounds.calling)
                                 }
-                                repeat(getConfig().delay.inWholeMilliseconds.div(1000L).toInt()) {
-                                    delay(1000L)
-                                    if (soul.hasXp) {
-                                        player.spawnParticle(soul.location, soulsConfig.particles.soulXp)
-                                    }
-                                    if (soul.hasItems) {
-                                        player.spawnParticle(soul.location, soulsConfig.particles.soulItems)
+                                async {
+                                    repeat(getConfig().delay.inWholeMilliseconds.div(1000L).toInt()) {
+                                        delay(1000L)
+                                        if (soul.hasXp) {
+                                            player.spawnParticle(soul.location, soulsConfig.particles.soulXp)
+                                        }
+                                        if (soul.hasItems) {
+                                            player.spawnParticle(soul.location, soulsConfig.particles.soulItems)
+                                        }
                                     }
                                 }
                             }
-                    }
+                    }.awaitAll()
             }
         }
     }

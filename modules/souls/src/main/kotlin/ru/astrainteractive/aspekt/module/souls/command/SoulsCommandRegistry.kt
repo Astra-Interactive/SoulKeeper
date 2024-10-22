@@ -8,7 +8,6 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import ru.astrainteractive.aspekt.module.souls.database.dao.SoulsDao
-import ru.astrainteractive.aspekt.module.souls.model.SoulsConfig
 import ru.astrainteractive.aspekt.plugin.PluginPermission
 import ru.astrainteractive.aspekt.plugin.PluginTranslation
 import ru.astrainteractive.aspekt.util.getValue
@@ -21,19 +20,15 @@ import ru.astrainteractive.astralibs.command.api.util.PluginExt.registerCommand
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissible
 import ru.astrainteractive.klibs.kstorage.api.Krate
-import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 internal class SoulsCommandRegistry(
     private val plugin: JavaPlugin,
     private val scope: CoroutineScope,
-    private val dispatchers: KotlinDispatchers,
     private val soulsDao: SoulsDao,
     translationKrate: Krate<PluginTranslation>,
-    soulsConfigKrate: Krate<SoulsConfig>,
     kyoriKrate: Krate<KyoriComponentSerializer>
 ) {
     private val kyori by kyoriKrate
-    private val soulsConfig by soulsConfigKrate
     private val translation by translationKrate
 
     sealed interface Intent {
@@ -47,8 +42,8 @@ internal class SoulsCommandRegistry(
                     val page = commandContext.argumentOrElse(
                         index = 0,
                         type = PrimitiveArgumentType.Int,
-                        default = { 0 }
-                    )
+                        default = { 1 }
+                    ).minus(1)
                     Intent.List(sender = commandContext.sender, page = page)
                 }
             }
@@ -64,8 +59,8 @@ internal class SoulsCommandRegistry(
                             .getOrNull()
                             .orEmpty()
                             .let {
-                                val start = input.page.times(5).coerceIn(0, it.size)
-                                val end = (input.page * 5 + 5).coerceAtMost(it.size)
+                                val start = input.page.times(PAGE_SIZE).coerceIn(0, it.size)
+                                val end = (input.page * PAGE_SIZE + PAGE_SIZE).coerceAtMost(it.size)
                                 if (start == end) {
                                     emptyList()
                                 } else if (end == 0) {
@@ -85,7 +80,7 @@ internal class SoulsCommandRegistry(
                                     .or((input.sender as? Player)?.uniqueId == soul.ownerUUID)
                             }
                         if (souls.isEmpty()) {
-                            val title = translation.souls.noSoulsOnPage(input.page).component
+                            val title = translation.souls.noSoulsOnPage(input.page.plus(1)).component
                             input.sender.sendMessage(title)
                             return@launch
                         }
@@ -99,15 +94,17 @@ internal class SoulsCommandRegistry(
                                 is TimeAgoFormatter.Format.MinuteAgo -> translation.souls.minutesAgoFormat(
                                     timeAgo.duration
                                 )
+
                                 is TimeAgoFormatter.Format.MonthAgo -> translation.souls.monthsAgoFormat(
                                     timeAgo.duration
                                 )
+
                                 is TimeAgoFormatter.Format.SecondsAgo -> translation.souls.secondsAgoFormat(
                                     timeAgo.duration
                                 )
                             }
                             val listingComponent = translation.souls.listingFormat(
-                                index = i.plus(1),
+                                index = input.page.times(PAGE_SIZE).plus(i.plus(1)),
                                 owner = soul.ownerLastName,
                                 timeAgo = timeAgoFormatted.raw,
                                 x = soul.location.x.toInt(),
@@ -157,6 +154,19 @@ internal class SoulsCommandRegistry(
                             input.sender.sendMessage(listingComponent)
                             input.sender.sendMessage(freeComponent.appendSpace().append(teleportComponent))
                         }
+
+                        val nextPageComponent = translation.souls.nextPage.component.clickEvent(
+                            ClickEvent.callback {
+                                execute(input.copy(page = input.page.plus(1)))
+                            }
+                        )
+
+                        val prevPageComponent = translation.souls.prevPage.component.clickEvent(
+                            ClickEvent.callback {
+                                execute(input.copy(page = input.page.minus(1)))
+                            }
+                        ).appendSpace().takeIf { input.page > 0 } ?: Component.empty()
+                        input.sender.sendMessage(prevPageComponent.append(nextPageComponent))
                     }
                 }
             }
@@ -172,5 +182,9 @@ internal class SoulsCommandRegistry(
                 throwable.printStackTrace()
             }
         )
+    }
+
+    companion object {
+        private const val PAGE_SIZE = 5
     }
 }
