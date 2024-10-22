@@ -134,22 +134,28 @@ internal class SoulsDaoImpl(
         }
     }.logFailure("deleteSoul").map { Unit }
 
-    override suspend fun updateSoul(itemStackSoul: ItemStackSoul): Result<Unit> = runCatching {
+    override suspend fun updateSoul(soul: Soul): Result<Unit> = runCatching {
         mutex.withLock {
-            soulFileEditor.write(itemStackSoul)
             transaction(databaseFlow.first()) {
                 SoulTable.update(
                     where = {
-                        SoulTable.created_at.eq(itemStackSoul.soul.createdAt)
-                            .and(SoulTable.ownerUUID.eq(itemStackSoul.soul.ownerName))
+                        SoulTable.created_at.eq(soul.createdAt)
+                            .and(SoulTable.ownerUUID.eq(soul.ownerName))
                     },
                     body = {
-                        it[SoulTable.isFree] = itemStackSoul.soul.isFree
-                        it[SoulTable.hasXp] = itemStackSoul.soul.hasXp
-                        it[SoulTable.hasItems] = itemStackSoul.soul.hasItems
+                        it[SoulTable.isFree] = soul.isFree
+                        it[SoulTable.hasXp] = soul.hasXp
+                        it[SoulTable.hasItems] = soul.hasItems
                     }
                 )
             }
+        }
+    }.logFailure("deleteSoul").map { Unit }
+
+    override suspend fun updateSoul(itemStackSoul: ItemStackSoul): Result<Unit> = runCatching {
+        updateSoul(soul = itemStackSoul.soul).getOrThrow()
+        mutex.withLock {
+            soulFileEditor.write(itemStackSoul)
         }
     }.logFailure("deleteSoul").map { Unit }
 

@@ -7,6 +7,8 @@ import ru.astrainteractive.aspekt.module.souls.domain.PickUpExpUseCase
 import ru.astrainteractive.aspekt.module.souls.domain.PickUpItemsUseCase
 import ru.astrainteractive.aspekt.module.souls.domain.PickUpSoulUseCase
 import ru.astrainteractive.aspekt.module.souls.event.SoulEvents
+import ru.astrainteractive.aspekt.module.souls.worker.DeleteSoulWorker
+import ru.astrainteractive.aspekt.module.souls.worker.FreeSoulWorker
 import ru.astrainteractive.aspekt.module.souls.worker.ParticleWorker
 import ru.astrainteractive.aspekt.module.souls.worker.PickUpWorker
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
@@ -25,6 +27,16 @@ interface SoulsModule {
         private val soulsConfigModule = SoulsConfigModule.Default(
             coreModule = coreModule,
             dataFolder = dataFolder
+        )
+
+        private val deleteSoulWorker = DeleteSoulWorker(
+            soulsDao = soulsDbModule.soulsDao,
+            configKrate = soulsConfigModule.soulsConfigKrate
+        )
+
+        private val freeSoulWorker = FreeSoulWorker(
+            soulsDao = soulsDbModule.soulsDao,
+            configKrate = soulsConfigModule.soulsConfigKrate
         )
 
         private val particleWorker = ParticleWorker(
@@ -69,6 +81,8 @@ interface SoulsModule {
                 event.onEnable(coreModule.plugin)
                 particleWorker.onEnable()
                 pickUpWorker.onEnable()
+                deleteSoulWorker.onEnable()
+                freeSoulWorker.onEnable()
             },
             onReload = {
                 soulsConfigModule.lifecycle.onReload()
@@ -80,6 +94,8 @@ interface SoulsModule {
                 event.onDisable()
                 particleWorker.onDisable()
                 pickUpWorker.onDisable()
+                deleteSoulWorker.onDisable()
+                freeSoulWorker.onDisable()
             }
         )
     }

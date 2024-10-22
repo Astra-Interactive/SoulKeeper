@@ -2,6 +2,7 @@ package ru.astrainteractive.aspekt.job
 
 import java.util.Timer
 
+@Deprecated("Replaced by LifecycleCoroutineWorker")
 abstract class ScheduledJob(val key: String) {
     private var scheduler: Timer? = null
 
