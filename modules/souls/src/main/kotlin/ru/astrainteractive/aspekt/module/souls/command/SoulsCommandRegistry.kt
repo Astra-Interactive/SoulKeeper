@@ -2,7 +2,6 @@ package ru.astrainteractive.aspekt.module.souls.command
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import net.kyori.adventure.text.Component
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
@@ -11,7 +10,6 @@ import ru.astrainteractive.aspekt.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.aspekt.module.souls.database.model.Soul
 import ru.astrainteractive.aspekt.module.souls.util.clickable
 import ru.astrainteractive.aspekt.module.souls.util.isEmpty
-import ru.astrainteractive.aspekt.module.souls.util.isNotEmpty
 import ru.astrainteractive.aspekt.module.souls.util.orEmpty
 import ru.astrainteractive.aspekt.plugin.PluginPermission
 import ru.astrainteractive.aspekt.plugin.PluginTranslation
@@ -62,7 +60,6 @@ internal class SoulsCommandRegistry(
                 .clickable { execute(input.copy(page = input.page.plus(1))) }
                 .takeIf { input.page < maxPages }
                 .orEmpty()
-
             val prevPageComponent = translation.souls.prevPage.component
                 .clickable { execute(input.copy(page = input.page.plus(-1))) }
                 .appendSpace().takeIf { input.page > 0 }
@@ -75,10 +72,10 @@ internal class SoulsCommandRegistry(
         private fun createTeleportComponent(
             sender: CommandSender,
             soul: Soul
-        ): Component = with(kyori) {
-            if (sender !is Player) return@with Component.empty()
+        ) = with(kyori) {
+            if (sender !is Player) return@with null
             if (!sender.toPermissible().hasPermission(PluginPermission.TeleportToSouls)) {
-                return@with Component.empty()
+                return@with null
             }
             translation.souls.teleportToSoul
                 .component
@@ -91,9 +88,8 @@ internal class SoulsCommandRegistry(
         ) = with(kyori) {
             val hasPermission = sender.toPermissible().hasPermission(PluginPermission.FreeAllSouls)
             val isOwner = (sender as? Player)?.uniqueId == soul.ownerUUID
-            val isSoulFree = soul.isFree
-            if (isSoulFree) return@with Component.empty()
-            if (!hasPermission || !isOwner) return@with Component.empty()
+            if (soul.isFree) return@with null
+            if (!hasPermission && !isOwner) return@with null
             translation.souls.freeSoul
                 .component
                 .appendSpace()
@@ -173,19 +169,20 @@ internal class SoulsCommandRegistry(
                                     ?.toInt()
                                     ?: 0
                             ).component
+                                .appendSpace()
+                                .append(
+                                    createFreeComponent(
+                                        sender = input.sender,
+                                        soul = soul
+                                    )?.appendSpace().orEmpty()
+                                )
+                                .append(
+                                    createTeleportComponent(
+                                        sender = input.sender,
+                                        soul = soul
+                                    ).orEmpty()
+                                )
                             input.sender.sendMessage(listingComponent)
-
-                            val freeComponent = createFreeComponent(
-                                sender = input.sender,
-                                soul = soul
-                            )
-                            val teleportComponent = createTeleportComponent(
-                                sender = input.sender,
-                                soul = soul
-                            )
-                            if (freeComponent.isNotEmpty().or(teleportComponent.isNotEmpty())) {
-                                input.sender.sendMessage(freeComponent.append(teleportComponent))
-                            }
                         }
                         sendPagingMessage(input, maxPages)
                     }

@@ -45,12 +45,12 @@ class PluginTranslation(
             "&#b8b8b8%index%. &#d1a71d%owner% &#b8b8b8(%time_ago%) &#b8b8b8(%x%; %y%; %z%) %dist%m"
         ),
         val listSoulsTitle: StringDesc.Raw = StringDesc.Raw("&#42f596Список видимых вам душ:"),
-        val freeSoul: StringDesc.Raw = StringDesc.Raw("&#b50b05[ОСВОБОДИТЬ]"),
-        val teleportToSoul: StringDesc.Raw = StringDesc.Raw("&#1db2b8[ТЕЛЕПОРТИРОВАТЬСЯ]"),
+        val freeSoul: StringDesc.Raw = StringDesc.Raw("&#b50b05[FREE]"),
+        val teleportToSoul: StringDesc.Raw = StringDesc.Raw("&#1db2b8[TP]"),
         val soulFreed: StringDesc.Raw = StringDesc.Raw("&#42f596Душа теперь свободна!"),
         val couldNotFreeSoul: StringDesc.Raw = StringDesc.Raw("&#db2c18Не удалось освободить душу!"),
-        val nextPage: StringDesc.Raw = StringDesc.Raw("&#42f596[ДАЛЬШЕ]"),
-        val prevPage: StringDesc.Raw = StringDesc.Raw("&#42f596[РАНЬШЕ]"),
+        val nextPage: StringDesc.Raw = StringDesc.Raw("&#42f596[>>ДАЛЬШЕ>>]"),
+        val prevPage: StringDesc.Raw = StringDesc.Raw("&#42f596[<<РАНЬШЕ<<]"),
     ) {
         fun listingFormat(
             index: Int,

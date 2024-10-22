@@ -4,7 +4,7 @@ import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 
-fun Component?.orEmpty() = Component.empty()
+fun Component?.orEmpty() = this ?: Component.empty()
 
 fun Component.isEmpty() = this == Component.empty()
 
