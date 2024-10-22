@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.module.souls.util
+package ru.astrainteractive.soulkeeper.core.util
 
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component

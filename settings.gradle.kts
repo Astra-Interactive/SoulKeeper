@@ -45,5 +45,5 @@ rootProject.name = "SoulKeeper"
 include("plugin")
 // Modules
 include(":modules:core")
-include(":modules:souls")
 include(":modules:database")
+include(":modules:worker")

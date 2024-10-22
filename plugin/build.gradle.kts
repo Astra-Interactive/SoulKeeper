@@ -19,6 +19,8 @@ dependencies {
     implementation(libs.klibs.mikro.core)
     implementation(libs.minecraft.astralibs.menu.bukkit)
     implementation(libs.minecraft.astralibs.core.bukkit)
+    implementation(libs.minecraft.astralibs.command)
+    implementation(libs.minecraft.astralibs.command.bukkit)
     compileOnly(libs.minecraft.vaultapi)
     compileOnly(libs.driver.h2)
     compileOnly(libs.driver.jdbc)
@@ -31,8 +33,8 @@ dependencies {
     testImplementation(libs.bundles.testing.kotlin)
     testImplementation(libs.tests.kotlin.test)
     implementation(projects.modules.core)
-    implementation(projects.modules.souls)
     implementation(projects.modules.database)
+    implementation(projects.modules.worker)
 }
 val destination = File("/media/makeevrserg/WDGOLD2TB/Minecraft Servers/server-docker/data/plugins")
     .takeIf(File::exists)

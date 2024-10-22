@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.module.souls.command
+package ru.astrainteractive.soulkeeper.command
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -16,13 +16,13 @@ import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissib
 import ru.astrainteractive.klibs.kstorage.api.Krate
 import ru.astrainteractive.soulkeeper.core.plugin.PluginPermission
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
+import ru.astrainteractive.soulkeeper.core.util.clickable
 import ru.astrainteractive.soulkeeper.core.util.getValue
+import ru.astrainteractive.soulkeeper.core.util.isEmpty
+import ru.astrainteractive.soulkeeper.core.util.orEmpty
 import ru.astrainteractive.soulkeeper.module.souls.database.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.Soul
-import ru.astrainteractive.soulkeeper.module.souls.util.clickable
-import ru.astrainteractive.soulkeeper.module.souls.util.isEmpty
-import ru.astrainteractive.soulkeeper.module.souls.util.orEmpty
 
 internal class SoulsCommandRegistry(
     private val plugin: JavaPlugin,

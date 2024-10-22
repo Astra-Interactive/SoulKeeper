@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.module.souls.util
+package ru.astrainteractive.soulkeeper.core.util
 
 import com.destroystokyo.paper.ParticleBuilder
 import net.kyori.adventure.key.Key
@@ -6,7 +6,7 @@ import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.entity.Player
-import ru.astrainteractive.soulkeeper.module.souls.model.SoulsConfig
+import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 
 private fun SoulsConfig.Sounds.SoundConfig.toKyoriSound(): net.kyori.adventure.sound.Sound {
     return net.kyori.adventure.sound.Sound.sound(
@@ -20,14 +20,14 @@ private fun SoulsConfig.Sounds.SoundConfig.toKyoriSound(): net.kyori.adventure.s
 /**
  * Play sound in this [Location] for all players
  */
-internal fun Location.playSound(sound: SoulsConfig.Sounds.SoundConfig) {
+fun Location.playSound(sound: SoulsConfig.Sounds.SoundConfig) {
     this.world.playSound(sound.toKyoriSound())
 }
 
 /**
  * Play sound only to this [Player]
  */
-internal fun Player.playSound(location: Location, sound: SoulsConfig.Sounds.SoundConfig) {
+fun Player.playSound(location: Location, sound: SoulsConfig.Sounds.SoundConfig) {
     playSound(sound.toKyoriSound(), location.x, location.y, location.z)
 }
 
@@ -57,7 +57,7 @@ private fun SoulsConfig.Particles.Particle.toBuilder(location: Location): Partic
 /**
  * Spawn particle to only this [Player]
  */
-internal fun Player.spawnParticle(location: Location, config: SoulsConfig.Particles.Particle) {
+fun Player.spawnParticle(location: Location, config: SoulsConfig.Particles.Particle) {
     config
         .toBuilder(location)
         .receivers(this)
@@ -67,7 +67,7 @@ internal fun Player.spawnParticle(location: Location, config: SoulsConfig.Partic
 /**
  * Spawn particle to all player in radius [radius]
  */
-internal fun Location.spawnParticle(config: SoulsConfig.Particles.Particle, radius: Int = 64) {
+fun Location.spawnParticle(config: SoulsConfig.Particles.Particle, radius: Int = 64) {
     config
         .toBuilder(this)
         .receivers(radius)

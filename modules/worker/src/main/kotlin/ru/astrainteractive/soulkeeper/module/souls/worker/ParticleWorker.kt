@@ -16,13 +16,13 @@ import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.klibs.kstorage.api.Krate
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.soulkeeper.core.job.LifecycleCoroutineWorker
+import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.util.getValue
+import ru.astrainteractive.soulkeeper.core.util.playSound
+import ru.astrainteractive.soulkeeper.core.util.spawnParticle
 import ru.astrainteractive.soulkeeper.module.souls.database.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorStandStubUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorStandUseCase
-import ru.astrainteractive.soulkeeper.module.souls.model.SoulsConfig
-import ru.astrainteractive.soulkeeper.module.souls.util.playSound
-import ru.astrainteractive.soulkeeper.module.souls.util.spawnParticle
 import kotlin.time.Duration.Companion.seconds
 
 /**

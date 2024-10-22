@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.module.souls.command
+package ru.astrainteractive.soulkeeper.command
 
 import ru.astrainteractive.astralibs.string.StringDesc
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation

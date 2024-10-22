@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.module.souls.command
+package ru.astrainteractive.soulkeeper.command
 
 import java.time.Instant
 import kotlin.time.Duration

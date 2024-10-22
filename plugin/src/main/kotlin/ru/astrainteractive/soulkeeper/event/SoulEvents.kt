@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.module.souls.event
+package ru.astrainteractive.soulkeeper.event
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -9,12 +9,12 @@ import org.bukkit.event.entity.PlayerDeathEvent
 import ru.astrainteractive.astralibs.async.CoroutineFeature
 import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.klibs.kstorage.api.Krate
+import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.util.getValue
+import ru.astrainteractive.soulkeeper.core.util.playSound
+import ru.astrainteractive.soulkeeper.core.util.spawnParticle
 import ru.astrainteractive.soulkeeper.module.souls.database.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemStackSoul
-import ru.astrainteractive.soulkeeper.module.souls.model.SoulsConfig
-import ru.astrainteractive.soulkeeper.module.souls.util.playSound
-import ru.astrainteractive.soulkeeper.module.souls.util.spawnParticle
 import java.time.Instant
 
 internal class SoulEvents(

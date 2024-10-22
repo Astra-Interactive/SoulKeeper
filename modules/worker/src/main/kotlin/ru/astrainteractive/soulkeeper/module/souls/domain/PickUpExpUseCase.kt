@@ -3,10 +3,10 @@ package ru.astrainteractive.soulkeeper.module.souls.domain
 import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
+import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
+import ru.astrainteractive.soulkeeper.core.util.playSound
 import ru.astrainteractive.soulkeeper.module.souls.database.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemStackSoul
-import ru.astrainteractive.soulkeeper.module.souls.model.SoulsConfig
-import ru.astrainteractive.soulkeeper.module.souls.util.playSound
 
 internal class PickUpExpUseCase(
     private val collectXpSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,

@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.module.souls.model
+package ru.astrainteractive.soulkeeper.core.plugin
 
 import com.charleskorn.kaml.YamlComment
 import kotlinx.serialization.SerialName
@@ -8,7 +8,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 
 @Serializable
-internal data class SoulsConfig(
+data class SoulsConfig(
     @YamlComment("Type of database for souls information")
     @SerialName("database")
     val database: DatabaseConfiguration = DatabaseConfiguration.H2("souls"),

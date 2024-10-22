@@ -22,6 +22,7 @@ import ru.astrainteractive.klibs.kstorage.api.Krate
 import ru.astrainteractive.klibs.kstorage.api.impl.DefaultMutableKrate
 import ru.astrainteractive.soulkeeper.core.di.factory.ConfigKrateFactory
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
+import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 
 interface CoreModule {
     val lifecycle: Lifecycle
@@ -32,6 +33,7 @@ interface CoreModule {
     val dispatchers: BukkitDispatchers
     val scope: CoroutineScope
     val translation: Krate<PluginTranslation>
+    val soulsConfigKrate: Krate<SoulsConfig>
     val yamlFormat: StringFormat
 
     val kyoriComponentSerializer: Krate<KyoriComponentSerializer>
@@ -60,6 +62,13 @@ interface CoreModule {
             stringFormat = yamlFormat,
             dataFolder = plugin.dataFolder,
             factory = ::PluginTranslation
+        )
+
+        override val soulsConfigKrate = ConfigKrateFactory.create<SoulsConfig>(
+            fileNameWithoutExtension = "souls_config",
+            stringFormat = yamlFormat,
+            dataFolder = plugin.dataFolder,
+            factory = ::SoulsConfig
         )
 
         override val kyoriComponentSerializer = DefaultMutableKrate<KyoriComponentSerializer>(
