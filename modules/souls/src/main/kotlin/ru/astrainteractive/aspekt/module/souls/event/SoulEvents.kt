@@ -62,7 +62,7 @@ internal class SoulEvents(
                 hasXp = droppedXp > 0
             )
         )
-        itemStackSoul.soul.location.spawnParticle(soulsConfig.particles.soulCreated)
+        itemStackSoul.soul.location.spawnParticle(soulsConfig.particles.soulCreated, soulsConfig.soulCallRadius)
         itemStackSoul.soul.location.playSound(soulsConfig.sounds.soulDropped)
         scope.launch { soulsDao.insertSoul(itemStackSoul) }
     }
