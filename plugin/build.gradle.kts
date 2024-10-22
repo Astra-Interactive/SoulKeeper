@@ -32,6 +32,7 @@ dependencies {
     testImplementation(libs.tests.kotlin.test)
     implementation(projects.modules.core)
     implementation(projects.modules.souls)
+    implementation(projects.modules.database)
 }
 val destination = File("/media/makeevrserg/WDGOLD2TB/Minecraft Servers/server-docker/data/plugins")
     .takeIf(File::exists)

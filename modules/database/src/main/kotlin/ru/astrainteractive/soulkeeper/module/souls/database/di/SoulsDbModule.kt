@@ -22,7 +22,7 @@ import ru.astrainteractive.soulkeeper.module.souls.database.dao.editor.SoulFileE
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulTable
 import java.io.File
 
-internal interface SoulsDbModule {
+interface SoulsDbModule {
     val lifecycle: Lifecycle
 
     val databaseFlow: Flow<Database>

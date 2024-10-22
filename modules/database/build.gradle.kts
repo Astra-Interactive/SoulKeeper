@@ -25,5 +25,4 @@ dependencies {
     testImplementation(libs.tests.kotlin.test)
     // Local
     implementation(projects.modules.core)
-    implementation(projects.modules.database)
 }

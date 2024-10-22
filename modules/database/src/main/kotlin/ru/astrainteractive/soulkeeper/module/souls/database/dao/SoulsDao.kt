@@ -6,7 +6,7 @@ import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemStackSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.Soul
 import java.util.UUID
 
-internal interface SoulsDao {
+interface SoulsDao {
     suspend fun getSouls(): Result<List<DatabaseSoul>>
 
     suspend fun getPlayerSouls(uuid: UUID): Result<List<DatabaseSoul>>

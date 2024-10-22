@@ -46,3 +46,4 @@ include("plugin")
 // Modules
 include(":modules:core")
 include(":modules:souls")
+include(":modules:database")

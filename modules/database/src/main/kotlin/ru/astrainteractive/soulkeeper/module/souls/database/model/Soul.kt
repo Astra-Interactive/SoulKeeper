@@ -4,7 +4,7 @@ import org.bukkit.Location
 import java.time.Instant
 import java.util.UUID
 
-internal interface Soul {
+interface Soul {
     val ownerUUID: UUID
     val ownerLastName: String
     val createdAt: Instant
