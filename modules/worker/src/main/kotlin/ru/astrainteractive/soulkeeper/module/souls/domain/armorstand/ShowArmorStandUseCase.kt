@@ -5,6 +5,6 @@ import ru.astrainteractive.soulkeeper.module.souls.database.model.Soul
 
 internal interface ShowArmorStandUseCase {
     fun destroy(player: Player, ids: Collection<Int>)
-    fun invoke(id: Int, player: Player, soul: Soul)
     fun generateEntityId(): Int
+    fun show(id: Int, player: Player, soul: Soul)
 }

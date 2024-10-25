@@ -1,7 +1,7 @@
 package ru.astrainteractive.soulkeeper.module.souls.command
 
 import org.junit.Test
-import ru.astrainteractive.soulkeeper.command.TimeAgoFormatter
+import ru.astrainteractive.soulkeeper.datetime.TimeAgoFormatter
 import java.time.Instant
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes

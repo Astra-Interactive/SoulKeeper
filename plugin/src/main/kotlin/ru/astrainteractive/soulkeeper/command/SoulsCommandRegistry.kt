@@ -20,6 +20,8 @@ import ru.astrainteractive.soulkeeper.core.util.clickable
 import ru.astrainteractive.soulkeeper.core.util.getValue
 import ru.astrainteractive.soulkeeper.core.util.isEmpty
 import ru.astrainteractive.soulkeeper.core.util.orEmpty
+import ru.astrainteractive.soulkeeper.datetime.TimeAgoFormatter
+import ru.astrainteractive.soulkeeper.datetime.TimeAgoTranslationFormatter
 import ru.astrainteractive.soulkeeper.module.souls.database.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.Soul

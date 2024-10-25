@@ -11,6 +11,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
+import org.bukkit.GameMode
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.klibs.kstorage.api.Krate
@@ -21,6 +22,7 @@ import ru.astrainteractive.soulkeeper.core.util.getValue
 import ru.astrainteractive.soulkeeper.core.util.playSound
 import ru.astrainteractive.soulkeeper.core.util.spawnParticle
 import ru.astrainteractive.soulkeeper.module.souls.database.dao.SoulsDao
+import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorStandStubUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorStandUseCase
 import kotlin.time.Duration.Companion.seconds
@@ -44,11 +46,11 @@ internal class ParticleWorker(
     private val mutex = Mutex()
     private var lastJob: Job? = null
 
-    private val armorStandIds = mutableSetOf<Int>()
-    private fun addAndRememberArmorStandId(): Int {
+    private val soulByArmorStandId = HashMap<Long, Int>()
+    private fun rememberArmorStandAndGetId(soul: DatabaseSoul): Int {
         if (showArmorStandUseCase is ShowArmorStandStubUseCase) return -1
         val id = showArmorStandUseCase.generateEntityId()
-        armorStandIds.add(id)
+        soulByArmorStandId[soul.id] = id
         return id
     }
 
@@ -58,14 +60,14 @@ internal class ParticleWorker(
                 lastJob?.cancelAndJoin()
                 lastJob = coroutineContext.job
                 Bukkit.getOnlinePlayers()
-                    .onEach { player -> showArmorStandUseCase.destroy(player, armorStandIds) }
+                    .onEach { player -> showArmorStandUseCase.destroy(player, soulByArmorStandId.values) }
                     .flatMap { player ->
                         soulsDao.getSoulsNear(location = player.location, radius = soulsConfig.soulCallRadius)
                             .getOrNull()
                             .orEmpty()
-                            .filter { it.isFree || it.ownerUUID == player.uniqueId }
+                            .filter { it.isFree || it.ownerUUID == player.uniqueId || player.gameMode == GameMode.SPECTATOR }
                             .map { soul ->
-                                showArmorStandUseCase.invoke(addAndRememberArmorStandId(), player, soul)
+                                showArmorStandUseCase.show(rememberArmorStandAndGetId(soul), player, soul)
                                 withContext(dispatchers.Main) {
                                     player.playSound(soul.location, soulsConfig.sounds.calling)
                                 }
@@ -89,6 +91,6 @@ internal class ParticleWorker(
     override fun onDisable() {
         super.onDisable()
         Bukkit.getOnlinePlayers()
-            .onEach { player -> showArmorStandUseCase.destroy(player, armorStandIds) }
+            .onEach { player -> showArmorStandUseCase.destroy(player, soulByArmorStandId.values) }
     }
 }

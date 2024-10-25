@@ -34,7 +34,7 @@ internal class ShowArmorStandUseCaseImpl(
         PacketEvents.getAPI().playerManager.sendPacket(player, packet)
     }
 
-    override fun invoke(id: Int, player: Player, soul: Soul) {
+    override fun show(id: Int, player: Player, soul: Soul) {
         val vector3d = soul.location.toVector().toVector3d()
         val packet = WrapperPlayServerSpawnEntity(
             id,

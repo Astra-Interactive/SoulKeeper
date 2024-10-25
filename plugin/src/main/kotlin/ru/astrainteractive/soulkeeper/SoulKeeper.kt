@@ -6,7 +6,7 @@ import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.soulkeeper.di.RootModule
 
-class SoulKeeper :
+class oulKeeper :
     JavaPlugin(),
     Logger by JUtiltLogger("SoulKeeper"),
     Lifecycle {

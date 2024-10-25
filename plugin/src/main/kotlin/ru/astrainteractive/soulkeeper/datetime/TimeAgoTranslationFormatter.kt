@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.command
+package ru.astrainteractive.soulkeeper.datetime
 
 import ru.astrainteractive.astralibs.string.StringDesc
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
