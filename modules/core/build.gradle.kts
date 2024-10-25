@@ -8,6 +8,7 @@ dependencies {
     implementation(libs.bundles.kotlin)
     // Bukkit
     compileOnly(libs.minecraft.paper.api)
+    compileOnly(libs.minecraft.bstats)
     // AstraLibs
     implementation(libs.minecraft.astralibs.core)
     implementation(libs.minecraft.astralibs.menu.bukkit)

@@ -1,10 +1,11 @@
 package ru.astrainteractive.soulkeeper.di
 
 import org.bukkit.event.HandlerList
-import org.bukkit.plugin.java.JavaPlugin
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.soulkeeper.command.SoulsCommandRegistry
+import ru.astrainteractive.soulkeeper.command.SoulsReloadCommandRegistry
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
+import ru.astrainteractive.soulkeeper.core.plugin.LifecyclePlugin
 import ru.astrainteractive.soulkeeper.event.SoulEvents
 import ru.astrainteractive.soulkeeper.module.souls.database.di.SoulsDbModule
 import ru.astrainteractive.soulkeeper.module.souls.domain.di.WorkerModule
@@ -12,7 +13,7 @@ import ru.astrainteractive.soulkeeper.module.souls.domain.di.WorkerModule
 interface RootModule {
     val lifecycle: Lifecycle
 
-    class RootModuleImpl(plugin: JavaPlugin) : RootModule {
+    class RootModuleImpl(plugin: LifecyclePlugin) : RootModule {
         private val coreModule: CoreModule = CoreModule.Default(plugin)
 
         private val soulsDbModule = SoulsDbModule.Default(
@@ -33,6 +34,12 @@ interface RootModule {
             translationKrate = coreModule.translation
         )
 
+        private val soulsReloadCommandRegistry = SoulsReloadCommandRegistry(
+            plugin = coreModule.plugin,
+            kyoriKrate = coreModule.kyoriComponentSerializer,
+            translationKrate = coreModule.translation
+        )
+
         private val workerModule = WorkerModule(
             coreModule = coreModule,
             soulsDbModule = soulsDbModule
@@ -49,6 +56,7 @@ interface RootModule {
             onEnable = {
                 event.onEnable(coreModule.plugin)
                 soulsCommandRegistry.register()
+                soulsReloadCommandRegistry.register()
                 lifecycles.forEach(Lifecycle::onEnable)
             },
             onDisable = {

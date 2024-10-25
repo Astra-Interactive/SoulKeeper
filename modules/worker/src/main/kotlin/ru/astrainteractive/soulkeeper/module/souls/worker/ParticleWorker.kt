@@ -49,9 +49,7 @@ internal class ParticleWorker(
     private val soulByArmorStandId = HashMap<Long, Int>()
     private fun rememberSoulArmorStandAndGetId(soul: DatabaseSoul): Int {
         if (showArmorStandUseCase is ShowArmorStandStubUseCase) return -1
-        val id = showArmorStandUseCase.generateEntityId()
-        soulByArmorStandId[soul.id] = id
-        return id
+        return soulByArmorStandId.getOrPut(soul.id) { showArmorStandUseCase.generateEntityId() }
     }
 
     override fun execute() {

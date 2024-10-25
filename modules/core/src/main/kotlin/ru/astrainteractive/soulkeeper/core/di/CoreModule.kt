@@ -7,7 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.json.Json
-import org.bukkit.plugin.java.JavaPlugin
+import org.bstats.bukkit.Metrics
 import ru.astrainteractive.astralibs.async.BukkitDispatchers
 import ru.astrainteractive.astralibs.async.CoroutineFeature
 import ru.astrainteractive.astralibs.async.DefaultBukkitDispatchers
@@ -21,13 +21,14 @@ import ru.astrainteractive.astralibs.serialization.YamlStringFormat
 import ru.astrainteractive.klibs.kstorage.api.Krate
 import ru.astrainteractive.klibs.kstorage.api.impl.DefaultMutableKrate
 import ru.astrainteractive.soulkeeper.core.di.factory.ConfigKrateFactory
+import ru.astrainteractive.soulkeeper.core.plugin.LifecyclePlugin
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 
 interface CoreModule {
     val lifecycle: Lifecycle
 
-    val plugin: JavaPlugin
+    val plugin: LifecyclePlugin
     val eventListener: EventListener
 
     val dispatchers: BukkitDispatchers
@@ -41,7 +42,7 @@ interface CoreModule {
 
     val jsonStringFormat: StringFormat
 
-    class Default(override val plugin: JavaPlugin) : CoreModule, Logger by JUtiltLogger("CoreModule") {
+    class Default(override val plugin: LifecyclePlugin) : CoreModule, Logger by JUtiltLogger("CoreModule") {
         // Core
         override val eventListener = EventListener.Default()
 
@@ -88,6 +89,7 @@ interface CoreModule {
             onEnable = {
                 inventoryClickEventListener.onEnable(plugin)
                 eventListener.onEnable(plugin)
+                Metrics(plugin, 23714)
             },
             onReload = {
                 translation.loadAndGet()

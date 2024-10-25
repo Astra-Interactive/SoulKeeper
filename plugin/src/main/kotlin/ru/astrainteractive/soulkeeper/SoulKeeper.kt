@@ -1,15 +1,13 @@
 package ru.astrainteractive.soulkeeper
 
-import org.bukkit.plugin.java.JavaPlugin
-import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
+import ru.astrainteractive.soulkeeper.core.plugin.LifecyclePlugin
 import ru.astrainteractive.soulkeeper.di.RootModule
 
 class SoulKeeper :
-    JavaPlugin(),
-    Logger by JUtiltLogger("SoulKeeper"),
-    Lifecycle {
+    LifecyclePlugin(),
+    Logger by JUtiltLogger("SoulKeeper") {
     private val rootModule by lazy { RootModule.RootModuleImpl(this) }
 
     override fun onEnable() {
