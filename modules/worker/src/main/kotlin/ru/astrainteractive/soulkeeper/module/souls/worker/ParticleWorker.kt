@@ -65,7 +65,11 @@ internal class ParticleWorker(
                         soulsDao.getSoulsNear(location = player.location, radius = soulsConfig.soulCallRadius)
                             .getOrNull()
                             .orEmpty()
-                            .filter { it.isFree || it.ownerUUID == player.uniqueId || player.gameMode == GameMode.SPECTATOR }
+                            .filter {
+                                it.isFree
+                                    .or(it.ownerUUID == player.uniqueId)
+                                    .or(player.gameMode == GameMode.SPECTATOR)
+                            }
                             .map { soul ->
                                 showArmorStandUseCase.show(rememberSoulArmorStandAndGetId(soul), player, soul)
                                 withContext(dispatchers.Main) {

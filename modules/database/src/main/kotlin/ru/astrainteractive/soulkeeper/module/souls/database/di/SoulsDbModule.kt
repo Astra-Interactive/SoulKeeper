@@ -18,7 +18,7 @@ import ru.astrainteractive.astralibs.exposed.model.DatabaseConfiguration
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.soulkeeper.module.souls.database.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.dao.SoulsDaoImpl
-import ru.astrainteractive.soulkeeper.module.souls.database.dao.editor.SoulFileEditor
+import ru.astrainteractive.soulkeeper.module.souls.database.dao.editor.BukkitSoulFile
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulTable
 import java.io.File
 
@@ -48,7 +48,7 @@ interface SoulsDbModule {
 
         override val soulsDao: SoulsDao = SoulsDaoImpl(
             databaseFlow = databaseFlow,
-            soulFileEditor = SoulFileEditor(
+            soulFileEditor = BukkitSoulFile(
                 folder = dataFolder.resolve("storage")
             )
         )

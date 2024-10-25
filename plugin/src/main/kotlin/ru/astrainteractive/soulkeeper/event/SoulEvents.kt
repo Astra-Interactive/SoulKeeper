@@ -14,7 +14,7 @@ import ru.astrainteractive.soulkeeper.core.util.getValue
 import ru.astrainteractive.soulkeeper.core.util.playSound
 import ru.astrainteractive.soulkeeper.core.util.spawnParticle
 import ru.astrainteractive.soulkeeper.module.souls.database.dao.SoulsDao
-import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemStackSoul
+import ru.astrainteractive.soulkeeper.module.souls.database.model.BukkitSoul
 import java.time.Instant
 
 internal class SoulEvents(
@@ -48,7 +48,7 @@ internal class SoulEvents(
 
         if (soulItems.isEmpty() && droppedXp <= 0) return
 
-        val itemStackSoul = ItemStackSoul(
+        val bukkitSoul = BukkitSoul(
             items = soulItems,
             exp = droppedXp,
             ownerUUID = event.player.uniqueId,
@@ -57,9 +57,9 @@ internal class SoulEvents(
             isFree = false,
             location = event.player.location,
         )
-        itemStackSoul.location.spawnParticle(soulsConfig.particles.soulCreated, soulsConfig.soulCallRadius)
-        itemStackSoul.location.playSound(soulsConfig.sounds.soulDropped)
-        scope.launch { soulsDao.insertSoul(itemStackSoul) }
+        bukkitSoul.location.spawnParticle(soulsConfig.particles.soulCreated, soulsConfig.soulCallRadius)
+        bukkitSoul.location.playSound(soulsConfig.sounds.soulDropped)
+        scope.launch { soulsDao.insertSoul(bukkitSoul) }
     }
 
     override fun onDisable() {

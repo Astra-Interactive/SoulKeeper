@@ -5,7 +5,7 @@ import org.bukkit.inventory.ItemStack
 import java.time.Instant
 import java.util.UUID
 
-data class ItemStackSoul(
+data class BukkitSoul(
     val exp: Int,
     val items: List<ItemStack>,
     override val ownerUUID: UUID,

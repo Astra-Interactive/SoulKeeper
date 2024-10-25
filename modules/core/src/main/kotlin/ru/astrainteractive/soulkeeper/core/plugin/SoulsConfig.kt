@@ -12,16 +12,23 @@ data class SoulsConfig(
     @YamlComment("Type of database for souls information")
     @SerialName("database")
     val database: DatabaseConfiguration = DatabaseConfiguration.H2("souls"),
-    @YamlComment("Soul will be public after this time")
+    @YamlComment(
+        "[DEFAULT] - 2 days",
+        "Soul will be public after this time"
+    )
     @SerialName("soul_free_after")
     val soulFreeAfter: Duration = 2.days,
-    @YamlComment("After this time soul will disappear entirely")
+    @YamlComment(
+        "[DEFAULT] - 14 days",
+        "After this time soul will disappear entirely"
+    )
     @SerialName("soul_fade_after")
     val soulFadeAfter: Duration = 14.days,
     @YamlComment("Near this radius saul will call for player")
     @SerialName("soul_call_radius")
-    val soulCallRadius: Int = 64,
+    val soulCallRadius: Int = 100,
     @YamlComment(
+        "[NOT IMPLEMENTED]",
         "Defines PVP behaviour",
         "NONE - the soul will be private",
         "EXP_ONLY - only exp will be public",
@@ -43,7 +50,6 @@ data class SoulsConfig(
         "Need packet events"
     )
     val displaySoulTitles: Boolean = true
-
 ) {
     @Serializable
     data class Particles(

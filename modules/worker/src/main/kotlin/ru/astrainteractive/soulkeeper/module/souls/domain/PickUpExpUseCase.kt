@@ -6,7 +6,7 @@ import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.util.playSound
 import ru.astrainteractive.soulkeeper.module.souls.database.dao.SoulsDao
-import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemStackSoul
+import ru.astrainteractive.soulkeeper.module.souls.database.model.BukkitSoul
 
 internal class PickUpExpUseCase(
     private val collectXpSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
@@ -17,14 +17,14 @@ internal class PickUpExpUseCase(
         data object ExpCollected : Output
     }
 
-    suspend fun invoke(player: Player, itemStackSoul: ItemStackSoul): Output {
-        if (itemStackSoul.exp <= 0) {
+    suspend fun invoke(player: Player, bukkitSoul: BukkitSoul): Output {
+        if (bukkitSoul.exp <= 0) {
             return Output.NoExpPresent
         }
-        itemStackSoul.location.playSound(collectXpSoundProvider.invoke())
-        player.giveExp(itemStackSoul.exp)
+        bukkitSoul.location.playSound(collectXpSoundProvider.invoke())
+        player.giveExp(bukkitSoul.exp)
         soulsDao.updateSoul(
-            itemStackSoul.copy(
+            bukkitSoul.copy(
                 exp = 0,
             )
         )

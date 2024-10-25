@@ -24,15 +24,17 @@ internal class DeleteSoulWorker(
 
     override fun execute() {
         scope.launch {
-            val soulsToFree = soulsDao.getSouls()
+            val soulsToDelete = soulsDao.getSouls()
                 .getOrNull()
                 .orEmpty()
                 .filter { soul ->
                     val diff = Instant.now().minusSeconds(config.soulFadeAfter.inWholeSeconds)
                     soul.createdAt < diff
                 }
-            info { "#execute found ${soulsToFree.size} souls to delete" }
-            soulsToFree.forEach { soul ->
+            if (soulsToDelete.isEmpty()) return@launch
+
+            info { "#execute found ${soulsToDelete.size} souls to delete" }
+            soulsToDelete.forEach { soul ->
                 soulsDao.deleteSoul(soul)
             }
         }

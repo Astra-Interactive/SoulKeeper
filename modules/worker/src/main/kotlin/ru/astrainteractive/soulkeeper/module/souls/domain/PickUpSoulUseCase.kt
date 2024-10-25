@@ -9,7 +9,7 @@ import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.util.playSound
 import ru.astrainteractive.soulkeeper.core.util.spawnParticle
 import ru.astrainteractive.soulkeeper.module.souls.database.dao.SoulsDao
-import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemStackSoul
+import ru.astrainteractive.soulkeeper.module.souls.database.model.BukkitSoul
 
 @Suppress("LongParameterList")
 internal class PickUpSoulUseCase(
@@ -27,23 +27,23 @@ internal class PickUpSoulUseCase(
         data object AllPickedUp : Output
     }
 
-    suspend fun invoke(player: Player, itemStackSoul: ItemStackSoul): Output {
+    suspend fun invoke(player: Player, bukkitSoul: BukkitSoul): Output {
         return withContext(dispatchers.Main) {
-            pickUpExpUseCase.invoke(player, itemStackSoul)
+            pickUpExpUseCase.invoke(player, bukkitSoul)
 
             val isAllItemsPickedUp = pickUpItemsUseCase.invoke(
                 player = player,
-                itemStackSoul = itemStackSoul
+                bukkitSoul = bukkitSoul
             ) !is PickUpItemsUseCase.Output.SomeItemsRemain
 
             if (!isAllItemsPickedUp) {
-                itemStackSoul.location.playSound(soulContentLeftSoundProvider.invoke())
-                itemStackSoul.location.spawnParticle(soulContentLeftParticleProvider.invoke())
+                bukkitSoul.location.playSound(soulContentLeftSoundProvider.invoke())
+                bukkitSoul.location.spawnParticle(soulContentLeftParticleProvider.invoke())
                 return@withContext Output.SomethingRest
             }
-            soulsDao.deleteSoul(itemStackSoul)
-            itemStackSoul.location.playSound(soulDisappearSoundProvider.invoke())
-            itemStackSoul.location.spawnParticle(soulGoneParticleProvider.invoke())
+            soulsDao.deleteSoul(bukkitSoul)
+            bukkitSoul.location.playSound(soulDisappearSoundProvider.invoke())
+            bukkitSoul.location.spawnParticle(soulGoneParticleProvider.invoke())
             return@withContext Output.AllPickedUp
         }
     }

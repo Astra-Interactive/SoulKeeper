@@ -19,16 +19,16 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
-import ru.astrainteractive.soulkeeper.module.souls.database.dao.editor.SoulFileEditor
+import ru.astrainteractive.soulkeeper.module.souls.database.dao.editor.BukkitSoulFile
+import ru.astrainteractive.soulkeeper.module.souls.database.model.BukkitSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
-import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemStackSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.Soul
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulTable
 import java.util.UUID
 
 internal class SoulsDaoImpl(
     private val databaseFlow: Flow<Database>,
-    private val soulFileEditor: SoulFileEditor
+    private val soulFileEditor: BukkitSoulFile
 ) : SoulsDao, Logger by JUtiltLogger("AspeKt-SoulsDaoImpl") {
     private val mutex = Mutex()
 
@@ -75,7 +75,7 @@ internal class SoulsDaoImpl(
         }
     }.logFailure("getPlayerSouls")
 
-    override suspend fun insertSoul(soul: ItemStackSoul): Result<Unit> = runCatching {
+    override suspend fun insertSoul(soul: BukkitSoul): Result<Unit> = runCatching {
         mutex.withLock {
             soulFileEditor.write(soul)
             transaction(databaseFlow.first()) {
@@ -159,15 +159,13 @@ internal class SoulsDaoImpl(
         Unit
     }.logFailure("deleteSoul")
 
-    override suspend fun updateSoul(soul: ItemStackSoul): Result<Unit> = runCatching {
+    override suspend fun updateSoul(soul: BukkitSoul): Result<Unit> = runCatching {
+        mutex.withLock { soulFileEditor.write(soul).getOrThrow() }
         updateSoul(soul = soul as Soul).getOrThrow()
-        mutex.withLock {
-            soulFileEditor.write(soul)
-        }
         Unit
     }.logFailure("deleteSoul")
 
-    override suspend fun toItemStackSoul(soul: Soul): Result<ItemStackSoul> {
+    override suspend fun toItemStackSoul(soul: Soul): Result<BukkitSoul> {
         return soulFileEditor.read(soul)
     }
 }

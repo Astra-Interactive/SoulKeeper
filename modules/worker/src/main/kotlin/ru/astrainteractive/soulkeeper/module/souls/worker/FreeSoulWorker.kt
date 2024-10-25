@@ -32,6 +32,8 @@ internal class FreeSoulWorker(
                     val diff = Instant.now().minusSeconds(config.soulFreeAfter.inWholeSeconds)
                     soul.createdAt < diff
                 }
+            if (soulsToFree.isEmpty()) return@launch
+
             info { "#execute found ${soulsToFree.size} souls to free" }
             soulsToFree.forEach { soul ->
                 soulsDao.updateSoul(soul.copy(isFree = true))
