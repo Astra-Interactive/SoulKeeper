@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target: [ ":instances:fabric", ":instances:forge", ":instances:velocity", ":instances:plugin" ]
+        target: [ ":plugin" ]
     steps:
       - name: Checkout Git repo
         uses: actions/checkout@v4
