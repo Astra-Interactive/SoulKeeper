@@ -16,10 +16,8 @@ internal class GetNearestSoulUseCase(
         return soulsDao.getSoulsNear(player.location, 2)
             .getOrNull()
             .orEmpty()
-            .also { info { "#processPickupSoulEvents ${it.size} souls near" } }
             .firstOrNull { it.isFree || it.ownerUUID == player.uniqueId }
             ?.let { soul -> soulsDao.toItemStackSoul(soul) }
             ?.getOrNull()
-            .also { info { "#processPickupSoulEvents converted soul $it" } }
     }
 }

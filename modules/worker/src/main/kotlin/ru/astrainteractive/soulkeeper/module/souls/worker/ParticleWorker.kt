@@ -47,7 +47,7 @@ internal class ParticleWorker(
     private var lastJob: Job? = null
 
     private val soulByArmorStandId = HashMap<Long, Int>()
-    private fun rememberArmorStandAndGetId(soul: DatabaseSoul): Int {
+    private fun rememberSoulArmorStandAndGetId(soul: DatabaseSoul): Int {
         if (showArmorStandUseCase is ShowArmorStandStubUseCase) return -1
         val id = showArmorStandUseCase.generateEntityId()
         soulByArmorStandId[soul.id] = id
@@ -67,7 +67,7 @@ internal class ParticleWorker(
                             .orEmpty()
                             .filter { it.isFree || it.ownerUUID == player.uniqueId || player.gameMode == GameMode.SPECTATOR }
                             .map { soul ->
-                                showArmorStandUseCase.show(rememberArmorStandAndGetId(soul), player, soul)
+                                showArmorStandUseCase.show(rememberSoulArmorStandAndGetId(soul), player, soul)
                                 withContext(dispatchers.Main) {
                                     player.playSound(soul.location, soulsConfig.sounds.calling)
                                 }

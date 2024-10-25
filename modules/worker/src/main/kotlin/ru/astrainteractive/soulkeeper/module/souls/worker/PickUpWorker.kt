@@ -41,7 +41,6 @@ internal class PickUpWorker(
 
     override fun execute() {
         if (mutex.isLocked) {
-            info { "#execute last job still in progress" }
             return
         }
         scope.launch {
