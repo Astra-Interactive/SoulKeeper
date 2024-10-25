@@ -15,10 +15,12 @@ import ru.astrainteractive.soulkeeper.core.util.playSound
 import ru.astrainteractive.soulkeeper.core.util.spawnParticle
 import ru.astrainteractive.soulkeeper.module.souls.database.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.BukkitSoul
+import ru.astrainteractive.soulkeeper.module.souls.worker.call.SoulCallRenderer
 import java.time.Instant
 
 internal class SoulEvents(
     private val soulsDao: SoulsDao,
+    private val soulCallRenderer: SoulCallRenderer,
     soulsConfigKrate: Krate<SoulsConfig>
 ) : EventListener {
     private val scope = CoroutineFeature.Default(Dispatchers.IO)
@@ -59,7 +61,10 @@ internal class SoulEvents(
         )
         bukkitSoul.location.spawnParticle(soulsConfig.particles.soulCreated, soulsConfig.soulCallRadius)
         bukkitSoul.location.playSound(soulsConfig.sounds.soulDropped)
-        scope.launch { soulsDao.insertSoul(bukkitSoul) }
+        scope.launch {
+            soulsDao.insertSoul(bukkitSoul)
+                .onSuccess { soul -> soulCallRenderer.rememberSoul(soul) }
+        }
     }
 
     override fun onDisable() {

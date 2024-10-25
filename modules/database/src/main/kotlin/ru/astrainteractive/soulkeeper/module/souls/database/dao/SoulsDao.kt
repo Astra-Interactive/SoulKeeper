@@ -11,7 +11,7 @@ interface SoulsDao {
 
     suspend fun getPlayerSouls(uuid: UUID): Result<List<DatabaseSoul>>
 
-    suspend fun insertSoul(soul: BukkitSoul): Result<Unit>
+    suspend fun insertSoul(soul: BukkitSoul): Result<DatabaseSoul>
 
     suspend fun getSoulsNear(location: Location, radius: Int): Result<List<DatabaseSoul>>
 

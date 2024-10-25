@@ -7,8 +7,10 @@ import org.bukkit.Bukkit
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.soulkeeper.core.job.LifecycleCoroutineWorker
+import ru.astrainteractive.soulkeeper.module.souls.database.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.domain.GetNearestSoulUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpSoulUseCase
+import ru.astrainteractive.soulkeeper.module.souls.worker.call.SoulCallRenderer
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -16,8 +18,9 @@ import kotlin.time.Duration.Companion.seconds
  */
 internal class PickUpWorker(
     private val pickUpSoulUseCase: PickUpSoulUseCase,
+    private val soulCallRenderer: SoulCallRenderer,
     private val getNearestSoulUseCase: GetNearestSoulUseCase,
-    private val onPickUp: () -> Unit
+    private val soulsDao: SoulsDao,
 ) : LifecycleCoroutineWorker("ParticleWorker"), Logger by JUtiltLogger("AspeKt-PickUpWorker") {
 
     override fun getConfig(): Config = Config(
@@ -31,9 +34,13 @@ internal class PickUpWorker(
         Bukkit.getOnlinePlayers()
             .filter { !it.isDead }
             .forEach { player ->
-                val itemStackSoul = getNearestSoulUseCase.invoke(player) ?: return@forEach
+                val databaseSoul = getNearestSoulUseCase.invoke(player) ?: return@forEach
+                val itemStackSoul = soulsDao.toItemStackSoul(databaseSoul).getOrNull() ?: return@forEach
                 when (pickUpSoulUseCase.invoke(player, itemStackSoul)) {
-                    PickUpSoulUseCase.Output.AllPickedUp -> onPickUp.invoke()
+                    PickUpSoulUseCase.Output.AllPickedUp -> {
+                        soulCallRenderer.removeSoul(databaseSoul)
+                    }
+
                     PickUpSoulUseCase.Output.SomethingRest -> Unit
                 }
             }

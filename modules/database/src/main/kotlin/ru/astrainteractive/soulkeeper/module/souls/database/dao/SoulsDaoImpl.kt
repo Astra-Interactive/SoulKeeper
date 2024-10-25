@@ -9,11 +9,12 @@ import org.bukkit.Location
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.between
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
@@ -75,11 +76,11 @@ internal class SoulsDaoImpl(
         }
     }.logFailure("getPlayerSouls")
 
-    override suspend fun insertSoul(soul: BukkitSoul): Result<Unit> = runCatching {
+    override suspend fun insertSoul(soul: BukkitSoul): Result<DatabaseSoul> = runCatching {
         mutex.withLock {
             soulFileEditor.write(soul)
             transaction(databaseFlow.first()) {
-                SoulTable.insert {
+                val id = SoulTable.insertAndGetId {
                     it[SoulTable.ownerUUID] = soul.ownerUUID.toString()
                     it[SoulTable.ownerLastName] = soul.ownerLastName
                     it[SoulTable.created_at] = soul.createdAt
@@ -91,9 +92,14 @@ internal class SoulsDaoImpl(
                     it[SoulTable.locationY] = soul.location.y
                     it[SoulTable.locationZ] = soul.location.z
                 }
+
+                SoulTable.selectAll()
+                    .where { SoulTable.id eq id }
+                    .limit(1)
+                    .map(::toDatabaseSoul)
+                    .first()
             }
         }
-        Unit
     }.logFailure("insertSoul")
 
     override suspend fun getSoulsNear(location: Location, radius: Int): Result<List<DatabaseSoul>> = runCatching {
@@ -162,7 +168,6 @@ internal class SoulsDaoImpl(
     override suspend fun updateSoul(soul: BukkitSoul): Result<Unit> = runCatching {
         mutex.withLock { soulFileEditor.write(soul).getOrThrow() }
         updateSoul(soul = soul as Soul).getOrThrow()
-        Unit
     }.logFailure("deleteSoul")
 
     override suspend fun toItemStackSoul(soul: Soul): Result<BukkitSoul> {

@@ -4,7 +4,7 @@ import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.soulkeeper.module.souls.database.dao.SoulsDao
-import ru.astrainteractive.soulkeeper.module.souls.database.model.BukkitSoul
+import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 
 /**
  * Get most near soul and available by current player
@@ -12,12 +12,10 @@ import ru.astrainteractive.soulkeeper.module.souls.database.model.BukkitSoul
 internal class GetNearestSoulUseCase(
     private val soulsDao: SoulsDao,
 ) : Logger by JUtiltLogger("AspeKt-GetNearestSoulUseCase") {
-    suspend fun invoke(player: Player): BukkitSoul? {
+    suspend fun invoke(player: Player): DatabaseSoul? {
         return soulsDao.getSoulsNear(player.location, 2)
             .getOrNull()
             .orEmpty()
             .firstOrNull { it.isFree || it.ownerUUID == player.uniqueId }
-            ?.let { soul -> soulsDao.toItemStackSoul(soul) }
-            ?.getOrNull()
     }
 }
