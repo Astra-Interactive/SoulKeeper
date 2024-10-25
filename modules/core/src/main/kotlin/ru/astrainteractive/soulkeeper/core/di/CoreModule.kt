@@ -92,6 +92,7 @@ interface CoreModule {
                 Metrics(plugin, 23714)
             },
             onReload = {
+                soulsConfigKrate.loadAndGet()
                 translation.loadAndGet()
             },
             onDisable = {

@@ -21,9 +21,15 @@ interface RootModule {
             scope = coreModule.scope
         )
 
+        private val workerModule = WorkerModule(
+            coreModule = coreModule,
+            soulsDbModule = soulsDbModule
+        )
+
         private val event = SoulEvents(
             soulsDao = soulsDbModule.soulsDao,
-            soulsConfigKrate = coreModule.soulsConfigKrate
+            soulsConfigKrate = coreModule.soulsConfigKrate,
+            soulCallRenderer = workerModule.soulCallRenderer
         )
 
         private val soulsCommandRegistry = SoulsCommandRegistry(
@@ -31,18 +37,14 @@ interface RootModule {
             scope = coreModule.scope,
             soulsDao = soulsDbModule.soulsDao,
             kyoriKrate = coreModule.kyoriComponentSerializer,
-            translationKrate = coreModule.translation
+            translationKrate = coreModule.translation,
+            soulCallRenderer = workerModule.soulCallRenderer
         )
 
         private val soulsReloadCommandRegistry = SoulsReloadCommandRegistry(
             plugin = coreModule.plugin,
             kyoriKrate = coreModule.kyoriComponentSerializer,
             translationKrate = coreModule.translation
-        )
-
-        private val workerModule = WorkerModule(
-            coreModule = coreModule,
-            soulsDbModule = soulsDbModule
         )
 
         private val lifecycles: List<Lifecycle>
