@@ -10,8 +10,6 @@
 
 Keep your items after death and find them later!
 
-![souls.png](media%2Fsouls.png)
-
 Features:
 
 - [x] Fully async
@@ -27,6 +25,18 @@ Features:
 | ️`-`             | View all souls in `/souls`   | soulkeeper.all      |
 | ️`-`             | Free any soul in `/souls`    | soulkeeper.free.all |
 | ️`-`             | Teleport to soul in `/souls` | soulkeeper.teleport |
+
+# Preview
+
+## Killing
+https://github.com/user-attachments/assets/ec5f1437-0dab-404f-a4a8-725ee1cd9129
+
+## Collecting
+https://github.com/user-attachments/assets/75f58f92-7d13-4c23-a7fb-b2d89476748b
+
+## Screenshot
+![souls.png](media%2Fsouls.png)
+
 
 More plugins from AstraInteractive [AstraInteractive](https://github.com/Astra-Interactive)
 
