@@ -1,11 +1,12 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import ru.astrainteractive.gradleplugin.property.extension.ModelPropertyValueExt.requireProjectInfo
-import ru.astrainteractive.gradleplugin.setupSpigotProcessor
 
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
     id("io.github.goooler.shadow")
+    alias(libs.plugins.klibs.minecraft.shadow)
+    alias(libs.plugins.klibs.minecraft.resource.processor)
 }
 
 dependencies {
@@ -40,7 +41,9 @@ val destination = File("D:\\Minecraft Servers\\server-docker\\data\\plugins")
     .takeIf(File::exists)
     ?: File(rootDir, "jars")
 
-setupSpigotProcessor()
+minecraftProcessResource {
+    bukkit()
+}
 
 val shadowJar = tasks.named<ShadowJar>("shadowJar")
 shadowJar.configure {
