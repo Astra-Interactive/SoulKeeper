@@ -37,7 +37,7 @@ dependencies {
     implementation(projects.modules.database)
     implementation(projects.modules.worker)
 }
-val destination = File("D:\\Minecraft Servers\\server-docker\\data\\plugins")
+val destination = File("/run/media/makeevrserg/WDGOLD2TB/MinecraftServers/Servers/conf.smp/smp/plugins")
     .takeIf(File::exists)
     ?: File(rootDir, "jars")
 
