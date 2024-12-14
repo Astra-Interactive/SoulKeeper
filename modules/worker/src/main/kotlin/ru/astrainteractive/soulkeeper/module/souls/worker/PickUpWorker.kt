@@ -7,7 +7,7 @@ import org.bukkit.Bukkit
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.soulkeeper.core.job.LifecycleCoroutineWorker
-import ru.astrainteractive.soulkeeper.module.souls.database.dao.SoulsDao
+import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.domain.GetNearestSoulUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpSoulUseCase
 import ru.astrainteractive.soulkeeper.module.souls.worker.call.SoulCallRenderer

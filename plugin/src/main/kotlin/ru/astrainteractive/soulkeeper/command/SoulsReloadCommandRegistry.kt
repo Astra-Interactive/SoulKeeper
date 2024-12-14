@@ -7,11 +7,11 @@ import ru.astrainteractive.astralibs.command.api.executor.CommandExecutor
 import ru.astrainteractive.astralibs.command.api.parser.CommandParser
 import ru.astrainteractive.astralibs.command.api.util.PluginExt.registerCommand
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
+import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
 import ru.astrainteractive.klibs.kstorage.api.Krate
-import ru.astrainteractive.soulkeeper.core.plugin.LifecyclePlugin
+import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.soulkeeper.core.plugin.PluginPermission
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
-import ru.astrainteractive.soulkeeper.core.util.getValue
 
 internal class SoulsReloadCommandRegistry(
     private val plugin: LifecyclePlugin,

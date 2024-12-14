@@ -14,14 +14,14 @@ import ru.astrainteractive.astralibs.async.DefaultBukkitDispatchers
 import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
+import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.astralibs.menu.event.DefaultInventoryClickEvent
 import ru.astrainteractive.astralibs.serialization.YamlStringFormat
+import ru.astrainteractive.astralibs.util.fileConfigKrate
 import ru.astrainteractive.klibs.kstorage.api.Krate
 import ru.astrainteractive.klibs.kstorage.api.impl.DefaultMutableKrate
-import ru.astrainteractive.soulkeeper.core.di.factory.ConfigKrateFactory
-import ru.astrainteractive.soulkeeper.core.plugin.LifecyclePlugin
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 
@@ -58,17 +58,15 @@ interface CoreModule {
             ),
         )
 
-        override val translation = ConfigKrateFactory.create(
-            fileNameWithoutExtension = "translations",
+        override val translation = fileConfigKrate(
+            file = plugin.dataFolder.resolve("translations.yml"),
             stringFormat = yamlFormat,
-            dataFolder = plugin.dataFolder,
             factory = ::PluginTranslation
         )
 
-        override val soulsConfigKrate = ConfigKrateFactory.create<SoulsConfig>(
-            fileNameWithoutExtension = "souls_config",
+        override val soulsConfigKrate = fileConfigKrate<SoulsConfig>(
+            file = plugin.dataFolder.resolve("souls_config.yml"),
             stringFormat = yamlFormat,
-            dataFolder = plugin.dataFolder,
             factory = ::SoulsConfig
         )
 

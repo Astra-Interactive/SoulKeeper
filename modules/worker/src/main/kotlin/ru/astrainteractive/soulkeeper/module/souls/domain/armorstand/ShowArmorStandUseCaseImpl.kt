@@ -12,9 +12,9 @@ import io.github.retrooper.packetevents.util.SpigotReflectionUtil
 import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.klibs.kstorage.api.Krate
+import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
-import ru.astrainteractive.soulkeeper.core.util.getValue
-import ru.astrainteractive.soulkeeper.module.souls.database.model.Soul
+import ru.astrainteractive.soulkeeper.module.souls.io.model.Soul
 import java.util.Optional
 import java.util.UUID
 

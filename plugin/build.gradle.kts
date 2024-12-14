@@ -30,14 +30,11 @@ dependencies {
     compileOnly(libs.minecraft.luckperms)
     compileOnly(libs.minecraft.discordsrv)
     compileOnly(libs.minecraft.essentialsx)
-    // Test
-    testImplementation(libs.bundles.testing.kotlin)
-    testImplementation(libs.tests.kotlin.test)
     implementation(projects.modules.core)
-    implementation(projects.modules.database)
+    implementation(projects.modules.dao)
     implementation(projects.modules.worker)
 }
-val destination = File("/run/media/makeevrserg/WDGOLD2TB/MinecraftServers/Servers/conf.smp/smp/plugins")
+val destination = File("/run/media/makeevrserg/WDGOLD2TB/MinecraftServers/Servers/conf.smp/smp/plugins/")
     .takeIf(File::exists)
     ?: File(rootDir, "jars")
 

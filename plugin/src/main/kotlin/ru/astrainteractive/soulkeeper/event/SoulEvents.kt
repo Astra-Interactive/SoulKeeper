@@ -3,18 +3,19 @@ package ru.astrainteractive.soulkeeper.event
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import org.bukkit.World
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
 import ru.astrainteractive.astralibs.async.CoroutineFeature
 import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.klibs.kstorage.api.Krate
+import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
-import ru.astrainteractive.soulkeeper.core.util.getValue
 import ru.astrainteractive.soulkeeper.core.util.playSound
 import ru.astrainteractive.soulkeeper.core.util.spawnParticle
-import ru.astrainteractive.soulkeeper.module.souls.database.dao.SoulsDao
-import ru.astrainteractive.soulkeeper.module.souls.database.model.BukkitSoul
+import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
+import ru.astrainteractive.soulkeeper.module.souls.io.model.BukkitSoul
 import ru.astrainteractive.soulkeeper.module.souls.worker.call.SoulCallRenderer
 import java.time.Instant
 
@@ -57,7 +58,15 @@ internal class SoulEvents(
             ownerLastName = event.player.name,
             createdAt = Instant.now(),
             isFree = false,
-            location = event.player.location,
+            location = when {
+                event.player.location.world.environment == World.Environment.THE_END -> {
+                    val endLocation = event.player.location.clone()
+                    endLocation.y = 0.0
+                    endLocation
+                }
+
+                else -> event.player.location
+            },
         )
         bukkitSoul.location.spawnParticle(soulsConfig.particles.soulCreated, soulsConfig.soulCallRadius)
         bukkitSoul.location.playSound(soulsConfig.sounds.soulDropped)

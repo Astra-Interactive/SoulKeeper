@@ -8,16 +8,17 @@ import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import ru.astrainteractive.klibs.kstorage.api.Krate
+import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
-import ru.astrainteractive.soulkeeper.core.util.getValue
-import ru.astrainteractive.soulkeeper.core.util.playSound
+import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
 import ru.astrainteractive.soulkeeper.core.util.spawnParticle
-import ru.astrainteractive.soulkeeper.module.souls.database.dao.SoulsDao
+import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorStandStubUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorStandUseCase
 
+@Suppress("TooManyFunctions")
 internal class SoulCallRendererImpl(
     private val showArmorStandUseCase: ShowArmorStandUseCase,
     private val soulsDao: SoulsDao,
@@ -45,8 +46,10 @@ internal class SoulCallRendererImpl(
     private fun isNear(
         soul: DatabaseSoul,
         player: Player
-    ) = soul.location.world.name.equals(player.location.world.name)
-        .and(soul.location.distance(player.location) < soulsConfig.soulCallRadius)
+    ): Boolean {
+        if (soul.location.world.name != player.location.world.name) return false
+        return soul.location.distance(player.location) < soulsConfig.soulCallRadius
+    }
 
     private fun isVisible(
         soul: DatabaseSoul,
@@ -87,7 +90,16 @@ internal class SoulCallRendererImpl(
             .values
             .filter { soul -> isVisible(soul, player) }
             .filter { soul -> isNear(soul, player) }
-            .forEach { soul -> player.playSound(soul.location, soulsConfig.sounds.calling) }
+            .forEach { soul -> soul.location.playSoundForPlayer(player, soulsConfig.sounds.calling) }
+    }
+
+    override suspend fun playSoundsContinuously(player: Player) = coroutineScope {
+        while (isActive) {
+            withContext(dispatchers.Main) {
+                playSounds(player)
+            }
+            delay(5000L)
+        }
     }
 
     override suspend fun displayParticlesContinuously(player: Player) = coroutineScope {
