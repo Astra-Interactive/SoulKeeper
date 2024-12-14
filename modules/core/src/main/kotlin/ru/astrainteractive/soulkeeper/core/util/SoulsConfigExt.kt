@@ -2,18 +2,19 @@ package ru.astrainteractive.soulkeeper.core.util
 
 import com.destroystokyo.paper.ParticleBuilder
 import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.entity.Player
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 
-private fun SoulsConfig.Sounds.SoundConfig.toKyoriSound(): net.kyori.adventure.sound.Sound {
-    return net.kyori.adventure.sound.Sound.sound(
+private fun SoulsConfig.Sounds.SoundConfig.toKyoriSound(): Sound {
+    return Sound.sound(
         Key.key(this.id),
-        net.kyori.adventure.sound.Sound.Source.AMBIENT,
+        Sound.Source.PLAYER,
         volume,
-        pitch
+        pitch,
     )
 }
 
@@ -27,8 +28,8 @@ fun Location.playSound(sound: SoulsConfig.Sounds.SoundConfig) {
 /**
  * Play sound only to this [Player]
  */
-fun Player.playSound(location: Location, sound: SoulsConfig.Sounds.SoundConfig) {
-    playSound(sound.toKyoriSound(), location.x, location.y, location.z)
+fun Location.playSoundForPlayer(player: Player, sound: SoulsConfig.Sounds.SoundConfig) {
+    player.playSound(sound.toKyoriSound(), x, y, z)
 }
 
 private fun SoulsConfig.Particles.Particle.toBuilder(location: Location): ParticleBuilder {

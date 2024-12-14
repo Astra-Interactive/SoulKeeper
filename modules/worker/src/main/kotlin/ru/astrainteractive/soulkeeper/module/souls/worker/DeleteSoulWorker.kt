@@ -4,10 +4,10 @@ import kotlinx.coroutines.launch
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.klibs.kstorage.api.Krate
+import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.soulkeeper.core.job.LifecycleCoroutineWorker
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
-import ru.astrainteractive.soulkeeper.core.util.getValue
-import ru.astrainteractive.soulkeeper.module.souls.database.dao.SoulsDao
+import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.worker.call.SoulCallRenderer
 import java.time.Instant
 import kotlin.time.Duration.Companion.seconds

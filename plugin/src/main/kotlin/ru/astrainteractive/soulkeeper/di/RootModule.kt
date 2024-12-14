@@ -2,12 +2,12 @@ package ru.astrainteractive.soulkeeper.di
 
 import org.bukkit.event.HandlerList
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
+import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
 import ru.astrainteractive.soulkeeper.command.SoulsCommandRegistry
 import ru.astrainteractive.soulkeeper.command.SoulsReloadCommandRegistry
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
-import ru.astrainteractive.soulkeeper.core.plugin.LifecyclePlugin
 import ru.astrainteractive.soulkeeper.event.SoulEvents
-import ru.astrainteractive.soulkeeper.module.souls.database.di.SoulsDbModule
+import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
 import ru.astrainteractive.soulkeeper.module.souls.domain.di.WorkerModule
 
 interface RootModule {
@@ -16,18 +16,18 @@ interface RootModule {
     class RootModuleImpl(plugin: LifecyclePlugin) : RootModule {
         private val coreModule: CoreModule = CoreModule.Default(plugin)
 
-        private val soulsDbModule = SoulsDbModule.Default(
+        private val soulsDaoModule = SoulsDaoModule.Default(
             dataFolder = coreModule.plugin.dataFolder,
             scope = coreModule.scope
         )
 
         private val workerModule = WorkerModule(
             coreModule = coreModule,
-            soulsDbModule = soulsDbModule
+            soulsDaoModule = soulsDaoModule
         )
 
         private val event = SoulEvents(
-            soulsDao = soulsDbModule.soulsDao,
+            soulsDao = soulsDaoModule.soulsDao,
             soulsConfigKrate = coreModule.soulsConfigKrate,
             soulCallRenderer = workerModule.soulCallRenderer
         )
@@ -35,7 +35,7 @@ interface RootModule {
         private val soulsCommandRegistry = SoulsCommandRegistry(
             plugin = coreModule.plugin,
             scope = coreModule.scope,
-            soulsDao = soulsDbModule.soulsDao,
+            soulsDao = soulsDaoModule.soulsDao,
             kyoriKrate = coreModule.kyoriComponentSerializer,
             translationKrate = coreModule.translation,
             soulCallRenderer = workerModule.soulCallRenderer
@@ -50,7 +50,7 @@ interface RootModule {
         private val lifecycles: List<Lifecycle>
             get() = listOfNotNull(
                 coreModule.lifecycle,
-                soulsDbModule.lifecycle,
+                soulsDaoModule.lifecycle,
                 workerModule.lifecycle,
             )
 

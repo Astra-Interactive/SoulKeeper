@@ -9,6 +9,7 @@ interface SoulCallRenderer {
     suspend fun updateSoulsForPlayer(player: Player)
     suspend fun displayArmorStands(player: Player)
     suspend fun playSounds(player: Player)
+    suspend fun playSoundsContinuously(player: Player)
     suspend fun displayParticlesContinuously(player: Player)
     fun clear()
 }

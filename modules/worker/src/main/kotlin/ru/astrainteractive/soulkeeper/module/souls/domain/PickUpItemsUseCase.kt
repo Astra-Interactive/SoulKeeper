@@ -5,8 +5,8 @@ import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.util.playSound
-import ru.astrainteractive.soulkeeper.module.souls.database.dao.SoulsDao
-import ru.astrainteractive.soulkeeper.module.souls.database.model.BukkitSoul
+import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
+import ru.astrainteractive.soulkeeper.module.souls.io.model.BukkitSoul
 
 internal class PickUpItemsUseCase(
     private val collectItemSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
