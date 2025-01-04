@@ -4,7 +4,7 @@ import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
-import ru.astrainteractive.soulkeeper.core.util.playSound
+import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.io.model.BukkitSoul
 
@@ -21,7 +21,7 @@ internal class PickUpExpUseCase(
         if (bukkitSoul.exp <= 0) {
             return Output.NoExpPresent
         }
-        bukkitSoul.location.playSound(collectXpSoundProvider.invoke())
+        bukkitSoul.location.playSoundForPlayer(player, collectXpSoundProvider.invoke())
         player.giveExp(bukkitSoul.exp)
         soulsDao.updateSoul(
             soul = bukkitSoul.copy(

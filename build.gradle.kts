@@ -1,3 +1,9 @@
+buildscript {
+    dependencies {
+        classpath("com.hierynomus:sshj:0.38.0")
+    }
+}
+
 plugins {
     java
     `maven-publish`
