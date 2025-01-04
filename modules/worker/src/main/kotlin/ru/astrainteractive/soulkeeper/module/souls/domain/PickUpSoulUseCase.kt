@@ -6,8 +6,8 @@ import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
-import ru.astrainteractive.soulkeeper.core.util.playSound
-import ru.astrainteractive.soulkeeper.core.util.spawnParticle
+import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
+import ru.astrainteractive.soulkeeper.core.util.spawnParticleForPlayer
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.io.model.BukkitSoul
 
@@ -37,13 +37,13 @@ internal class PickUpSoulUseCase(
             ) !is PickUpItemsUseCase.Output.SomeItemsRemain
 
             if (!isAllItemsPickedUp) {
-                bukkitSoul.location.playSound(soulContentLeftSoundProvider.invoke())
-                bukkitSoul.location.spawnParticle(soulContentLeftParticleProvider.invoke())
+                bukkitSoul.location.playSoundForPlayer(player, soulContentLeftSoundProvider.invoke())
+                bukkitSoul.location.spawnParticleForPlayer(player, soulContentLeftParticleProvider.invoke())
                 return@withContext Output.SomethingRest
             }
             soulsDao.deleteSoul(bukkitSoul)
-            bukkitSoul.location.playSound(soulDisappearSoundProvider.invoke())
-            bukkitSoul.location.spawnParticle(soulGoneParticleProvider.invoke())
+            bukkitSoul.location.playSoundForPlayer(player, soulDisappearSoundProvider.invoke())
+            bukkitSoul.location.spawnParticleForPlayer(player, soulGoneParticleProvider.invoke())
             return@withContext Output.AllPickedUp
         }
     }

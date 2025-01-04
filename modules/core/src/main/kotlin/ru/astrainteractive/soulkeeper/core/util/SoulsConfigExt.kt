@@ -12,17 +12,10 @@ import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 private fun SoulsConfig.Sounds.SoundConfig.toKyoriSound(): Sound {
     return Sound.sound(
         Key.key(this.id),
-        Sound.Source.PLAYER,
+        Sound.Source.AMBIENT,
         volume,
         pitch,
     )
-}
-
-/**
- * Play sound in this [Location] for all players
- */
-fun Location.playSound(sound: SoulsConfig.Sounds.SoundConfig) {
-    this.world.playSound(sound.toKyoriSound())
 }
 
 /**
@@ -56,21 +49,11 @@ private fun SoulsConfig.Particles.Particle.toBuilder(location: Location): Partic
 }
 
 /**
- * Spawn particle to only this [Player]
+ * Spawn particle to only this [player]
  */
-fun Player.spawnParticle(location: Location, config: SoulsConfig.Particles.Particle) {
-    config
-        .toBuilder(location)
-        .receivers(this)
-        .spawn()
-}
-
-/**
- * Spawn particle to all player in radius [radius]
- */
-fun Location.spawnParticle(config: SoulsConfig.Particles.Particle, radius: Int = 64) {
+fun Location.spawnParticleForPlayer(player: Player, config: SoulsConfig.Particles.Particle) {
     config
         .toBuilder(this)
-        .receivers(radius)
+        .receivers(player)
         .spawn()
 }

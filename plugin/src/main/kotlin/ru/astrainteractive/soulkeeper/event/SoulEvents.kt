@@ -12,8 +12,8 @@ import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.klibs.kstorage.api.Krate
 import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
-import ru.astrainteractive.soulkeeper.core.util.playSound
-import ru.astrainteractive.soulkeeper.core.util.spawnParticle
+import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
+import ru.astrainteractive.soulkeeper.core.util.spawnParticleForPlayer
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.io.model.BukkitSoul
 import ru.astrainteractive.soulkeeper.module.souls.worker.call.SoulCallRenderer
@@ -70,8 +70,11 @@ internal class SoulEvents(
                 else -> event.player.location
             },
         )
-        bukkitSoul.location.spawnParticle(soulsConfig.particles.soulCreated, soulsConfig.soulCallRadius)
-        bukkitSoul.location.playSound(soulsConfig.sounds.soulDropped)
+        bukkitSoul.location.spawnParticleForPlayer(
+            event.player,
+            soulsConfig.particles.soulCreated,
+        )
+        bukkitSoul.location.playSoundForPlayer(event.player, soulsConfig.sounds.soulDropped)
         scope.launch {
             soulsDao.insertSoul(bukkitSoul)
                 .onSuccess { soul -> soulCallRenderer.rememberSoul(soul) }

@@ -12,7 +12,7 @@ import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
-import ru.astrainteractive.soulkeeper.core.util.spawnParticle
+import ru.astrainteractive.soulkeeper.core.util.spawnParticleForPlayer
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorStandStubUseCase
@@ -110,10 +110,10 @@ internal class SoulCallRendererImpl(
             withContext(dispatchers.Main) {
                 filteredSouls.forEach { soul ->
                     if (soul.hasXp) {
-                        player.spawnParticle(soul.location, soulsConfig.particles.soulXp)
+                        soul.location.spawnParticleForPlayer(player, soulsConfig.particles.soulXp)
                     }
                     if (soul.hasItems) {
-                        player.spawnParticle(soul.location, soulsConfig.particles.soulItems)
+                        soul.location.spawnParticleForPlayer(player, soulsConfig.particles.soulItems)
                     }
                 }
             }

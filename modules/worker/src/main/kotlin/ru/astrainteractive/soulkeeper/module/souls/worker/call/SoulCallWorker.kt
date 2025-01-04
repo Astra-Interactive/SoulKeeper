@@ -1,7 +1,6 @@
 package ru.astrainteractive.soulkeeper.module.souls.worker.call
 
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -36,7 +35,7 @@ internal class SoulCallWorker(
                         .onEach { player -> soulCallRenderer.updateSoulsForPlayer(player) }
                         .onEach { player -> soulCallRenderer.displayArmorStands(player) }
                         .onEach { player -> soulCallRenderer.playSounds(player) }
-                        .map { player -> async { soulCallRenderer.displayParticlesContinuously(player) } }
+                        .map { player -> launch { soulCallRenderer.displayParticlesContinuously(player) } }
                 }
             }
         }
