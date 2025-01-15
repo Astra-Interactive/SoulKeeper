@@ -7,7 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target: [ ":plugin" ]
+        include:
+          - id: "bukkit"
+            task: ":instances:bukkit:build"
     steps:
       - name: Checkout Git repo
         uses: actions/checkout@v4
@@ -21,4 +23,4 @@ jobs:
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v3
         with:
-          arguments: ${{ matrix.target }}:build --stacktrace
+          arguments: ${{ matrix.task }} --stacktrace

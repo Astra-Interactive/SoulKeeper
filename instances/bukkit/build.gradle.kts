@@ -1,13 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
-import net.schmizz.sshj.SSHClient
-import net.schmizz.sshj.transport.verification.PromiscuousVerifier
-import net.schmizz.sshj.xfer.FileSystemFile
-import ru.astrainteractive.gradleplugin.property.PropertyValue.Companion.secretProperty
 import ru.astrainteractive.gradleplugin.property.extension.ModelPropertyValueExt.requireProjectInfo
-import ru.astrainteractive.gradleplugin.property.extension.PrimitivePropertyValueExt.requireInt
-import ru.astrainteractive.gradleplugin.property.extension.PrimitivePropertyValueExt.requireString
 
 plugins {
     kotlin("jvm")
@@ -67,45 +59,6 @@ shadowJar.configure {
         exclude(dependency("org.jetbrains.kotlin:kotlin-stdlib:${libs.versions.kotlin.version.get()}"))
     }
     archiveVersion.set(projectInfo.versionString)
-    archiveBaseName.set(projectInfo.name)
+    archiveBaseName.set("${projectInfo.name}-bukkit")
     destination.also(destinationDirectory::set)
-}
-
-tasks.register("uploadSsh") {
-    val projectInfo = requireProjectInfo
-
-    dependsOn(shadowJar)
-    mustRunAfter(shadowJar)
-
-    val sshClient = SSHClient().apply {
-        this.addHostKeyVerifier(PromiscuousVerifier())
-        this.connect(
-            secretProperty("hostname").requireString,
-            secretProperty("port").requireInt
-        )
-        this.authPassword(
-            secretProperty("username").requireString,
-            secretProperty("password").requireString
-        )
-    }
-    val sftpClient = sshClient.newSFTPClient()
-    val jarFile = rootDir
-        .resolve("jars")
-        .resolve("${projectInfo.name}-${projectInfo.versionString}.jar")
-    try {
-        runBlocking {
-            withTimeout(5000) {
-                sftpClient.use { client ->
-                    val destination = secretProperty("destination").requireString
-                    println("Deleting ${"$destination/${jarFile.name}"}")
-                    runCatching { client.rm("$destination/${jarFile.name}") }
-                    client.put(FileSystemFile(jarFile), destination)
-                }
-            }
-        }
-    } catch (e: Exception) {
-        e.printStackTrace()
-    } finally {
-        if (sshClient.isConnected) sshClient.disconnect()
-    }
 }
