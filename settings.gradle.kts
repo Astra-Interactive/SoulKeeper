@@ -42,7 +42,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "SoulKeeper"
 
 // Spigot
-include("plugin")
+include(":instances:bukkit")
 // Modules
 include(":modules:core")
 include(":modules:dao")
