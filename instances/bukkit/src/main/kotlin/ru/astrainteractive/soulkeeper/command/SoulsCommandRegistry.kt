@@ -5,12 +5,12 @@ import kotlinx.coroutines.launch
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
-import ru.astrainteractive.astralibs.command.api.argumenttype.PrimitiveArgumentType
+import ru.astrainteractive.astralibs.command.api.argumenttype.IntArgumentType
 import ru.astrainteractive.astralibs.command.api.context.BukkitCommandContext
 import ru.astrainteractive.astralibs.command.api.context.BukkitCommandContextExt.argumentOrElse
 import ru.astrainteractive.astralibs.command.api.executor.CommandExecutor
 import ru.astrainteractive.astralibs.command.api.parser.CommandParser
-import ru.astrainteractive.astralibs.command.api.util.PluginExt.registerCommand
+import ru.astrainteractive.astralibs.command.api.util.PluginExt.setCommandExecutor
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissible
 import ru.astrainteractive.astralibs.util.clickable
@@ -43,15 +43,15 @@ internal class SoulsCommandRegistry(
     }
 
     private inner class CommandParserImpl : CommandParser<Intent, BukkitCommandContext> {
-        override fun parse(commandContext: BukkitCommandContext): Intent {
-            return when (commandContext.args.getOrNull(0)) {
+        override fun parse(ctx: BukkitCommandContext): Intent {
+            return when (ctx.args.getOrNull(0)) {
                 else -> {
-                    val page = commandContext.argumentOrElse(
+                    val page = ctx.argumentOrElse(
                         index = 0,
-                        type = PrimitiveArgumentType.Int,
+                        type = IntArgumentType,
                         default = { 1 }
                     ).coerceAtLeast(1).minus(1)
-                    Intent.List(sender = commandContext.sender, page = page)
+                    Intent.List(sender = ctx.sender, page = page)
                 }
             }
         }
@@ -198,11 +198,11 @@ internal class SoulsCommandRegistry(
     }
 
     fun register() {
-        plugin.registerCommand(
+        plugin.setCommandExecutor(
             alias = "souls",
             commandParser = CommandParserImpl(),
             commandExecutor = CommandExecutorImpl(),
-            errorHandler = { context, throwable ->
+            errorHandler = { _, throwable ->
                 throwable.printStackTrace()
             }
         )
