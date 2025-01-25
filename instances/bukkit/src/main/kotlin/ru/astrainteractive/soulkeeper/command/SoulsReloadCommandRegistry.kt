@@ -5,7 +5,7 @@ import ru.astrainteractive.astralibs.command.api.context.BukkitCommandContext
 import ru.astrainteractive.astralibs.command.api.context.BukkitCommandContextExt.requirePermission
 import ru.astrainteractive.astralibs.command.api.executor.CommandExecutor
 import ru.astrainteractive.astralibs.command.api.parser.CommandParser
-import ru.astrainteractive.astralibs.command.api.util.PluginExt.registerCommand
+import ru.astrainteractive.astralibs.command.api.util.PluginExt.setCommandExecutor
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
 import ru.astrainteractive.klibs.kstorage.api.Krate
@@ -44,11 +44,11 @@ internal class SoulsReloadCommandRegistry(
     }
 
     fun register() {
-        plugin.registerCommand(
+        plugin.setCommandExecutor(
             alias = "skreload",
             commandParser = CommandParserImpl(),
             commandExecutor = CommandExecutorImpl(),
-            errorHandler = { context, throwable ->
+            errorHandler = { _, throwable ->
                 throwable.printStackTrace()
             }
         )
