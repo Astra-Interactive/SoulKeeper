@@ -29,7 +29,6 @@ interface RootModule {
         private val event = SoulEvents(
             soulsDao = soulsDaoModule.soulsDao,
             soulsConfigKrate = coreModule.soulsConfigKrate,
-            soulCallRenderer = workerModule.soulCallRenderer
         )
 
         private val soulsCommandRegistry = SoulsCommandRegistry(
@@ -38,7 +37,6 @@ interface RootModule {
             soulsDao = soulsDaoModule.soulsDao,
             kyoriKrate = coreModule.kyoriComponentSerializer,
             translationKrate = coreModule.translation,
-            soulCallRenderer = workerModule.soulCallRenderer
         )
 
         private val soulsReloadCommandRegistry = SoulsReloadCommandRegistry(

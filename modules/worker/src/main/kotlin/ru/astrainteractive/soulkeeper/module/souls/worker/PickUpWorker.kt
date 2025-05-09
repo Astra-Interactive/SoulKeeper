@@ -10,7 +10,6 @@ import ru.astrainteractive.soulkeeper.core.job.LifecycleCoroutineWorker
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.domain.GetNearestSoulUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpSoulUseCase
-import ru.astrainteractive.soulkeeper.module.souls.worker.call.SoulCallRenderer
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -18,7 +17,6 @@ import kotlin.time.Duration.Companion.seconds
  */
 internal class PickUpWorker(
     private val pickUpSoulUseCase: PickUpSoulUseCase,
-    private val soulCallRenderer: SoulCallRenderer,
     private val getNearestSoulUseCase: GetNearestSoulUseCase,
     private val soulsDao: SoulsDao,
 ) : LifecycleCoroutineWorker("ParticleWorker"), Logger by JUtiltLogger("AspeKt-PickUpWorker") {
@@ -37,9 +35,7 @@ internal class PickUpWorker(
                 val databaseSoul = getNearestSoulUseCase.invoke(player) ?: return@forEach
                 val itemStackSoul = soulsDao.toItemStackSoul(databaseSoul).getOrNull() ?: return@forEach
                 when (pickUpSoulUseCase.invoke(player, itemStackSoul)) {
-                    PickUpSoulUseCase.Output.AllPickedUp -> {
-                        soulCallRenderer.removeSoul(databaseSoul)
-                    }
+                    PickUpSoulUseCase.Output.AllPickedUp -> Unit
 
                     PickUpSoulUseCase.Output.SomethingRest -> Unit
                 }

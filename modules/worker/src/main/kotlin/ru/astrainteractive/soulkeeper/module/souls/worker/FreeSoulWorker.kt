@@ -8,13 +8,11 @@ import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.soulkeeper.core.job.LifecycleCoroutineWorker
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
-import ru.astrainteractive.soulkeeper.module.souls.worker.call.SoulCallRenderer
 import java.time.Instant
 import kotlin.time.Duration.Companion.seconds
 
 internal class FreeSoulWorker(
     private val soulsDao: SoulsDao,
-    private val soulCallRenderer: SoulCallRenderer,
     configKrate: Krate<SoulsConfig>
 ) : LifecycleCoroutineWorker("FreeSoulWorker"), Logger by JUtiltLogger("AspeKt-FreeSoulWorker") {
     private val config by configKrate
@@ -41,7 +39,6 @@ internal class FreeSoulWorker(
                 .map { soul -> soul.copy(isFree = true) }
                 .forEach { soul ->
                     soulsDao.updateSoul(soul)
-                    soulCallRenderer.rememberSoul(soul)
                 }
         }
     }

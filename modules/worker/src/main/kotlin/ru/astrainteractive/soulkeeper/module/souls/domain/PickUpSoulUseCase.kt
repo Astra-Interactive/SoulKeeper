@@ -39,6 +39,7 @@ internal class PickUpSoulUseCase(
             if (!isAllItemsPickedUp) {
                 bukkitSoul.location.playSoundForPlayer(player, soulContentLeftSoundProvider.invoke())
                 bukkitSoul.location.spawnParticleForPlayer(player, soulContentLeftParticleProvider.invoke())
+                info { "not all items picked up: $bukkitSoul" }
                 return@withContext Output.SomethingRest
             }
             soulsDao.deleteSoul(bukkitSoul)

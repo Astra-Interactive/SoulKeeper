@@ -16,12 +16,10 @@ import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
 import ru.astrainteractive.soulkeeper.core.util.spawnParticleForPlayer
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.io.model.BukkitSoul
-import ru.astrainteractive.soulkeeper.module.souls.worker.call.SoulCallRenderer
 import java.time.Instant
 
 internal class SoulEvents(
     private val soulsDao: SoulsDao,
-    private val soulCallRenderer: SoulCallRenderer,
     soulsConfigKrate: Krate<SoulsConfig>
 ) : EventListener {
     private val scope = CoroutineFeature.Default(Dispatchers.IO)
@@ -77,7 +75,6 @@ internal class SoulEvents(
         bukkitSoul.location.playSoundForPlayer(event.player, soulsConfig.sounds.soulDropped)
         scope.launch {
             soulsDao.insertSoul(bukkitSoul)
-                .onSuccess { soul -> soulCallRenderer.rememberSoul(soul) }
         }
     }
 
