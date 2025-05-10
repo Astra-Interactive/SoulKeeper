@@ -25,13 +25,11 @@ import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.io.model.Soul
-import ru.astrainteractive.soulkeeper.module.souls.worker.call.SoulCallRenderer
 
 internal class SoulsCommandRegistry(
     private val plugin: JavaPlugin,
     private val scope: CoroutineScope,
     private val soulsDao: SoulsDao,
-    private val soulCallRenderer: SoulCallRenderer,
     translationKrate: Krate<PluginTranslation>,
     kyoriKrate: Krate<KyoriComponentSerializer>
 ) {
@@ -102,8 +100,6 @@ internal class SoulsCommandRegistry(
                         soulsDao.updateSoul(soul.copy(isFree = true))
                             .onSuccess {
                                 audience.sendMessage(translation.souls.soulFreed.component)
-                                soulCallRenderer.removeSoul(soul)
-                                soulCallRenderer.rememberSoul(soul)
                             }
                             .onFailure {
                                 audience.sendMessage(translation.souls.couldNotFreeSoul.component)

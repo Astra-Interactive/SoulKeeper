@@ -34,7 +34,9 @@ dependencies {
     implementation(projects.modules.dao)
     implementation(projects.modules.worker)
 }
-val destination = File("/run/media/makeevrserg/WDGOLD2TB/MinecraftServers/Servers/conf.smp/smp/plugins/")
+val destination = rootDir.resolve("build")
+    .resolve("bukkit")
+    .resolve("plugins")
     .takeIf(File::exists)
     ?: File(rootDir, "jars")
 

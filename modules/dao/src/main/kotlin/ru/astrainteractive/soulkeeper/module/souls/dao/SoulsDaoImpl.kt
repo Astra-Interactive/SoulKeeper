@@ -1,6 +1,8 @@
 package ru.astrainteractive.soulkeeper.module.souls.dao
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -14,6 +16,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
@@ -26,18 +29,24 @@ import ru.astrainteractive.soulkeeper.module.souls.io.model.BukkitSoul
 import ru.astrainteractive.soulkeeper.module.souls.io.model.Soul
 import java.util.UUID
 
+@Suppress("TooManyFunctions")
 internal class SoulsDaoImpl(
     private val databaseFlow: Flow<Database>,
     private val soulFileEditor: BukkitSoulFile
 ) : SoulsDao, Logger by JUtiltLogger("AspeKt-SoulsDaoImpl") {
     private val mutex = Mutex()
+    private val soulsChangedSharedFlow = MutableSharedFlow<Unit>()
+
+    override fun getSoulsChangeFlow(): Flow<Unit> {
+        return soulsChangedSharedFlow.asSharedFlow()
+    }
 
     private fun toDatabaseSoul(it: ResultRow): DatabaseSoul {
         return DatabaseSoul(
             id = it[SoulTable.id].value,
             ownerUUID = UUID.fromString(it[SoulTable.ownerUUID]),
             ownerLastName = it[SoulTable.ownerLastName],
-            createdAt = it[SoulTable.created_at],
+            createdAt = it[SoulTable.created_at] ?: it[SoulTable.broken_created_at],
             isFree = it[SoulTable.isFree],
             hasXp = it[SoulTable.hasXp],
             hasItems = it[SoulTable.hasItems],
@@ -59,6 +68,7 @@ internal class SoulsDaoImpl(
         mutex.withLock {
             transaction(databaseFlow.first()) {
                 SoulTable.selectAll()
+                    .orderBy(SoulTable.broken_created_at to SortOrder.DESC)
                     .orderBy(SoulTable.created_at to SortOrder.DESC)
                     .map(::toDatabaseSoul)
             }
@@ -82,6 +92,7 @@ internal class SoulsDaoImpl(
                 val id = SoulTable.insertAndGetId {
                     it[SoulTable.ownerUUID] = soul.ownerUUID.toString()
                     it[SoulTable.ownerLastName] = soul.ownerLastName
+                    it[SoulTable.broken_created_at] = soul.createdAt
                     it[SoulTable.created_at] = soul.createdAt
                     it[SoulTable.isFree] = soul.isFree
                     it[SoulTable.locationWorld] = soul.location.world.name
@@ -99,7 +110,7 @@ internal class SoulsDaoImpl(
                     .first()
             }
         }
-    }.logFailure("insertSoul")
+    }.logFailure("insertSoul").onSuccess { soulsChangedSharedFlow.emit(Unit) }
 
     override suspend fun getSoulsNear(location: Location, radius: Int): Result<List<DatabaseSoul>> = runCatching {
         mutex.withLock {
@@ -137,21 +148,26 @@ internal class SoulsDaoImpl(
             soulFileEditor.delete(soul)
             transaction(databaseFlow.first()) {
                 SoulTable.deleteWhere {
-                    SoulTable.created_at.eq(soul.createdAt)
-                        .and(SoulTable.ownerUUID.eq(soul.ownerUUID.toString()))
+                    SoulTable.ownerUUID.eq(soul.ownerUUID.toString()).and {
+                        SoulTable.broken_created_at.eq(soul.createdAt)
+                            .or(SoulTable.created_at.eq(soul.createdAt))
+                    }
                 }
             }
         }
         Unit
-    }.logFailure("deleteSoul")
+    }.logFailure("deleteSoul").onSuccess { soulsChangedSharedFlow.emit(Unit) }
 
     override suspend fun updateSoul(soul: Soul): Result<Unit> = runCatching {
         mutex.withLock {
             transaction(databaseFlow.first()) {
                 SoulTable.update(
                     where = {
-                        SoulTable.created_at.eq(soul.createdAt)
-                            .and(SoulTable.ownerUUID.eq(soul.ownerUUID.toString()))
+                        SoulTable.ownerUUID.eq(soul.ownerUUID.toString())
+                            .and {
+                                SoulTable.broken_created_at.eq(soul.createdAt)
+                                    .or(SoulTable.created_at.eq(soul.createdAt))
+                            }
                     },
                     body = {
                         it[SoulTable.isFree] = soul.isFree
@@ -162,12 +178,12 @@ internal class SoulsDaoImpl(
             }
         }
         Unit
-    }.logFailure("deleteSoul")
+    }.logFailure("deleteSoul").onSuccess { soulsChangedSharedFlow.emit(Unit) }
 
     override suspend fun updateSoul(soul: BukkitSoul): Result<Unit> = runCatching {
         mutex.withLock { soulFileEditor.write(soul).getOrThrow() }
         updateSoul(soul = soul as Soul).getOrThrow()
-    }.logFailure("deleteSoul")
+    }.logFailure("deleteSoul").onSuccess { soulsChangedSharedFlow.emit(Unit) }
 
     override suspend fun toItemStackSoul(soul: Soul): Result<BukkitSoul> {
         return soulFileEditor.read(soul)

@@ -41,6 +41,7 @@ interface SoulsDaoModule {
             transaction(database) {
                 addLogger(Slf4jSqlDebugLogger)
                 SchemaUtils.create(SoulTable)
+                SchemaUtils.createMissingTablesAndColumns(SoulTable)
             }
             emit(database)
         }.shareIn(scope, SharingStarted.Eagerly, 1)

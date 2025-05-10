@@ -16,7 +16,9 @@ internal class BukkitSoulFile(
     private val Soul.file: File
         get() {
             if (!folder.exists()) folder.mkdirs()
-            return folder.resolve("$fileNameWithoutExtension.yml")
+            val file = folder.resolve("$fileNameWithoutExtension.yml")
+            if (!file.exists()) file.createNewFile()
+            return file
         }
 
     private val Soul.configuration
@@ -24,7 +26,7 @@ internal class BukkitSoulFile(
 
     override fun read(soul: Soul) = kotlin.runCatching {
         BukkitSoul(
-            items = soul.configuration.getList("items") as List<ItemStack>,
+            items = (soul.configuration.getList("items") as? List<ItemStack>?).orEmpty(),
             exp = soul.configuration.getInt("exp"),
             ownerUUID = soul.ownerUUID,
             ownerLastName = soul.ownerLastName,

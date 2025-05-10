@@ -9,12 +9,13 @@ import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpExpUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpSoulUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.di.factory.ShowArmorStandUseCaseFactory
+import ru.astrainteractive.soulkeeper.module.souls.renderer.ArmorStandRenderer
+import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulParticleRenderer
+import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulSoundRenderer
 import ru.astrainteractive.soulkeeper.module.souls.worker.DeleteSoulWorker
 import ru.astrainteractive.soulkeeper.module.souls.worker.FreeSoulWorker
 import ru.astrainteractive.soulkeeper.module.souls.worker.PickUpWorker
-import ru.astrainteractive.soulkeeper.module.souls.worker.call.SoulCallRenderer
-import ru.astrainteractive.soulkeeper.module.souls.worker.call.SoulCallRendererImpl
-import ru.astrainteractive.soulkeeper.module.souls.worker.call.SoulCallWorker
+import ru.astrainteractive.soulkeeper.module.souls.worker.SoulCallWorker
 
 class WorkerModule(
     coreModule: CoreModule,
@@ -23,27 +24,36 @@ class WorkerModule(
 
     private val showArmorStandUseCase = ShowArmorStandUseCaseFactory(coreModule).create()
 
-    val soulCallRenderer: SoulCallRenderer = SoulCallRendererImpl(
-        showArmorStandUseCase = showArmorStandUseCase,
-        soulsDao = soulsDaoModule.soulsDao,
+    private val armorStandRenderer = ArmorStandRenderer(
         soulsConfigKrate = coreModule.soulsConfigKrate,
+        showArmorStandUseCase = showArmorStandUseCase
+    )
+    private val soulParticleRenderer = SoulParticleRenderer(
+        soulsConfigKrate = coreModule.soulsConfigKrate,
+        dispatchers = coreModule.dispatchers
+    )
+    private val soulSoundRenderer = SoulSoundRenderer(
         dispatchers = coreModule.dispatchers,
+        soulsConfigKrate = coreModule.soulsConfigKrate
     )
 
     private val deleteSoulWorker = DeleteSoulWorker(
         soulsDao = soulsDaoModule.soulsDao,
         configKrate = coreModule.soulsConfigKrate,
-        soulCallRenderer = soulCallRenderer
     )
 
     private val freeSoulWorker = FreeSoulWorker(
         soulsDao = soulsDaoModule.soulsDao,
         configKrate = coreModule.soulsConfigKrate,
-        soulCallRenderer = soulCallRenderer
     )
 
-    private val particleWorker = SoulCallWorker(
-        soulCallRenderer = soulCallRenderer
+    private val soulCallWorker = SoulCallWorker(
+        soulsDao = soulsDaoModule.soulsDao,
+        plugin = coreModule.plugin,
+        config = coreModule.soulsConfigKrate.cachedValue,
+        soulParticleRenderer = soulParticleRenderer,
+        soulSoundRenderer = soulSoundRenderer,
+        soulArmorStandRenderer = armorStandRenderer
     )
 
     private val pickUpWorker = PickUpWorker(
@@ -70,7 +80,6 @@ class WorkerModule(
         getNearestSoulUseCase = GetNearestSoulUseCase(
             soulsDao = soulsDaoModule.soulsDao
         ),
-        soulCallRenderer = soulCallRenderer,
         soulsDao = soulsDaoModule.soulsDao
     )
 
@@ -78,7 +87,7 @@ class WorkerModule(
         onEnable = {
             coreModule.lifecycle.onEnable()
             soulsDaoModule.lifecycle.onEnable()
-            particleWorker.onEnable()
+            soulCallWorker.onEnable()
             pickUpWorker.onEnable()
             deleteSoulWorker.onEnable()
             freeSoulWorker.onEnable()
@@ -90,7 +99,7 @@ class WorkerModule(
         onDisable = {
             coreModule.lifecycle.onDisable()
             soulsDaoModule.lifecycle.onDisable()
-            particleWorker.onDisable()
+            soulCallWorker.onDisable()
             pickUpWorker.onDisable()
             deleteSoulWorker.onDisable()
             freeSoulWorker.onDisable()
