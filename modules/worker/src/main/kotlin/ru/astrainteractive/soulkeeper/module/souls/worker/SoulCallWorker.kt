@@ -7,7 +7,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collect
@@ -37,6 +36,7 @@ import ru.astrainteractive.soulkeeper.module.souls.domain.TickFlow
 import ru.astrainteractive.soulkeeper.module.souls.renderer.ArmorStandRenderer
 import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulParticleRenderer
 import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulSoundRenderer
+import ru.astrainteractive.soulkeeper.module.souls.util.ThrottleExecutor
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
@@ -64,11 +64,10 @@ internal class SoulCallWorker(
             .filterIsInstance<PlayerMoveEvent>()
             .filter { event -> event.player.uniqueId == player.uniqueId }
             .onEach { event ->
-                val oldLocation = savedLocation
                 val newLocation = event.to
                 if (savedLocation.world.uid != newLocation.world.uid) {
                     emit(event)
-                } else if (oldLocation.distance(newLocation) >= config.soulCallRadius.div(2)) {
+                } else if (savedLocation.distance(newLocation) >= config.soulCallRadius.div(2)) {
                     emit(event)
                 } else {
                     return@onEach
@@ -80,31 +79,32 @@ internal class SoulCallWorker(
 
     private fun getPlayerVisibleSoulsFlow(scope: CoroutineScope, player: Player): Flow<List<DatabaseSoul>> {
         return combineInstantly(
-            flow = distancedPlayerMoveEvent(player).shareIn(scope, SharingStarted.Eagerly),
+            flow = distancedPlayerMoveEvent(player).shareIn(scope, SharingStarted.Eagerly, 1),
             flow2 = soulsDao.getSoulsChangeFlow(),
             transform = { event, _ -> event }
         ).filterNotNull().map { event ->
             soulsDao.getSoulsNear(event.player.location, config.soulCallRadius)
                 .getOrNull()
                 .orEmpty()
+                .filter { soul -> soul.ownerUUID == player.uniqueId || soul.isFree }
         }
     }
 
     private fun startPlayerRendererJob(player: Player) {
         playerRendererJobMap[player.uniqueId]?.cancel()
         playerRendererJobMap[player.uniqueId] = scope.launch {
+            val soundThrottleExecutor = ThrottleExecutor(5.seconds)
+            val particleThrottleExecutor = ThrottleExecutor(2.seconds)
             combineInstantly(
                 flow = TickFlow(1.seconds),
-                flow2 = getPlayerVisibleSoulsFlow(this, player).shareIn(this, SharingStarted.Eagerly),
+                flow2 = getPlayerVisibleSoulsFlow(this, player).shareIn(this, SharingStarted.Eagerly, 1),
                 transform = { _, souls -> souls }
             ).filterNotNull().onEach { souls ->
-                coroutineScope {
-                    listOf(
-                        async { soulParticleRenderer.renderOnce(player, souls) },
-                        async { soulSoundRenderer.renderOnce(player, souls) },
-                        async { soulArmorStandRenderer.renderOnce(player, souls) }
-                    ).awaitAll()
-                }
+                listOf(
+                    async { particleThrottleExecutor.execute { soulParticleRenderer.renderOnce(player, souls) } },
+                    async { soundThrottleExecutor.execute { soulSoundRenderer.renderOnce(player, souls) } },
+                    async { soulArmorStandRenderer.renderOnce(player, souls) }
+                ).awaitAll()
             }.launchIn(this)
         }
     }

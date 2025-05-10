@@ -4,7 +4,7 @@ import org.jetbrains.exposed.sql.ColumnType
 import org.jetbrains.exposed.sql.vendors.currentDialect
 import java.time.Instant
 
-class KJavaInstantColumnType : ColumnType<Instant>() {
+internal class KJavaInstantColumnType : ColumnType<Instant>() {
     override fun sqlType(): String = currentDialect.dataTypeProvider.longType()
 
     override fun valueFromDB(value: Any): Instant = when (value) {
