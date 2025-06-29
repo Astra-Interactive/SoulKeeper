@@ -10,7 +10,7 @@ import ru.astrainteractive.soulkeeper.core.di.CoreBukkitModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.module.event.di.BukkitEventModule
 import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
-import ru.astrainteractive.soulkeeper.module.souls.domain.di.WorkerModule
+import ru.astrainteractive.soulkeeper.module.souls.di.WorkerModule
 
 interface RootModule {
     val lifecycle: Lifecycle

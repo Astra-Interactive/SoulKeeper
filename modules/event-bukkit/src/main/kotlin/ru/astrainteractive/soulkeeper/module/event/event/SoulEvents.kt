@@ -21,6 +21,7 @@ import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
 import java.time.Instant
+import kotlin.time.Duration.Companion.seconds
 
 internal class SoulEvents(
     private val soulsDao: SoulsDao,
@@ -58,7 +59,7 @@ internal class SoulEvents(
             ownerUUID = event.player.uniqueId,
             ownerLastName = event.player.name,
             createdAt = Instant.now(),
-            isFree = false,
+            isFree = soulsConfig.soulFreeAfter == 0.seconds,
             location = when {
                 event.player.location.world.environment == World.Environment.THE_END -> {
                     val endLocation = event.player.location.clone()

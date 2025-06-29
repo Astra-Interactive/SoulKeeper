@@ -1,5 +1,6 @@
 package ru.astrainteractive.soulkeeper.module.event.di
 
+import org.bukkit.event.HandlerList
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.soulkeeper.core.di.CoreBukkitModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
@@ -21,6 +22,7 @@ class BukkitEventModule(
         },
         onDisable = {
             event.onDisable()
+            HandlerList.unregisterAll(bukkitCoreModule.plugin)
         }
     )
 }
