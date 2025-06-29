@@ -19,11 +19,11 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
+import ru.astrainteractive.astralibs.server.location.Location
+import ru.astrainteractive.astralibs.server.location.dist
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
-import ru.astrainteractive.soulkeeper.module.souls.database.model.Location
-import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulItemsTable
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulTable
 import java.util.*
@@ -124,7 +124,7 @@ internal class SoulsDaoImpl(
                     .andWhere { SoulTable.locationY.between(location.y - radius, location.y + radius) }
                     .andWhere { SoulTable.locationZ.between(location.z - radius, location.z + radius) }
                     .map(::toDatabaseSoul)
-                    .filter { it.location.distance(location) < radius }
+                    .filter { it.location.dist(location) < radius }
             }
         }
     }.logFailure("getSoulsNear")

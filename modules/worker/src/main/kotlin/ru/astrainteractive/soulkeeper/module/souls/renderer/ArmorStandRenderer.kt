@@ -2,7 +2,7 @@ package ru.astrainteractive.soulkeeper.module.souls.renderer
 
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import ru.astrainteractive.klibs.kstorage.api.Krate
+import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
@@ -11,7 +11,7 @@ import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorSt
 import ru.astrainteractive.soulkeeper.module.souls.renderer.api.SoulEffectRenderer
 
 internal class ArmorStandRenderer(
-    soulsConfigKrate: Krate<SoulsConfig>,
+    soulsConfigKrate: CachedKrate<SoulsConfig>,
     private val showArmorStandUseCase: ShowArmorStandUseCase,
 ) : SoulEffectRenderer {
     private val soulsConfig by soulsConfigKrate

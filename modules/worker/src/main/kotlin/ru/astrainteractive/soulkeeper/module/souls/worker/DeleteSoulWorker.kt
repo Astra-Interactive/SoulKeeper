@@ -3,7 +3,7 @@ package ru.astrainteractive.soulkeeper.module.souls.worker
 import kotlinx.coroutines.launch
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
-import ru.astrainteractive.klibs.kstorage.api.Krate
+import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.soulkeeper.core.job.LifecycleCoroutineWorker
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
@@ -13,7 +13,7 @@ import kotlin.time.Duration.Companion.seconds
 
 internal class DeleteSoulWorker(
     private val soulsDao: SoulsDao,
-    configKrate: Krate<SoulsConfig>
+    configKrate: CachedKrate<SoulsConfig>
 ) : LifecycleCoroutineWorker("DeleteSoulWorker"), Logger by JUtiltLogger("AspeKt-DeleteSoulWorker") {
     private val config by configKrate
 

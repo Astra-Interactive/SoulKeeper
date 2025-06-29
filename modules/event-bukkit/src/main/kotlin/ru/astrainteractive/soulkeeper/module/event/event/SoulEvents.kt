@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.event
+package ru.astrainteractive.soulkeeper.module.event.event
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -9,22 +9,22 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
 import ru.astrainteractive.astralibs.async.CoroutineFeature
 import ru.astrainteractive.astralibs.event.EventListener
-import ru.astrainteractive.klibs.kstorage.api.Krate
+import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.serialization.ItemStackSerializer
 import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
 import ru.astrainteractive.soulkeeper.core.util.spawnParticleForPlayer
+import ru.astrainteractive.soulkeeper.core.util.toBukkitLocation
+import ru.astrainteractive.soulkeeper.core.util.toDatabaseLocation
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
-import ru.astrainteractive.soulkeeper.util.toBukkitLocation
-import ru.astrainteractive.soulkeeper.util.toDatabaseLocation
 import java.time.Instant
 
 internal class SoulEvents(
     private val soulsDao: SoulsDao,
-    soulsConfigKrate: Krate<SoulsConfig>
+    soulsConfigKrate: CachedKrate<SoulsConfig>
 ) : EventListener {
     private val scope = CoroutineFeature.Default(Dispatchers.IO)
     private val soulsConfig by soulsConfigKrate

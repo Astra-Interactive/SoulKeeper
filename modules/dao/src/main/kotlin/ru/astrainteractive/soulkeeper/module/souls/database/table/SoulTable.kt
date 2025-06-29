@@ -3,8 +3,6 @@ package ru.astrainteractive.soulkeeper.module.souls.database.table
 import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.javatime.timestamp
 import ru.astrainteractive.soulkeeper.module.souls.database.coulmn.KJavaInstantColumnType
-import ru.astrainteractive.soulkeeper.module.souls.database.coulmn.StringFormatObjectColumnType
-import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
 
 internal object SoulTable : LongIdTable(name = "SOUL") {
     val ownerUUID = text("owner_uuid")

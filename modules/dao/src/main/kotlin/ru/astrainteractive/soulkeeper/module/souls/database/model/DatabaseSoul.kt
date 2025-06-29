@@ -1,5 +1,6 @@
 package ru.astrainteractive.soulkeeper.module.souls.database.model
 
+import ru.astrainteractive.astralibs.server.location.Location
 import java.time.Instant
 import java.util.UUID
 

@@ -11,9 +11,10 @@ import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
+import ru.astrainteractive.astralibs.serialization.StringFormatExt.parseOrWriteIntoDefault
 import ru.astrainteractive.astralibs.serialization.YamlStringFormat
-import ru.astrainteractive.astralibs.util.fileConfigKrate
 import ru.astrainteractive.klibs.kstorage.api.impl.DefaultMutableKrate
+import ru.astrainteractive.klibs.kstorage.util.asCachedKrate
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
@@ -34,23 +35,30 @@ class CoreModule(
         ),
     )
 
-    val translation = fileConfigKrate(
-        file = dataFolder.resolve("translations.yml"),
-        stringFormat = yamlFormat,
-        factory = ::PluginTranslation
-    )
+    val translation = DefaultMutableKrate(
+        factory = ::PluginTranslation,
+        loader = {
+            yamlFormat.parseOrWriteIntoDefault(
+                file = dataFolder.resolve("translations.yml"),
+                default = ::PluginTranslation
+            )
+        }
+    ).asCachedKrate()
 
-    val soulsConfigKrate = fileConfigKrate<SoulsConfig>(
-        file = dataFolder.resolve("souls_config.yml"),
-        stringFormat = yamlFormat,
-        factory = ::SoulsConfig
-    )
+    val soulsConfigKrate = DefaultMutableKrate(
+        factory = ::SoulsConfig,
+        loader = {
+            yamlFormat.parseOrWriteIntoDefault(
+                file = dataFolder.resolve("souls_config.yml"),
+                default = ::SoulsConfig
+            )
+        }
+    ).asCachedKrate()
 
     val kyoriComponentSerializer = DefaultMutableKrate<KyoriComponentSerializer>(
         loader = { null },
         factory = { KyoriComponentSerializer.Legacy }
-    )
-
+    ).asCachedKrate()
 
     val jsonStringFormat: StringFormat = Json {
         isLenient = true
@@ -61,8 +69,8 @@ class CoreModule(
     val lifecycle: Lifecycle = Lifecycle.Lambda(
         onEnable = {},
         onReload = {
-            soulsConfigKrate.loadAndGet()
-            translation.loadAndGet()
+            soulsConfigKrate.getValue()
+            translation.getValue()
         },
         onDisable = {
             scope.cancel()

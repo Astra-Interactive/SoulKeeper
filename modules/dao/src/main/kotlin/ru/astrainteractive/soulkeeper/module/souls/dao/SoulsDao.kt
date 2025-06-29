@@ -1,7 +1,10 @@
 package ru.astrainteractive.soulkeeper.module.souls.dao
 
 import kotlinx.coroutines.flow.Flow
-import ru.astrainteractive.soulkeeper.module.souls.database.model.*
+import ru.astrainteractive.astralibs.server.location.Location
+import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
+import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
+import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
 import java.util.*
 
 interface SoulsDao {

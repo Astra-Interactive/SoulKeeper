@@ -16,23 +16,23 @@ import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissib
 import ru.astrainteractive.astralibs.util.clickable
 import ru.astrainteractive.astralibs.util.isEmpty
 import ru.astrainteractive.astralibs.util.orEmpty
-import ru.astrainteractive.klibs.kstorage.api.Krate
+import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.soulkeeper.core.datetime.TimeAgoFormatter
 import ru.astrainteractive.soulkeeper.core.datetime.TimeAgoTranslationFormatter
 import ru.astrainteractive.soulkeeper.core.plugin.PluginPermission
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
+import ru.astrainteractive.soulkeeper.core.util.toBukkitLocation
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.Soul
-import ru.astrainteractive.soulkeeper.util.toBukkitLocation
 
 internal class SoulsCommandRegistry(
     private val plugin: JavaPlugin,
     private val scope: CoroutineScope,
     private val soulsDao: SoulsDao,
-    translationKrate: Krate<PluginTranslation>,
-    kyoriKrate: Krate<KyoriComponentSerializer>
+    translationKrate: CachedKrate<PluginTranslation>,
+    kyoriKrate: CachedKrate<KyoriComponentSerializer>
 ) {
     private val kyori by kyoriKrate
     private val translation by translationKrate

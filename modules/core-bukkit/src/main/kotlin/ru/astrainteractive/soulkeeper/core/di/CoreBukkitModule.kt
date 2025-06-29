@@ -1,6 +1,5 @@
 package ru.astrainteractive.soulkeeper.core.di
 
-import kotlinx.coroutines.cancel
 import org.bstats.bukkit.Metrics
 import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle

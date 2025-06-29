@@ -8,7 +8,7 @@ import ru.astrainteractive.soulkeeper.command.SoulsCommandRegistry
 import ru.astrainteractive.soulkeeper.command.SoulsReloadCommandRegistry
 import ru.astrainteractive.soulkeeper.core.di.CoreBukkitModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
-import ru.astrainteractive.soulkeeper.event.SoulEvents
+import ru.astrainteractive.soulkeeper.module.event.di.BukkitEventModule
 import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
 import ru.astrainteractive.soulkeeper.module.souls.domain.di.WorkerModule
 
@@ -33,9 +33,10 @@ interface RootModule {
             coreBukkitModule = coreBukkitModule
         )
 
-        private val event = SoulEvents(
-            soulsDao = soulsDaoModule.soulsDao,
-            soulsConfigKrate = coreModule.soulsConfigKrate,
+        private val bukkitEventModule = BukkitEventModule(
+            coreModule = coreModule,
+            bukkitCoreModule = coreBukkitModule,
+            soulsDaoModule = soulsDaoModule
         )
 
         private val soulsCommandRegistry = SoulsCommandRegistry(
@@ -57,18 +58,17 @@ interface RootModule {
                 coreModule.lifecycle,
                 coreBukkitModule.lifecycle,
                 soulsDaoModule.lifecycle,
+                bukkitEventModule.lifecycle,
                 workerModule.lifecycle,
             )
 
         override val lifecycle = Lifecycle.Lambda(
             onEnable = {
-                event.onEnable(coreBukkitModule.plugin)
                 soulsCommandRegistry.register()
                 soulsReloadCommandRegistry.register()
                 lifecycles.forEach(Lifecycle::onEnable)
             },
             onDisable = {
-                event.onDisable()
                 HandlerList.unregisterAll(coreBukkitModule.plugin)
                 lifecycles.forEach(Lifecycle::onDisable)
             },

@@ -5,7 +5,7 @@ package ru.astrainteractive.soulkeeper.core.plugin
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import ru.astrainteractive.astralibs.string.StringDesc
-import ru.astrainteractive.astralibs.string.StringDescExt.replace
+import ru.astrainteractive.astralibs.string.replace
 import kotlin.time.Duration
 
 @Serializable

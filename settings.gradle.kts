@@ -1,5 +1,5 @@
 pluginManagement {
-include(":modules:core")
+    include(":modules:core")
     repositories {
         maven("https://plugins.gradle.org/m2/")
         maven("https://jitpack.io")
@@ -49,3 +49,4 @@ include(":modules:core")
 include(":modules:core-bukkit")
 include(":modules:dao")
 include(":modules:worker")
+include(":modules:event-bukkit")
