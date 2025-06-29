@@ -62,8 +62,8 @@ internal class SoulEvents(
             location = when {
                 event.player.location.world.environment == World.Environment.THE_END -> {
                     val endLocation = event.player.location.clone()
-                    if (endLocation.y < 0) {
-                        endLocation.y = 0.0
+                    if (endLocation.y < soulsConfig.endLocationLimitY) {
+                        endLocation.y = soulsConfig.endLocationLimitY
                     }
                     endLocation
                 }

@@ -6,7 +6,6 @@ import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
-import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.util.toBukkitLocation
 

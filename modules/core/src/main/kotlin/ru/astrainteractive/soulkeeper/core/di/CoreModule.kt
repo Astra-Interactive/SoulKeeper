@@ -2,102 +2,70 @@ package ru.astrainteractive.soulkeeper.core.di
 
 import com.charleskorn.kaml.PolymorphismStyle
 import com.charleskorn.kaml.Yaml
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.json.Json
-import org.bstats.bukkit.Metrics
-import ru.astrainteractive.astralibs.async.BukkitDispatchers
 import ru.astrainteractive.astralibs.async.CoroutineFeature
-import ru.astrainteractive.astralibs.async.DefaultBukkitDispatchers
-import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
-import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
-import ru.astrainteractive.astralibs.menu.event.DefaultInventoryClickEvent
 import ru.astrainteractive.astralibs.serialization.YamlStringFormat
 import ru.astrainteractive.astralibs.util.fileConfigKrate
-import ru.astrainteractive.klibs.kstorage.api.Krate
 import ru.astrainteractive.klibs.kstorage.api.impl.DefaultMutableKrate
+import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
+import java.io.File
 
-interface CoreModule {
-    val lifecycle: Lifecycle
+class CoreModule(
+    val dispatchers: KotlinDispatchers,
+    val dataFolder: File
+) : Logger by JUtiltLogger("CoreModule") {
 
-    val plugin: LifecyclePlugin
-    val eventListener: EventListener
+    val scope = CoroutineFeature.Default(Dispatchers.IO)
 
-    val dispatchers: BukkitDispatchers
-    val scope: CoroutineScope
-    val translation: Krate<PluginTranslation>
-    val soulsConfigKrate: Krate<SoulsConfig>
-    val yamlFormat: StringFormat
+    val yamlFormat: StringFormat = YamlStringFormat(
+        configuration = Yaml.default.configuration.copy(
+            encodeDefaults = true,
+            strictMode = false,
+            polymorphismStyle = PolymorphismStyle.Property
+        ),
+    )
 
-    val kyoriComponentSerializer: Krate<KyoriComponentSerializer>
-    val inventoryClickEventListener: DefaultInventoryClickEvent
+    val translation = fileConfigKrate(
+        file = dataFolder.resolve("translations.yml"),
+        stringFormat = yamlFormat,
+        factory = ::PluginTranslation
+    )
 
-    val jsonStringFormat: StringFormat
+    val soulsConfigKrate = fileConfigKrate<SoulsConfig>(
+        file = dataFolder.resolve("souls_config.yml"),
+        stringFormat = yamlFormat,
+        factory = ::SoulsConfig
+    )
 
-    class Default(override val plugin: LifecyclePlugin) : CoreModule, Logger by JUtiltLogger("CoreModule") {
-        // Core
-        override val eventListener = EventListener.Default()
+    val kyoriComponentSerializer = DefaultMutableKrate<KyoriComponentSerializer>(
+        loader = { null },
+        factory = { KyoriComponentSerializer.Legacy }
+    )
 
-        override val dispatchers = DefaultBukkitDispatchers(plugin)
 
-        override val scope = CoroutineFeature.Default(Dispatchers.IO)
-
-        override val yamlFormat: StringFormat = YamlStringFormat(
-            configuration = Yaml.default.configuration.copy(
-                encodeDefaults = true,
-                strictMode = false,
-                polymorphismStyle = PolymorphismStyle.Property
-            ),
-        )
-
-        override val translation = fileConfigKrate(
-            file = plugin.dataFolder.resolve("translations.yml"),
-            stringFormat = yamlFormat,
-            factory = ::PluginTranslation
-        )
-
-        override val soulsConfigKrate = fileConfigKrate<SoulsConfig>(
-            file = plugin.dataFolder.resolve("souls_config.yml"),
-            stringFormat = yamlFormat,
-            factory = ::SoulsConfig
-        )
-
-        override val kyoriComponentSerializer = DefaultMutableKrate<KyoriComponentSerializer>(
-            loader = { null },
-            factory = { KyoriComponentSerializer.Legacy }
-        )
-
-        override val inventoryClickEventListener = DefaultInventoryClickEvent()
-
-        override val jsonStringFormat: StringFormat = Json {
-            isLenient = true
-            ignoreUnknownKeys = true
-            prettyPrint = true
-        }
-
-        override val lifecycle: Lifecycle = Lifecycle.Lambda(
-            onEnable = {
-                inventoryClickEventListener.onEnable(plugin)
-                eventListener.onEnable(plugin)
-                Metrics(plugin, 23714)
-            },
-            onReload = {
-                soulsConfigKrate.loadAndGet()
-                translation.loadAndGet()
-            },
-            onDisable = {
-                inventoryClickEventListener.onDisable()
-                eventListener.onDisable()
-                scope.cancel()
-            }
-        )
+    val jsonStringFormat: StringFormat = Json {
+        isLenient = true
+        ignoreUnknownKeys = true
+        prettyPrint = true
     }
+
+    val lifecycle: Lifecycle = Lifecycle.Lambda(
+        onEnable = {},
+        onReload = {
+            soulsConfigKrate.loadAndGet()
+            translation.loadAndGet()
+        },
+        onDisable = {
+            scope.cancel()
+        }
+    )
 }
