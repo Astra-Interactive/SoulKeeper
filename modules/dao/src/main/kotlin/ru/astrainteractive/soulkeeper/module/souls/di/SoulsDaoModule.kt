@@ -36,7 +36,7 @@ interface SoulsDaoModule {
     ) : SoulsDaoModule {
         override val databaseFlow: Flow<Database> = flow {
             if (!dataFolder.exists()) dataFolder.mkdirs()
-            val database = DatabaseConfiguration.H2("souls").connect(dataFolder)
+            val database = DatabaseConfiguration.H2("souls_v2").connect(dataFolder)
             TransactionManager.manager.defaultIsolationLevel = java.sql.Connection.TRANSACTION_SERIALIZABLE
             transaction(database) {
                 addLogger(Slf4jSqlDebugLogger)
