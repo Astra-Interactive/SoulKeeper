@@ -1,6 +1,6 @@
 buildscript {
     dependencies {
-        classpath("com.hierynomus:sshj:0.39.0")
+        classpath("com.hierynomus:sshj:0.40.0")
     }
 }
 
