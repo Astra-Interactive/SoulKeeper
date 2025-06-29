@@ -2,11 +2,7 @@ package ru.astrainteractive.soulkeeper.module.souls.di
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -19,8 +15,8 @@ import ru.astrainteractive.astralibs.exposed.model.DatabaseConfiguration
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDaoImpl
+import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulItemsTable
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulTable
-import ru.astrainteractive.soulkeeper.module.souls.io.BukkitSoulFile
 import java.io.File
 
 interface SoulsDaoModule {
@@ -42,15 +38,13 @@ interface SoulsDaoModule {
                 addLogger(Slf4jSqlDebugLogger)
                 SchemaUtils.create(SoulTable)
                 SchemaUtils.createMissingTablesAndColumns(SoulTable)
+                SchemaUtils.createMissingTablesAndColumns(SoulItemsTable)
             }
             emit(database)
         }.shareIn(scope, SharingStarted.Eagerly, 1)
 
         override val soulsDao: SoulsDao = SoulsDaoImpl(
             databaseFlow = databaseFlow,
-            soulFileEditor = BukkitSoulFile(
-                folder = dataFolder.resolve("storage")
-            )
         )
 
         override val lifecycle: Lifecycle = Lifecycle.Lambda(

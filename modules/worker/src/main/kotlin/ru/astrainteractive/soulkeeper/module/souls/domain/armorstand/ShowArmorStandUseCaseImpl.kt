@@ -14,7 +14,8 @@ import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.klibs.kstorage.api.Krate
 import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
-import ru.astrainteractive.soulkeeper.module.souls.io.model.Soul
+import ru.astrainteractive.soulkeeper.module.souls.database.model.Soul
+import ru.astrainteractive.soulkeeper.module.souls.util.toBukkitLocation
 import java.util.Optional
 import java.util.UUID
 
@@ -35,7 +36,8 @@ internal class ShowArmorStandUseCaseImpl(
     }
 
     override fun show(id: Int, player: Player, soul: Soul) {
-        val vector3d = soul.location.toVector().toVector3d()
+        val bukkitLocation = soul.location.toBukkitLocation()
+        val vector3d = bukkitLocation.toVector().toVector3d()
         val packet = WrapperPlayServerSpawnEntity(
             id,
             Optional.of(UUID.randomUUID()),
@@ -45,8 +47,8 @@ internal class ShowArmorStandUseCaseImpl(
                 vector3d.y,
                 vector3d.z
             ),
-            soul.location.pitch,
-            soul.location.yaw,
+            bukkitLocation.pitch,
+            bukkitLocation.yaw,
             0f,
             0,
             Optional.empty(),

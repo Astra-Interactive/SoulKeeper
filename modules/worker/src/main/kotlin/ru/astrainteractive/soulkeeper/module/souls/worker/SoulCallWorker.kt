@@ -37,6 +37,7 @@ import ru.astrainteractive.soulkeeper.module.souls.renderer.ArmorStandRenderer
 import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulParticleRenderer
 import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulSoundRenderer
 import ru.astrainteractive.soulkeeper.module.souls.util.ThrottleExecutor
+import ru.astrainteractive.soulkeeper.module.souls.util.toDatabaseLocation
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
@@ -83,7 +84,7 @@ internal class SoulCallWorker(
             flow2 = soulsDao.getSoulsChangeFlow(),
             transform = { event, _ -> event }
         ).filterNotNull().map { event ->
-            soulsDao.getSoulsNear(event.player.location, config.soulCallRadius)
+            soulsDao.getSoulsNear(event.player.location.toDatabaseLocation(), config.soulCallRadius)
                 .getOrNull()
                 .orEmpty()
                 .filter { soul -> soul.ownerUUID == player.uniqueId || soul.isFree }

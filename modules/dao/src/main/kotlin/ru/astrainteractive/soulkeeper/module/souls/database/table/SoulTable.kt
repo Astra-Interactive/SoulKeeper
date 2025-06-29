@@ -3,6 +3,8 @@ package ru.astrainteractive.soulkeeper.module.souls.database.table
 import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.javatime.timestamp
 import ru.astrainteractive.soulkeeper.module.souls.database.coulmn.KJavaInstantColumnType
+import ru.astrainteractive.soulkeeper.module.souls.database.coulmn.StringFormatObjectColumnType
+import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
 
 internal object SoulTable : LongIdTable(name = "SOUL") {
     val ownerUUID = text("owner_uuid")
@@ -14,8 +16,7 @@ internal object SoulTable : LongIdTable(name = "SOUL") {
     val created_at = registerColumn("created_at_millis", KJavaInstantColumnType()).nullable()
 
     val isFree = bool("is_free")
-    val hasXp = bool("has_xp")
-    val hasItems = bool("has_items")
+    val exp = integer("exp")
 
     val locationWorld = text("location_world")
     val locationX = double("location_x")

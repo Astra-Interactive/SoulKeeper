@@ -9,6 +9,7 @@ import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.renderer.api.SoulEffectRenderer
+import ru.astrainteractive.soulkeeper.module.souls.util.toBukkitLocation
 
 class SoulSoundRenderer(
     private val dispatchers: KotlinDispatchers,
@@ -19,7 +20,7 @@ class SoulSoundRenderer(
     override suspend fun renderOnce(player: Player, souls: List<DatabaseSoul>) {
         withContext(dispatchers.Main) {
             souls.forEach { soul ->
-                soul.location.playSoundForPlayer(player, soulsConfig.sounds.calling)
+                soul.location.toBukkitLocation().playSoundForPlayer(player, soulsConfig.sounds.calling)
             }
         }
     }

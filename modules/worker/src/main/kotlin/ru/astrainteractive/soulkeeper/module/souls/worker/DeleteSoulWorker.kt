@@ -35,7 +35,7 @@ internal class DeleteSoulWorker(
 
             info { "#execute found ${soulsToDelete.size} souls to delete" }
             soulsToDelete.forEach { soul ->
-                soulsDao.deleteSoul(soul)
+                soulsDao.deleteSoul(soul.id)
             }
         }
     }

@@ -3,7 +3,7 @@ package ru.astrainteractive.soulkeeper.module.souls.database.model
 import java.time.Instant
 import java.util.UUID
 
-data class DatabaseSoul(
+data class ItemDatabaseSoul(
     val id: Long,
     override val ownerUUID: UUID,
     override val ownerLastName: String,
@@ -12,4 +12,5 @@ data class DatabaseSoul(
     override val location: Location,
     override val hasItems: Boolean,
     override val exp: Int,
+    val items: List<StringFormatObject>
 ) : Soul

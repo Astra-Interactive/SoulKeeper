@@ -24,7 +24,8 @@ import ru.astrainteractive.soulkeeper.core.plugin.PluginPermission
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
-import ru.astrainteractive.soulkeeper.module.souls.io.model.Soul
+import ru.astrainteractive.soulkeeper.module.souls.database.model.Soul
+import ru.astrainteractive.soulkeeper.util.toBukkitLocation
 
 internal class SoulsCommandRegistry(
     private val plugin: JavaPlugin,
@@ -81,7 +82,7 @@ internal class SoulsCommandRegistry(
             }
             translation.souls.teleportToSoul
                 .component
-                .clickable { sender.teleportAsync(soul.location) }
+                .clickable { sender.teleportAsync(soul.location.toBukkitLocation()) }
         }
 
         private fun createFreeComponent(
@@ -114,7 +115,7 @@ internal class SoulsCommandRegistry(
                 .orEmpty()
                 .filter {
                     (sender as? Player)?.world?.name?.let { worldName ->
-                        it.location.world.name == worldName
+                        it.location.worldName == worldName
                     } ?: true
                 }
                 .filter { soul ->
@@ -167,7 +168,7 @@ internal class SoulsCommandRegistry(
                                 z = soul.location.z.toInt(),
                                 distance = (input.sender as? Player)
                                     ?.location
-                                    ?.distance(soul.location)
+                                    ?.distance(soul.location.toBukkitLocation())
                                     ?.toInt()
                                     ?: 0
                             ).component

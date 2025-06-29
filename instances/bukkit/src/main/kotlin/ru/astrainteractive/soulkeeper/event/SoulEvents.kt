@@ -12,10 +12,14 @@ import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.klibs.kstorage.api.Krate
 import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
+import ru.astrainteractive.soulkeeper.core.serialization.ItemStackSerializer
 import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
 import ru.astrainteractive.soulkeeper.core.util.spawnParticleForPlayer
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
-import ru.astrainteractive.soulkeeper.module.souls.io.model.BukkitSoul
+import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
+import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
+import ru.astrainteractive.soulkeeper.util.toBukkitLocation
+import ru.astrainteractive.soulkeeper.util.toDatabaseLocation
 import java.time.Instant
 
 internal class SoulEvents(
@@ -49,8 +53,7 @@ internal class SoulEvents(
 
         if (soulItems.isEmpty() && droppedXp <= 0) return
 
-        val bukkitSoul = BukkitSoul(
-            items = soulItems,
+        val bukkitSoul = DefaultSoul(
             exp = droppedXp,
             ownerUUID = event.player.uniqueId,
             ownerLastName = event.player.name,
@@ -66,13 +69,17 @@ internal class SoulEvents(
                 }
 
                 else -> event.player.location
+            }.toDatabaseLocation(),
+            hasItems = soulItems.isNotEmpty(),
+            items = soulItems.map {
+                StringFormatObject(ItemStackSerializer.encodeToString(it))
             },
         )
-        bukkitSoul.location.spawnParticleForPlayer(
+        bukkitSoul.location.toBukkitLocation().spawnParticleForPlayer(
             event.player,
             soulsConfig.particles.soulCreated,
         )
-        bukkitSoul.location.playSoundForPlayer(event.player, soulsConfig.sounds.soulDropped)
+        bukkitSoul.location.toBukkitLocation().playSoundForPlayer(event.player, soulsConfig.sounds.soulDropped)
         scope.launch {
             soulsDao.insertSoul(bukkitSoul)
         }

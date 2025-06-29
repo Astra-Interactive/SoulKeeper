@@ -4,9 +4,12 @@ import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
+import ru.astrainteractive.soulkeeper.core.serialization.ItemStackSerializer
 import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
-import ru.astrainteractive.soulkeeper.module.souls.io.model.BukkitSoul
+import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
+import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
+import ru.astrainteractive.soulkeeper.module.souls.util.toBukkitLocation
 
 internal class PickUpItemsUseCase(
     private val collectItemSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
@@ -18,17 +21,22 @@ internal class PickUpItemsUseCase(
         data object SomeItemsRemain : Output
     }
 
-    suspend fun invoke(player: Player, bukkitSoul: BukkitSoul): Output {
-        if (bukkitSoul.items.isEmpty()) return Output.NoItemsPresent
+    suspend fun invoke(player: Player, soul: ItemDatabaseSoul): Output {
+        if (soul.items.isEmpty()) return Output.NoItemsPresent
 
-        val notAddedItems = player.inventory.addItem(*bukkitSoul.items.toTypedArray()).values.toList()
-        if (notAddedItems != bukkitSoul.items) {
-            bukkitSoul.location.playSoundForPlayer(player, collectItemSoundProvider.invoke())
+        val items = soul.items
+            .map(StringFormatObject::raw)
+            .map(ItemStackSerializer::decodeFromString)
+            .mapNotNull { itemStackResult -> itemStackResult.getOrNull() }
+        val notAddedItems = player.inventory.addItem(*items.toTypedArray()).values.toList()
+        if (notAddedItems != soul.items) {
+            soul.location.toBukkitLocation().playSoundForPlayer(player, collectItemSoundProvider.invoke())
         }
         soulsDao.updateSoul(
-            bukkitSoul.copy(
-                exp = 0,
+            soul.copy(
                 items = notAddedItems
+                    .map(ItemStackSerializer::encodeToString)
+                    .map(::StringFormatObject)
             )
         )
         return when {
