@@ -126,7 +126,7 @@ class PluginTranslation(
     )
 
     companion object {
-        val prefix: StringDesc.Raw = StringDesc.Raw("&#18dbd1[SoulKeeper]")
+        val prefix: StringDesc.Raw = StringDesc.Raw("&#18dbd1[SoulKeeper] ")
     }
 }
 
