@@ -49,7 +49,9 @@ data class SoulsConfig(
         "This feature will display titles above souls via translations.yml -> souls.soul_of",
         "Need packet events"
     )
-    val displaySoulTitles: Boolean = true
+    val displaySoulTitles: Boolean = true,
+    @YamlComment("Locate minimum Y coord of soul in the end dimension")
+    val endLocationLimitY: Double = 0.0
 ) {
     @Serializable
     data class Particles(

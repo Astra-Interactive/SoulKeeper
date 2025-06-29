@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.module.souls.util
+package ru.astrainteractive.soulkeeper.core.util
 
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds

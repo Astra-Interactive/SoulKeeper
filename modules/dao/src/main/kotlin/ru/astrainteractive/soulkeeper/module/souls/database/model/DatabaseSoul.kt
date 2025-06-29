@@ -1,7 +1,6 @@
 package ru.astrainteractive.soulkeeper.module.souls.database.model
 
-import org.bukkit.Location
-import ru.astrainteractive.soulkeeper.module.souls.io.model.Soul
+import ru.astrainteractive.astralibs.server.location.Location
 import java.time.Instant
 import java.util.UUID
 
@@ -13,5 +12,5 @@ data class DatabaseSoul(
     override val isFree: Boolean,
     override val location: Location,
     override val hasItems: Boolean,
-    override val hasXp: Boolean,
+    override val exp: Int,
 ) : Soul

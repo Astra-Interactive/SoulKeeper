@@ -31,6 +31,8 @@ dependencies {
     compileOnly(libs.minecraft.discordsrv)
     compileOnly(libs.minecraft.essentialsx)
     implementation(projects.modules.core)
+    implementation(projects.modules.coreBukkit)
+    implementation(projects.modules.eventBukkit)
     implementation(projects.modules.dao)
     implementation(projects.modules.worker)
 }

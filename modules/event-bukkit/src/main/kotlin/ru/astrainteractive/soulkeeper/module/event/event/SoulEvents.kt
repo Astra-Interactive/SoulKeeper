@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.event
+package ru.astrainteractive.soulkeeper.module.event.event
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -9,18 +9,23 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
 import ru.astrainteractive.astralibs.async.CoroutineFeature
 import ru.astrainteractive.astralibs.event.EventListener
-import ru.astrainteractive.klibs.kstorage.api.Krate
+import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
+import ru.astrainteractive.soulkeeper.core.serialization.ItemStackSerializer
 import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
 import ru.astrainteractive.soulkeeper.core.util.spawnParticleForPlayer
+import ru.astrainteractive.soulkeeper.core.util.toBukkitLocation
+import ru.astrainteractive.soulkeeper.core.util.toDatabaseLocation
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
-import ru.astrainteractive.soulkeeper.module.souls.io.model.BukkitSoul
+import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
+import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
 import java.time.Instant
+import kotlin.time.Duration.Companion.seconds
 
 internal class SoulEvents(
     private val soulsDao: SoulsDao,
-    soulsConfigKrate: Krate<SoulsConfig>
+    soulsConfigKrate: CachedKrate<SoulsConfig>
 ) : EventListener {
     private val scope = CoroutineFeature.Default(Dispatchers.IO)
     private val soulsConfig by soulsConfigKrate
@@ -49,30 +54,33 @@ internal class SoulEvents(
 
         if (soulItems.isEmpty() && droppedXp <= 0) return
 
-        val bukkitSoul = BukkitSoul(
-            items = soulItems,
+        val bukkitSoul = DefaultSoul(
             exp = droppedXp,
             ownerUUID = event.player.uniqueId,
             ownerLastName = event.player.name,
             createdAt = Instant.now(),
-            isFree = false,
+            isFree = soulsConfig.soulFreeAfter == 0.seconds,
             location = when {
                 event.player.location.world.environment == World.Environment.THE_END -> {
                     val endLocation = event.player.location.clone()
-                    if (endLocation.y < 0) {
-                        endLocation.y = 0.0
+                    if (endLocation.y < soulsConfig.endLocationLimitY) {
+                        endLocation.y = soulsConfig.endLocationLimitY
                     }
                     endLocation
                 }
 
                 else -> event.player.location
+            }.toDatabaseLocation(),
+            hasItems = soulItems.isNotEmpty(),
+            items = soulItems.map {
+                StringFormatObject(ItemStackSerializer.encodeToString(it))
             },
         )
-        bukkitSoul.location.spawnParticleForPlayer(
+        bukkitSoul.location.toBukkitLocation().spawnParticleForPlayer(
             event.player,
             soulsConfig.particles.soulCreated,
         )
-        bukkitSoul.location.playSoundForPlayer(event.player, soulsConfig.sounds.soulDropped)
+        bukkitSoul.location.toBukkitLocation().playSoundForPlayer(event.player, soulsConfig.sounds.soulDropped)
         scope.launch {
             soulsDao.insertSoul(bukkitSoul)
         }

@@ -5,8 +5,9 @@ import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
+import ru.astrainteractive.soulkeeper.core.util.toBukkitLocation
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
-import ru.astrainteractive.soulkeeper.module.souls.io.model.BukkitSoul
+import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
 
 internal class PickUpExpUseCase(
     private val collectXpSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
@@ -17,17 +18,13 @@ internal class PickUpExpUseCase(
         data object ExpCollected : Output
     }
 
-    suspend fun invoke(player: Player, bukkitSoul: BukkitSoul): Output {
-        if (bukkitSoul.exp <= 0) {
+    suspend fun invoke(player: Player, soul: ItemDatabaseSoul): Output {
+        if (soul.exp <= 0) {
             return Output.NoExpPresent
         }
-        bukkitSoul.location.playSoundForPlayer(player, collectXpSoundProvider.invoke())
-        player.giveExp(bukkitSoul.exp)
-        soulsDao.updateSoul(
-            soul = bukkitSoul.copy(
-                exp = 0,
-            )
-        )
+        soul.location.toBukkitLocation().playSoundForPlayer(player, collectXpSoundProvider.invoke())
+        player.giveExp(soul.exp)
+        soulsDao.updateSoul(soul = soul.copy(exp = 0))
         return Output.ExpCollected
     }
 }

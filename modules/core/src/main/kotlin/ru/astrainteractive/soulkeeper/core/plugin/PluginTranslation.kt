@@ -5,7 +5,8 @@ package ru.astrainteractive.soulkeeper.core.plugin
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import ru.astrainteractive.astralibs.string.StringDesc
-import ru.astrainteractive.astralibs.string.StringDescExt.replace
+import ru.astrainteractive.astralibs.string.plus
+import ru.astrainteractive.astralibs.string.replace
 import kotlin.time.Duration
 
 @Serializable
@@ -28,21 +29,32 @@ class PluginTranslation(
         @SerialName("seconds_ago_format")
         private val secondsAgoFormat: StringDesc.Raw = StringDesc.Raw("%time% секунд назад"),
         @SerialName("no_souls_on_page")
-        private val noSoulsOnPage: StringDesc.Raw = StringDesc.Raw("&#db2c18Нет душ на странице %page%"),
+        private val noSoulsOnPage: StringDesc.Raw = prefix
+            .plus("&#db2c18Нет душ на странице %page%")
+            .toRaw(),
         @SerialName("listing_format")
-        private val listingFormat: StringDesc.Raw = StringDesc.Raw(
-            "&#b8b8b8%index%. &#d1a71d%owner% &#b8b8b8(%time_ago%) &#b8b8b8(%x%; %y%; %z%) %dist%m"
-        ),
+        private val listingFormat: StringDesc.Raw = StringDesc.Raw("&#b8b8b8%index%. ")
+            .plus("&#d1a71d%owner% ")
+            .plus("&#b8b8b8(%time_ago%) ")
+            .plus("&#b8b8b8(%x%; %y%; %z%) ")
+            .plus("%dist%m")
+            .toRaw(),
         @SerialName("list_souls_title")
-        val listSoulsTitle: StringDesc.Raw = StringDesc.Raw("&#42f596Список видимых вам душ:"),
+        val listSoulsTitle: StringDesc.Raw = prefix
+            .plus("&#42f596Список видимых вам душ:")
+            .toRaw(),
         @SerialName("free_soul")
         val freeSoul: StringDesc.Raw = StringDesc.Raw("&#b50b05[FREE]"),
         @SerialName("teleport_to_soul")
         val teleportToSoul: StringDesc.Raw = StringDesc.Raw("&#1db2b8[TP]"),
         @SerialName("soul_freed")
-        val soulFreed: StringDesc.Raw = StringDesc.Raw("&#42f596Душа теперь свободна!"),
+        val soulFreed: StringDesc.Raw = prefix
+            .plus("&#42f596Душа теперь свободна!")
+            .toRaw(),
         @SerialName("could_not_free_soul")
-        val couldNotFreeSoul: StringDesc.Raw = StringDesc.Raw("&#db2c18Не удалось освободить душу!"),
+        val couldNotFreeSoul: StringDesc.Raw = prefix
+            .plus("&#db2c18Не удалось освободить душу!")
+            .toRaw(),
         @SerialName("next_page")
         val nextPage: StringDesc.Raw = StringDesc.Raw("&#42f596[>>ДАЛЬШЕ>>]"),
         @SerialName("prev_page")
@@ -91,17 +103,33 @@ class PluginTranslation(
 
     @Serializable
     class General(
-        @SerialName("prefix")
-        val prefix: StringDesc.Raw = StringDesc.Raw("&#18dbd1[SoulKeeper]"),
         @SerialName("reload")
-        val reload: StringDesc.Raw = StringDesc.Raw("&#dbbb18Перезагрузка плагина"),
+        val reload: StringDesc.Raw = prefix
+            .plus("&#dbbb18Перезагрузка плагина")
+            .toRaw(),
         @SerialName("reload_complete")
-        val reloadComplete: StringDesc.Raw = StringDesc.Raw("&#42f596Перезагрузка успешно завершена"),
+        val reloadComplete: StringDesc.Raw = prefix
+            .plus("&#42f596Перезагрузка успешно завершена")
+            .toRaw(),
         @SerialName("no_permission")
-        val noPermission: StringDesc.Raw = StringDesc.Raw("&#db2c18У вас нет прав!"),
+        val noPermission: StringDesc.Raw = prefix
+            .plus("&#db2c18У вас нет прав!")
+            .toRaw(),
         @SerialName("wrong_usage")
-        val wrongUsage: StringDesc.Raw = StringDesc.Raw("&#db2c18Неверное использование!"),
+        val wrongUsage: StringDesc.Raw = prefix
+            .plus("&#db2c18Неверное использование!")
+            .toRaw(),
         @SerialName("only_player_command")
-        val onlyPlayerCommand: StringDesc.Raw = StringDesc.Raw("&#db2c18Эта команда только для игроков!"),
+        val onlyPlayerCommand: StringDesc.Raw = prefix
+            .plus("&#db2c18Эта команда только для игроков!")
+            .toRaw(),
     )
+
+    companion object {
+        val prefix: StringDesc.Raw = StringDesc.Raw("&#18dbd1[SoulKeeper] ")
+    }
+}
+
+private fun StringDesc.toRaw(): StringDesc.Raw {
+    return StringDesc.Raw(this.raw)
 }

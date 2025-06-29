@@ -8,8 +8,9 @@ import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
 import ru.astrainteractive.soulkeeper.core.util.spawnParticleForPlayer
+import ru.astrainteractive.soulkeeper.core.util.toBukkitLocation
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
-import ru.astrainteractive.soulkeeper.module.souls.io.model.BukkitSoul
+import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
 
 @Suppress("LongParameterList")
 internal class PickUpSoulUseCase(
@@ -27,24 +28,25 @@ internal class PickUpSoulUseCase(
         data object AllPickedUp : Output
     }
 
-    suspend fun invoke(player: Player, bukkitSoul: BukkitSoul): Output {
+    suspend fun invoke(player: Player, bukkitSoul: ItemDatabaseSoul): Output {
         return withContext(dispatchers.Main) {
             pickUpExpUseCase.invoke(player, bukkitSoul)
 
             val isAllItemsPickedUp = pickUpItemsUseCase.invoke(
                 player = player,
-                bukkitSoul = bukkitSoul
+                soul = bukkitSoul
             ) !is PickUpItemsUseCase.Output.SomeItemsRemain
 
             if (!isAllItemsPickedUp) {
-                bukkitSoul.location.playSoundForPlayer(player, soulContentLeftSoundProvider.invoke())
-                bukkitSoul.location.spawnParticleForPlayer(player, soulContentLeftParticleProvider.invoke())
+                bukkitSoul.location.toBukkitLocation().playSoundForPlayer(player, soulContentLeftSoundProvider.invoke())
+                bukkitSoul.location.toBukkitLocation()
+                    .spawnParticleForPlayer(player, soulContentLeftParticleProvider.invoke())
                 info { "not all items picked up: $bukkitSoul" }
                 return@withContext Output.SomethingRest
             }
-            soulsDao.deleteSoul(bukkitSoul)
-            bukkitSoul.location.playSoundForPlayer(player, soulDisappearSoundProvider.invoke())
-            bukkitSoul.location.spawnParticleForPlayer(player, soulGoneParticleProvider.invoke())
+            soulsDao.deleteSoul(bukkitSoul.id)
+            bukkitSoul.location.toBukkitLocation().playSoundForPlayer(player, soulDisappearSoundProvider.invoke())
+            bukkitSoul.location.toBukkitLocation().spawnParticleForPlayer(player, soulGoneParticleProvider.invoke())
             return@withContext Output.AllPickedUp
         }
     }

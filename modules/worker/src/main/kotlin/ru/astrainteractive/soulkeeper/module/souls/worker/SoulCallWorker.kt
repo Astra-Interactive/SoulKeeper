@@ -29,14 +29,15 @@ import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
+import ru.astrainteractive.soulkeeper.core.util.ThrottleExecutor
 import ru.astrainteractive.soulkeeper.core.util.combineInstantly
+import ru.astrainteractive.soulkeeper.core.util.toDatabaseLocation
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.domain.TickFlow
 import ru.astrainteractive.soulkeeper.module.souls.renderer.ArmorStandRenderer
 import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulParticleRenderer
 import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulSoundRenderer
-import ru.astrainteractive.soulkeeper.module.souls.util.ThrottleExecutor
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
@@ -83,7 +84,7 @@ internal class SoulCallWorker(
             flow2 = soulsDao.getSoulsChangeFlow(),
             transform = { event, _ -> event }
         ).filterNotNull().map { event ->
-            soulsDao.getSoulsNear(event.player.location, config.soulCallRadius)
+            soulsDao.getSoulsNear(event.player.location.toDatabaseLocation(), config.soulCallRadius)
                 .getOrNull()
                 .orEmpty()
                 .filter { soul -> soul.ownerUUID == player.uniqueId || soul.isFree }
@@ -105,7 +106,7 @@ internal class SoulCallWorker(
                     async { soundThrottleExecutor.execute { soulSoundRenderer.renderOnce(player, souls) } },
                     async { soulArmorStandRenderer.renderOnce(player, souls) }
                 ).awaitAll()
-            }.launchIn(this)
+            }.collect()
         }
     }
 

@@ -14,8 +14,7 @@ internal object SoulTable : LongIdTable(name = "SOUL") {
     val created_at = registerColumn("created_at_millis", KJavaInstantColumnType()).nullable()
 
     val isFree = bool("is_free")
-    val hasXp = bool("has_xp")
-    val hasItems = bool("has_items")
+    val exp = integer("exp")
 
     val locationWorld = text("location_world")
     val locationX = double("location_x")

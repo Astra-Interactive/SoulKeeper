@@ -33,7 +33,7 @@ internal class PickUpWorker(
             .filter { !it.isDead }
             .forEach { player ->
                 val databaseSoul = getNearestSoulUseCase.invoke(player) ?: return@forEach
-                val itemStackSoul = soulsDao.toItemStackSoul(databaseSoul).getOrNull() ?: return@forEach
+                val itemStackSoul = soulsDao.toItemDatabaseSoul(databaseSoul).getOrNull() ?: return@forEach
                 when (pickUpSoulUseCase.invoke(player, itemStackSoul)) {
                     PickUpSoulUseCase.Output.AllPickedUp -> Unit
 
