@@ -1,5 +1,5 @@
 services:
-  # For command call use `docker exec mc_docker_aspekt rcon-cli <your_command>`
+  # For command call use `docker exec mc_docker_soulkeeper rcon-cli <your_command>`
   mc_docker_soulkeeper:
     restart: no
     container_name: mc_docker_soulkeeper
@@ -10,7 +10,7 @@ services:
       - "25565:25565"
     environment:
       EULA: true
-      ONLINE_MODE: FALSE
+      ONLINE_MODE: false
       # Forge --------------------
 #      TYPE: FORGE
 #      VERSION: "1.20.1"
