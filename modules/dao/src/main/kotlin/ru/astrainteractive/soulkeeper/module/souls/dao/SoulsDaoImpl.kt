@@ -132,8 +132,8 @@ internal class SoulsDaoImpl(
     override suspend fun deleteSoul(id: Long): Result<Unit> = runCatching {
         mutex.withLock {
             transaction(databaseFlow.first()) {
-                SoulTable.deleteWhere { SoulTable.id.eq(id) }
                 SoulItemsTable.deleteWhere { SoulItemsTable.soulId.eq(id) }
+                SoulTable.deleteWhere { SoulTable.id.eq(id) }
             }
         }
         Unit
