@@ -1,16 +1,16 @@
 package ru.astrainteractive.soulkeeper.module.event.event
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.bukkit.World
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
-import ru.astrainteractive.astralibs.async.CoroutineFeature
+import ru.astrainteractive.astralibs.async.withTimings
 import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
+import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.serialization.ItemStackSerializer
 import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
@@ -27,7 +27,7 @@ internal class SoulEvents(
     private val soulsDao: SoulsDao,
     soulsConfigKrate: CachedKrate<SoulsConfig>
 ) : EventListener {
-    private val scope = CoroutineFeature.Default(Dispatchers.IO)
+    private val scope = CoroutineFeature.IO.withTimings()
     private val soulsConfig by soulsConfigKrate
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)

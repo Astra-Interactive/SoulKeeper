@@ -3,7 +3,8 @@ package ru.astrainteractive.soulkeeper.core.plugin
 import com.charleskorn.kaml.YamlComment
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import ru.astrainteractive.astralibs.exposed.model.DatabaseConfiguration
+import ru.astrainteractive.klibs.mikro.exposed.model.DatabaseConfiguration
+import java.io.File
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 
@@ -11,7 +12,7 @@ import kotlin.time.Duration.Companion.days
 data class SoulsConfig(
     @YamlComment("Type of database for souls information")
     @SerialName("database")
-    val database: DatabaseConfiguration = DatabaseConfiguration.H2("souls"),
+    val database: DatabaseConfiguration = DatabaseConfiguration.H2(File("database").absolutePath),
     @YamlComment(
         "[DEFAULT] - 2 days",
         "Soul will be public after this time"

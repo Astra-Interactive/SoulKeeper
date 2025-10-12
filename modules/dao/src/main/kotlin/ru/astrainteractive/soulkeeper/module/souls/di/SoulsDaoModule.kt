@@ -14,9 +14,9 @@ import org.jetbrains.exposed.sql.Slf4jSqlDebugLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
-import ru.astrainteractive.astralibs.exposed.model.DatabaseConfiguration
-import ru.astrainteractive.astralibs.exposed.model.connect
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
+import ru.astrainteractive.klibs.mikro.exposed.model.DatabaseConfiguration
+import ru.astrainteractive.klibs.mikro.exposed.util.connect
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDaoImpl
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulItemsTable
@@ -36,7 +36,9 @@ interface SoulsDaoModule {
     ) : SoulsDaoModule {
         override val databaseFlow: Flow<Database> = flow {
             if (!dataFolder.exists()) dataFolder.mkdirs()
-            val database = DatabaseConfiguration.H2("souls_v2").connect(dataFolder)
+            val database = dataFolder.resolve("souls_v2").absolutePath
+                .let(DatabaseConfiguration::H2)
+                .connect()
             TransactionManager.manager.defaultIsolationLevel = java.sql.Connection.TRANSACTION_SERIALIZABLE
             transaction(database) {
                 addLogger(Slf4jSqlDebugLogger)

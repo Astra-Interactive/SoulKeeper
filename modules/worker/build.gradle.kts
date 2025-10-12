@@ -5,13 +5,15 @@ plugins {
 
 dependencies {
     // Kotlin
-    implementation(libs.bundles.kotlin)
-    implementation(libs.bundles.exposed)
+    implementation(libs.kotlin.serialization.json)
+    implementation(libs.exposed.core)
+    implementation(libs.exposed.dao)
+    implementation(libs.exposed.jdbc)
     // Bukkit
     compileOnly(libs.minecraft.paper.api)
     // AstraLibs
     implementation(libs.minecraft.astralibs.core)
-    implementation(libs.minecraft.astralibs.exposed)
+    implementation(libs.klibs.mikro.extensions)
     implementation(libs.minecraft.astralibs.command)
     implementation(libs.minecraft.astralibs.command.bukkit)
     implementation(libs.minecraft.astralibs.menu.bukkit)
@@ -21,7 +23,6 @@ dependencies {
     implementation(libs.klibs.mikro.core)
     compileOnly(libs.minecraft.packetevents)
     // Test
-    testImplementation(libs.bundles.testing.kotlin)
     testImplementation(libs.tests.kotlin.test)
     // Local
     implementation(projects.modules.core)

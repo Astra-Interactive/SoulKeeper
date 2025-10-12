@@ -2,20 +2,20 @@ package ru.astrainteractive.soulkeeper.core.di
 
 import com.charleskorn.kaml.PolymorphismStyle
 import com.charleskorn.kaml.Yaml
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.json.Json
-import ru.astrainteractive.astralibs.async.CoroutineFeature
+import ru.astrainteractive.astralibs.async.withTimings
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
-import ru.astrainteractive.astralibs.logging.JUtiltLogger
-import ru.astrainteractive.astralibs.logging.Logger
-import ru.astrainteractive.astralibs.serialization.StringFormatExt.parseOrWriteIntoDefault
-import ru.astrainteractive.astralibs.serialization.YamlStringFormat
+import ru.astrainteractive.astralibs.util.YamlStringFormat
+import ru.astrainteractive.astralibs.util.parseOrWriteIntoDefault
 import ru.astrainteractive.klibs.kstorage.api.impl.DefaultMutableKrate
 import ru.astrainteractive.klibs.kstorage.util.asCachedKrate
+import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
+import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
+import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import java.io.File
@@ -23,9 +23,9 @@ import java.io.File
 class CoreModule(
     val dispatchers: KotlinDispatchers,
     val dataFolder: File
-) : Logger by JUtiltLogger("CoreModule") {
+) : Logger by JUtiltLogger("CoreModule").withoutParentHandlers() {
 
-    val scope = CoroutineFeature.Default(Dispatchers.IO)
+    val scope = CoroutineFeature.IO.withTimings()
 
     val yamlFormat: StringFormat = YamlStringFormat(
         configuration = Yaml.default.configuration.copy(

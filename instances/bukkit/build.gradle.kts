@@ -4,14 +4,12 @@ import ru.astrainteractive.gradleplugin.property.extension.ModelPropertyValueExt
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
-    id("io.github.goooler.shadow")
-    alias(libs.plugins.klibs.minecraft.shadow)
     alias(libs.plugins.klibs.minecraft.resource.processor)
+    alias(libs.plugins.gradle.shadow)
 }
 
 dependencies {
-    // Kotlin
-    implementation(libs.bundles.kotlin)
+    implementation(libs.kotlin.coroutines.core)
     // Spigot dependencies
     compileOnly(libs.minecraft.paper.api)
     implementation(libs.minecraft.bstats)
@@ -36,11 +34,6 @@ dependencies {
     implementation(projects.modules.dao)
     implementation(projects.modules.worker)
 }
-val destination = rootDir.resolve("build")
-    .resolve("bukkit")
-    .resolve("plugins")
-    .takeIf(File::exists)
-    ?: File(rootDir, "jars")
 
 minecraftProcessResource {
     bukkit()
@@ -48,7 +41,6 @@ minecraftProcessResource {
 
 val shadowJar = tasks.named<ShadowJar>("shadowJar")
 shadowJar.configure {
-    if (!destination.exists()) destination.mkdirs()
 
     val projectInfo = requireProjectInfo
     isReproducibleFileOrder = true
@@ -64,5 +56,9 @@ shadowJar.configure {
     }
     archiveVersion.set(projectInfo.versionString)
     archiveBaseName.set("${projectInfo.name}-bukkit")
-    destination.also(destinationDirectory::set)
+    destinationDirectory = rootDir.resolve("build")
+        .resolve("bukkit")
+        .resolve("plugins")
+        .takeIf(File::exists)
+        ?: File(rootDir, "jars").also(File::mkdirs)
 }
