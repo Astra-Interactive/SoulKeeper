@@ -47,12 +47,10 @@ shadowJar.configure {
     mergeServiceFiles()
     dependsOn(configurations)
     archiveClassifier.set(null as String?)
-    relocate("org.bstats", projectInfo.group)
 
     minimize {
         exclude(dependency(libs.exposed.jdbc.get()))
         exclude(dependency(libs.exposed.dao.get()))
-        exclude(dependency("org.jetbrains.kotlin:kotlin-stdlib:${libs.versions.kotlin.version.get()}"))
     }
     archiveVersion.set(projectInfo.versionString)
     archiveBaseName.set("${projectInfo.name}-bukkit")
@@ -61,4 +59,28 @@ shadowJar.configure {
         .resolve("plugins")
         .takeIf(File::exists)
         ?: File(rootDir, "jars").also(File::mkdirs)
+
+    relocate("org.bstats", projectInfo.group)
+    listOf(
+        "ch.qos.logback",
+        "com.charleskorn.kaml",
+        "com.ibm.icu",
+        "it.krzeminski.snakeyaml",
+        "net.thauvin.erik",
+        "okio",
+        "org.apache",
+        "org.intellij",
+        "org.slf4j",
+        "org.jetbrains.annotations",
+        "ru.astrainteractive.klibs",
+        "ru.astrainteractive.astralibs"
+    ).forEach { pattern -> relocate(pattern, "${projectInfo.group}.$pattern") }
+    listOf(
+        "org.jetbrains.exposed",
+        "kotlinx",
+    ).forEach { pattern ->
+        relocate(pattern, "${projectInfo.group}.$pattern") {
+            exclude("kotlin/kotlin.kotlin_builtins")
+        }
+    }
 }
