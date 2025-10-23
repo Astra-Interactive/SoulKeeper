@@ -17,10 +17,10 @@ import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
-import ru.astrainteractive.astralibs.logging.JUtiltLogger
-import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.astralibs.server.location.Location
 import ru.astrainteractive.astralibs.server.location.dist
+import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
+import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul

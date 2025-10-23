@@ -1,18 +1,18 @@
 package ru.astrainteractive.soulkeeper.core.job
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelChildren
-import ru.astrainteractive.astralibs.async.CoroutineFeature
+import ru.astrainteractive.astralibs.async.withTimings
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
+import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
 import java.util.Timer
 import kotlin.time.Duration
 
 abstract class LifecycleCoroutineWorker(val key: String) : Lifecycle {
     private var scheduler: Timer? = null
 
-    protected open val scope: CoroutineScope = CoroutineFeature.Default(Dispatchers.IO)
+    protected open val scope: CoroutineScope = CoroutineFeature.IO.withTimings()
 
     data class Config(
         val delay: Duration,

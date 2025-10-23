@@ -1,7 +1,6 @@
 package ru.astrainteractive.soulkeeper.module.souls.worker
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -23,18 +22,19 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.plugin.Plugin
-import ru.astrainteractive.astralibs.async.CoroutineFeature
+import ru.astrainteractive.astralibs.async.withTimings
 import ru.astrainteractive.astralibs.event.flowEvent
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
-import ru.astrainteractive.astralibs.logging.JUtiltLogger
-import ru.astrainteractive.astralibs.logging.Logger
+import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
+import ru.astrainteractive.klibs.mikro.core.coroutines.TickFlow
+import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
+import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.util.ThrottleExecutor
 import ru.astrainteractive.soulkeeper.core.util.combineInstantly
 import ru.astrainteractive.soulkeeper.core.util.toDatabaseLocation
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
-import ru.astrainteractive.soulkeeper.module.souls.domain.TickFlow
 import ru.astrainteractive.soulkeeper.module.souls.renderer.ArmorStandRenderer
 import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulParticleRenderer
 import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulSoundRenderer
@@ -52,7 +52,7 @@ internal class SoulCallWorker(
     private val soulSoundRenderer: SoulSoundRenderer,
     private val soulArmorStandRenderer: ArmorStandRenderer
 ) : Logger by JUtiltLogger("AspeKt-SoulCallWorker"), Lifecycle {
-    private val scope = CoroutineFeature.Default(Dispatchers.IO)
+    private val scope = CoroutineFeature.IO.withTimings()
 
     private val playerRendererJobMap = mutableMapOf<UUID, Job>()
 

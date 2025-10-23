@@ -4,8 +4,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.bukkit.Bukkit
-import ru.astrainteractive.astralibs.logging.JUtiltLogger
-import ru.astrainteractive.astralibs.logging.Logger
+import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
+import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.job.LifecycleCoroutineWorker
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.domain.GetNearestSoulUseCase

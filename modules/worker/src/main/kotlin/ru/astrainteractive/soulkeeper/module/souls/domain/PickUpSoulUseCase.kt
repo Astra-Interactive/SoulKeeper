@@ -2,9 +2,9 @@ package ru.astrainteractive.soulkeeper.module.souls.domain
 
 import kotlinx.coroutines.withContext
 import org.bukkit.entity.Player
-import ru.astrainteractive.astralibs.logging.JUtiltLogger
-import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
+import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
+import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
 import ru.astrainteractive.soulkeeper.core.util.spawnParticleForPlayer
