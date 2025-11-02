@@ -8,8 +8,8 @@ import ru.astrainteractive.soulkeeper.command.di.CommandModule
 import ru.astrainteractive.soulkeeper.core.di.BukkitCoreModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.module.event.di.BukkitEventModule
+import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
-import ru.astrainteractive.soulkeeper.module.souls.di.WorkerModule
 
 internal interface RootModule {
     val lifecycle: Lifecycle
@@ -26,7 +26,7 @@ internal interface RootModule {
             scope = coreModule.ioScope
         )
 
-        private val workerModule = WorkerModule(
+        private val serviceModule = ServiceModule(
             coreModule = coreModule,
             soulsDaoModule = soulsDaoModule,
             bukkitCoreModule = bukkitCoreModule
@@ -50,7 +50,7 @@ internal interface RootModule {
                 bukkitCoreModule.lifecycle,
                 soulsDaoModule.lifecycle,
                 bukkitEventModule.lifecycle,
-                workerModule.lifecycle,
+                serviceModule.lifecycle,
                 commandModule.lifecycle
             )
 

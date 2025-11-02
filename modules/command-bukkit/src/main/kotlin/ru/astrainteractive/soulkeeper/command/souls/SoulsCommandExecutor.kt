@@ -117,12 +117,7 @@ internal class SoulsCommandExecutor(
             translation.souls.freeSoul
                 .component
                 .appendSpace()
-                .clickable { audience ->
-                    val executor = audience
-                        .tryCast<Player>()
-                        ?: return@clickable
-                    executor.performCommand("/souls free ${soul.id}")
-                }
+                .clickable { execute(SoulsCommand.Intent.Free(sender, soul.id)) }
         }
     }
 
@@ -139,12 +134,7 @@ internal class SoulsCommandExecutor(
         if (!sender.canTeleportToSoul()) return null
         return translation.souls.teleportToSoul
             .component
-            .clickable { audience ->
-                val executor = audience
-                    .tryCast<Player>()
-                    ?: return@clickable
-                executor.performCommand("/souls teleport ${soul.id}")
-            }
+            .clickable { execute(SoulsCommand.Intent.TeleportToSoul(sender, soul.id)) }
     }
 
     fun Component.append(
@@ -209,7 +199,10 @@ internal class SoulsCommandExecutor(
                     val newSoul = soulsDao.getSoul(input.soulId)
                         .getOrNull()
                         ?.copy(isFree = true)
-                        ?: return@launch
+                    if (newSoul == null) {
+                        input.sender.sendMessage(translation.souls.soulNotFound.component)
+                        return@launch
+                    }
                     soulsDao.updateSoul(newSoul)
                         .onSuccess {
                             input.sender.sendMessage(translation.souls.soulFreed.component)
@@ -227,7 +220,10 @@ internal class SoulsCommandExecutor(
                         .getOrNull()
                         ?.location
                         ?.toBukkitLocation()
-                        ?: return@launch
+                    if (location == null) {
+                        input.sender.sendMessage(translation.souls.soulNotFound.component)
+                        return@launch
+                    }
                     player.teleportAsync(location)
                 }
             }
