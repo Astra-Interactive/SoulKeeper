@@ -11,6 +11,7 @@ interface SoulsDao {
     fun getSoulsChangeFlow(): Flow<Unit>
 
     suspend fun getSouls(): Result<List<DatabaseSoul>>
+    suspend fun getSoul(id: Long): Result<DatabaseSoul>
 
     suspend fun getPlayerSouls(uuid: UUID): Result<List<DatabaseSoul>>
 

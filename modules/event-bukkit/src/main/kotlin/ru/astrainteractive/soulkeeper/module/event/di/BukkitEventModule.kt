@@ -2,14 +2,14 @@ package ru.astrainteractive.soulkeeper.module.event.di
 
 import org.bukkit.event.HandlerList
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
-import ru.astrainteractive.soulkeeper.core.di.CoreBukkitModule
+import ru.astrainteractive.soulkeeper.core.di.BukkitCoreModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.module.event.event.SoulEvents
 import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
 
 class BukkitEventModule(
     coreModule: CoreModule,
-    bukkitCoreModule: CoreBukkitModule,
+    bukkitCoreModule: BukkitCoreModule,
     soulsDaoModule: SoulsDaoModule
 ) {
     private val event = SoulEvents(

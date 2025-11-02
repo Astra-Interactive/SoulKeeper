@@ -73,6 +73,20 @@ internal class SoulsDaoImpl(
         }
     }.logFailure("getSouls")
 
+    override suspend fun getSoul(id: Long): Result<DatabaseSoul> = runCatching {
+        mutex.withLock {
+            transaction(databaseFlow.first()) {
+                SoulTable
+                    .selectAll()
+                    .limit(1)
+                    .orderBy(SoulTable.broken_created_at to SortOrder.DESC)
+                    .orderBy(SoulTable.created_at to SortOrder.DESC)
+                    .map(::toDatabaseSoul)
+                    .first()
+            }
+        }
+    }.logFailure("getSouls")
+
     override suspend fun getPlayerSouls(uuid: UUID): Result<List<DatabaseSoul>> = runCatching {
         mutex.withLock {
             transaction(databaseFlow.first()) {

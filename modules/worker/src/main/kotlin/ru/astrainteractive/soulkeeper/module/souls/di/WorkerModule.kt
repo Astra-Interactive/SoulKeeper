@@ -1,7 +1,7 @@
 package ru.astrainteractive.soulkeeper.module.souls.di
 
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
-import ru.astrainteractive.soulkeeper.core.di.CoreBukkitModule
+import ru.astrainteractive.soulkeeper.core.di.BukkitCoreModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.module.souls.domain.GetNearestSoulUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpExpUseCase
@@ -18,7 +18,7 @@ import ru.astrainteractive.soulkeeper.module.souls.worker.SoulCallWorker
 
 class WorkerModule(
     coreModule: CoreModule,
-    coreBukkitModule: CoreBukkitModule,
+    bukkitCoreModule: BukkitCoreModule,
     soulsDaoModule: SoulsDaoModule
 ) {
 
@@ -49,7 +49,7 @@ class WorkerModule(
 
     private val soulCallWorker = SoulCallWorker(
         soulsDao = soulsDaoModule.soulsDao,
-        plugin = coreBukkitModule.plugin,
+        plugin = bukkitCoreModule.plugin,
         config = coreModule.soulsConfigKrate.cachedValue,
         soulParticleRenderer = soulParticleRenderer,
         soulSoundRenderer = soulSoundRenderer,
