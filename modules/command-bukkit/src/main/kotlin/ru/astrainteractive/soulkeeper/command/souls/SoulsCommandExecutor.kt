@@ -24,7 +24,6 @@ import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.Soul
 import kotlin.collections.filter
-import kotlin.compareTo
 
 internal class SoulsCommandExecutor(
     private val ioScope: CoroutineScope,
@@ -161,6 +160,7 @@ internal class SoulsCommandExecutor(
         }
     }
 
+    @Suppress("LongMethod")
     fun execute(input: SoulsCommand.Intent) {
         when (input) {
             is SoulsCommand.Intent.List -> {
