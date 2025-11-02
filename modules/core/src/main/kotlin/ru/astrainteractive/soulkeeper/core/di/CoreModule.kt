@@ -25,7 +25,10 @@ class CoreModule(
     val dataFolder: File
 ) : Logger by JUtiltLogger("CoreModule").withoutParentHandlers() {
 
-    val scope = CoroutineFeature.IO.withTimings()
+    val ioScope = CoroutineFeature.IO.withTimings()
+    val mainScope = CoroutineFeature
+        .Default(dispatchers.Main)
+        .withTimings()
 
     val yamlFormat: StringFormat = YamlStringFormat(
         configuration = Yaml.default.configuration.copy(
@@ -73,7 +76,7 @@ class CoreModule(
             translation.getValue()
         },
         onDisable = {
-            scope.cancel()
+            ioScope.cancel()
         }
     )
 }

@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.module.souls.worker
+package ru.astrainteractive.soulkeeper.module.souls.service
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

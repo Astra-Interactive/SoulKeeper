@@ -32,7 +32,8 @@ dependencies {
     implementation(projects.modules.coreBukkit)
     implementation(projects.modules.eventBukkit)
     implementation(projects.modules.dao)
-    implementation(projects.modules.worker)
+    implementation(projects.modules.service)
+    implementation(projects.modules.commandBukkit)
 }
 
 minecraftProcessResource {

@@ -55,6 +55,10 @@ class PluginTranslation(
         val couldNotFreeSoul: StringDesc.Raw = prefix
             .plus("&#db2c18Не удалось освободить душу!")
             .toRaw(),
+        @SerialName("soul_not_found")
+        val soulNotFound: StringDesc.Raw = prefix
+            .plus("&#db2c18Душа не найдена!")
+            .toRaw(),
         @SerialName("next_page")
         val nextPage: StringDesc.Raw = StringDesc.Raw("&#42f596[>>ДАЛЬШЕ>>]"),
         @SerialName("prev_page")

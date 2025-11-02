@@ -4,15 +4,14 @@ import org.bukkit.event.HandlerList
 import ru.astrainteractive.astralibs.async.DefaultBukkitDispatchers
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
-import ru.astrainteractive.soulkeeper.command.SoulsCommandRegistry
-import ru.astrainteractive.soulkeeper.command.SoulsReloadCommandRegistry
-import ru.astrainteractive.soulkeeper.core.di.CoreBukkitModule
+import ru.astrainteractive.soulkeeper.command.di.CommandModule
+import ru.astrainteractive.soulkeeper.core.di.BukkitCoreModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.module.event.di.BukkitEventModule
+import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
-import ru.astrainteractive.soulkeeper.module.souls.di.WorkerModule
 
-interface RootModule {
+internal interface RootModule {
     val lifecycle: Lifecycle
 
     class RootModuleImpl(plugin: LifecyclePlugin) : RootModule {
@@ -20,56 +19,47 @@ interface RootModule {
             dispatchers = DefaultBukkitDispatchers(plugin),
             dataFolder = plugin.dataFolder
         )
-        private val coreBukkitModule = CoreBukkitModule(plugin)
+        private val bukkitCoreModule = BukkitCoreModule(plugin)
 
         private val soulsDaoModule = SoulsDaoModule.Default(
             dataFolder = coreModule.dataFolder,
-            scope = coreModule.scope
+            scope = coreModule.ioScope
         )
 
-        private val workerModule = WorkerModule(
+        private val serviceModule = ServiceModule(
             coreModule = coreModule,
             soulsDaoModule = soulsDaoModule,
-            coreBukkitModule = coreBukkitModule
+            bukkitCoreModule = bukkitCoreModule
         )
 
         private val bukkitEventModule = BukkitEventModule(
             coreModule = coreModule,
-            bukkitCoreModule = coreBukkitModule,
+            bukkitCoreModule = bukkitCoreModule,
             soulsDaoModule = soulsDaoModule
         )
 
-        private val soulsCommandRegistry = SoulsCommandRegistry(
-            plugin = coreBukkitModule.plugin,
-            scope = coreModule.scope,
-            soulsDao = soulsDaoModule.soulsDao,
-            kyoriKrate = coreModule.kyoriComponentSerializer,
-            translationKrate = coreModule.translation,
-        )
-
-        private val soulsReloadCommandRegistry = SoulsReloadCommandRegistry(
-            plugin = coreBukkitModule.plugin,
-            kyoriKrate = coreModule.kyoriComponentSerializer,
-            translationKrate = coreModule.translation
+        private val commandModule = CommandModule(
+            coreModule = coreModule,
+            bukkitCoreModule = bukkitCoreModule,
+            soulsDaoModule = soulsDaoModule
         )
 
         private val lifecycles: List<Lifecycle>
             get() = listOfNotNull(
                 coreModule.lifecycle,
-                coreBukkitModule.lifecycle,
+                bukkitCoreModule.lifecycle,
                 soulsDaoModule.lifecycle,
                 bukkitEventModule.lifecycle,
-                workerModule.lifecycle,
+                serviceModule.lifecycle,
+                commandModule.lifecycle
             )
 
         override val lifecycle = Lifecycle.Lambda(
             onEnable = {
-                soulsCommandRegistry.register()
-                soulsReloadCommandRegistry.register()
                 lifecycles.forEach(Lifecycle::onEnable)
             },
             onDisable = {
-                HandlerList.unregisterAll(coreBukkitModule.plugin)
+                HandlerList.unregisterAll(bukkitCoreModule.plugin)
                 lifecycles.forEach(Lifecycle::onDisable)
             },
             onReload = {
