@@ -29,6 +29,11 @@ dependencies {
     shadow(libs.kyori.plain)
     shadow(libs.kyori.legacy)
     shadow(libs.kyori.gson)
+    // Local
+    shadow(projects.modules.core)
+    shadow(projects.modules.dao)
+    shadow(projects.modules.service)
+    shadow(projects.modules.serviceForge)
 }
 
 minecraft {

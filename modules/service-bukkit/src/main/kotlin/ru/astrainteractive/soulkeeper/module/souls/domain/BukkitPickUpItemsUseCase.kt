@@ -13,7 +13,7 @@ import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSo
 import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase.Output
 
-internal class PickUpItemsUseCaseBukkit(
+internal class BukkitPickUpItemsUseCase(
     private val collectItemSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
     private val soulsDao: SoulsDao,
 ) : PickUpItemsUseCase,

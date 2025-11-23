@@ -33,6 +33,7 @@ dependencies {
     implementation(projects.modules.eventBukkit)
     implementation(projects.modules.dao)
     implementation(projects.modules.service)
+    implementation(projects.modules.serviceBukkit)
     implementation(projects.modules.commandBukkit)
 }
 

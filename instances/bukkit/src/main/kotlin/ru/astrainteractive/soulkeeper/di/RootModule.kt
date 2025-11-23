@@ -8,63 +8,66 @@ import ru.astrainteractive.soulkeeper.command.di.CommandModule
 import ru.astrainteractive.soulkeeper.core.di.BukkitCoreModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.module.event.di.BukkitEventModule
+import ru.astrainteractive.soulkeeper.module.souls.di.BukkitPlatformServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
 
-internal interface RootModule {
-    val lifecycle: Lifecycle
 
-    class RootModuleImpl(plugin: LifecyclePlugin) : RootModule {
-        private val coreModule: CoreModule = CoreModule(
-            dispatchers = DefaultBukkitDispatchers(plugin),
-            dataFolder = plugin.dataFolder
+class RootModule(plugin: LifecyclePlugin)  {
+    private val coreModule: CoreModule = CoreModule(
+        dispatchers = DefaultBukkitDispatchers(plugin),
+        dataFolder = plugin.dataFolder
+    )
+    private val bukkitCoreModule = BukkitCoreModule(plugin)
+
+    private val soulsDaoModule = SoulsDaoModule.Default(
+        dataFolder = coreModule.dataFolder,
+        scope = coreModule.ioScope
+    )
+
+    private val bukkitPlatformServiceModule = BukkitPlatformServiceModule(
+        coreModule = coreModule,
+        bukkitCoreModule = bukkitCoreModule,
+        soulsDaoModule = soulsDaoModule
+    )
+    private val serviceModule = ServiceModule(
+        coreModule = coreModule,
+        soulsDaoModule = soulsDaoModule,
+        platformServiceModule = bukkitPlatformServiceModule
+    )
+
+    private val bukkitEventModule = BukkitEventModule(
+        coreModule = coreModule,
+        bukkitCoreModule = bukkitCoreModule,
+        soulsDaoModule = soulsDaoModule
+    )
+
+    private val commandModule = CommandModule(
+        coreModule = coreModule,
+        bukkitCoreModule = bukkitCoreModule,
+        soulsDaoModule = soulsDaoModule
+    )
+
+    private val lifecycles: List<Lifecycle>
+        get() = listOfNotNull(
+            coreModule.lifecycle,
+            bukkitCoreModule.lifecycle,
+            soulsDaoModule.lifecycle,
+            bukkitEventModule.lifecycle,
+            serviceModule.lifecycle,
+            commandModule.lifecycle
         )
-        private val bukkitCoreModule = BukkitCoreModule(plugin)
 
-        private val soulsDaoModule = SoulsDaoModule.Default(
-            dataFolder = coreModule.dataFolder,
-            scope = coreModule.ioScope
-        )
-
-        private val serviceModule = ServiceModule(
-            coreModule = coreModule,
-            soulsDaoModule = soulsDaoModule,
-            bukkitCoreModule = bukkitCoreModule
-        )
-
-        private val bukkitEventModule = BukkitEventModule(
-            coreModule = coreModule,
-            bukkitCoreModule = bukkitCoreModule,
-            soulsDaoModule = soulsDaoModule
-        )
-
-        private val commandModule = CommandModule(
-            coreModule = coreModule,
-            bukkitCoreModule = bukkitCoreModule,
-            soulsDaoModule = soulsDaoModule
-        )
-
-        private val lifecycles: List<Lifecycle>
-            get() = listOfNotNull(
-                coreModule.lifecycle,
-                bukkitCoreModule.lifecycle,
-                soulsDaoModule.lifecycle,
-                bukkitEventModule.lifecycle,
-                serviceModule.lifecycle,
-                commandModule.lifecycle
-            )
-
-        override val lifecycle = Lifecycle.Lambda(
-            onEnable = {
-                lifecycles.forEach(Lifecycle::onEnable)
-            },
-            onDisable = {
-                HandlerList.unregisterAll(bukkitCoreModule.plugin)
-                lifecycles.forEach(Lifecycle::onDisable)
-            },
-            onReload = {
-                lifecycles.forEach(Lifecycle::onReload)
-            }
-        )
-    }
+    val lifecycle = Lifecycle.Lambda(
+        onEnable = {
+            lifecycles.forEach(Lifecycle::onEnable)
+        },
+        onDisable = {
+            HandlerList.unregisterAll(bukkitCoreModule.plugin)
+            lifecycles.forEach(Lifecycle::onDisable)
+        },
+        onReload = {
+            lifecycles.forEach(Lifecycle::onReload)
+        }
+    )
 }

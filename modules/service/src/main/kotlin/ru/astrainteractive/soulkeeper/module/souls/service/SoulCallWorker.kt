@@ -43,6 +43,7 @@ import kotlin.time.Duration.Companion.seconds
 /**
  * This worker is required to display soul particles near players
  */
+@Suppress("LongParameterList")
 internal class SoulCallWorker(
     private val soulsDao: SoulsDao,
     private val config: SoulsConfig,

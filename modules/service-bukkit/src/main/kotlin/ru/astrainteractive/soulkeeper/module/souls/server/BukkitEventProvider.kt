@@ -15,7 +15,7 @@ import ru.astrainteractive.soulkeeper.module.souls.server.event.model.SharedPlay
 import ru.astrainteractive.soulkeeper.module.souls.server.event.model.SharedPlayerLeaveEvent
 import ru.astrainteractive.soulkeeper.module.souls.server.event.model.SharedPlayerMoveEvent
 
-class EventProviderBukkit(
+internal class BukkitEventProvider(
     private val plugin: JavaPlugin
 ) : EventProvider {
     override fun getPlayerMoveEvent(): Flow<SharedPlayerMoveEvent> {

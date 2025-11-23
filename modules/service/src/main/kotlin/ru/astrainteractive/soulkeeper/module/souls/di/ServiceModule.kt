@@ -2,21 +2,13 @@ package ru.astrainteractive.soulkeeper.module.souls.di
 
 import kotlinx.coroutines.flow.flowOf
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
-import ru.astrainteractive.astralibs.server.MinecraftNativeBridge
-import ru.astrainteractive.astralibs.server.PlatformServer
 import ru.astrainteractive.astralibs.service.TickFlowService
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.module.souls.domain.GetNearestSoulUseCase
-import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpExpUseCase
-import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpSoulUseCase
-import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorStandUseCase
 import ru.astrainteractive.soulkeeper.module.souls.renderer.ArmorStandRenderer
 import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulParticleRenderer
 import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulSoundRenderer
-import ru.astrainteractive.soulkeeper.module.souls.server.EffectEmitter
-import ru.astrainteractive.soulkeeper.module.souls.server.IsDeadPlayerProvider
-import ru.astrainteractive.soulkeeper.module.souls.server.event.EventProvider
 import ru.astrainteractive.soulkeeper.module.souls.service.DeleteSoulWorker
 import ru.astrainteractive.soulkeeper.module.souls.service.FreeSoulWorker
 import ru.astrainteractive.soulkeeper.module.souls.service.PickUpWorker
@@ -26,31 +18,24 @@ import kotlin.time.Duration.Companion.seconds
 class ServiceModule(
     coreModule: CoreModule,
     soulsDaoModule: SoulsDaoModule,
-    showArmorStandUseCase: ShowArmorStandUseCase,
-    pickUpExpUseCase: PickUpExpUseCase,
-    pickUpItemsUseCase: PickUpItemsUseCase,
-    isDeadPlayerProvider: IsDeadPlayerProvider,
-    platformServer: PlatformServer,
-    effectEmitter: EffectEmitter,
-    minecraftNativeBridge: MinecraftNativeBridge,
-    eventProvider: EventProvider
+    platformServiceModule: PlatformServiceModule
 
 ) {
 
     private val armorStandRenderer = ArmorStandRenderer(
         soulsConfigKrate = coreModule.soulsConfigKrate,
-        showArmorStandUseCase = showArmorStandUseCase,
-        platformServer = platformServer
+        showArmorStandUseCase = platformServiceModule.showArmorStandUseCase,
+        platformServer = platformServiceModule.platformServer
     )
     private val soulParticleRenderer = SoulParticleRenderer(
         soulsConfigKrate = coreModule.soulsConfigKrate,
         dispatchers = coreModule.dispatchers,
-        effectEmitter = effectEmitter
+        effectEmitter = platformServiceModule.effectEmitter
     )
     private val soulSoundRenderer = SoulSoundRenderer(
         dispatchers = coreModule.dispatchers,
         soulsConfigKrate = coreModule.soulsConfigKrate,
-        effectEmitter = effectEmitter
+        effectEmitter = platformServiceModule.effectEmitter
     )
 
     private val deleteSoulService = TickFlowService(
@@ -77,8 +62,8 @@ class ServiceModule(
         soulParticleRenderer = soulParticleRenderer,
         soulSoundRenderer = soulSoundRenderer,
         soulArmorStandRenderer = armorStandRenderer,
-        eventProvider = eventProvider,
-        minecraftNativeBridge = minecraftNativeBridge
+        eventProvider = platformServiceModule.eventProvider,
+        minecraftNativeBridge = platformServiceModule.minecraftNativeBridge
     )
 
     private val pickUpSoulService = TickFlowService(
@@ -87,8 +72,8 @@ class ServiceModule(
         executor = PickUpWorker(
             pickUpSoulUseCase = PickUpSoulUseCase(
                 dispatchers = coreModule.dispatchers,
-                pickUpExpUseCase = pickUpExpUseCase,
-                pickUpItemsUseCase = pickUpItemsUseCase,
+                pickUpExpUseCase = platformServiceModule.pickUpExpUseCase,
+                pickUpItemsUseCase = platformServiceModule.pickUpItemsUseCase,
                 soulsDao = soulsDaoModule.soulsDao,
                 soulGoneParticleProvider = { coreModule.soulsConfigKrate.cachedValue.particles.soulGone },
                 soulDisappearSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.soulDisappear },
@@ -98,15 +83,15 @@ class ServiceModule(
                 soulContentLeftSoundProvider = {
                     coreModule.soulsConfigKrate.cachedValue.sounds.soulContentLeft
                 },
-                effectEmitter = effectEmitter
+                effectEmitter = platformServiceModule.effectEmitter
             ),
             getNearestSoulUseCase = GetNearestSoulUseCase(
                 soulsDao = soulsDaoModule.soulsDao,
-                minecraftNativeBridge = minecraftNativeBridge
+                minecraftNativeBridge = platformServiceModule.minecraftNativeBridge
             ),
             soulsDao = soulsDaoModule.soulsDao,
-            platformServer = platformServer,
-            isDeadPlayerProvider = isDeadPlayerProvider,
+            platformServer = platformServiceModule.platformServer,
+            isDeadPlayerProvider = platformServiceModule.isDeadPlayerProvider,
         )
     )
 

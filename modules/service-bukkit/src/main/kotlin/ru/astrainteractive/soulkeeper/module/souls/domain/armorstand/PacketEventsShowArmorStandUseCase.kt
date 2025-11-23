@@ -1,14 +1,27 @@
 package ru.astrainteractive.soulkeeper.module.souls.domain.armorstand
 
+import com.github.retrooper.packetevents.PacketEvents
+import com.github.retrooper.packetevents.protocol.entity.data.EntityData
+import com.github.retrooper.packetevents.protocol.entity.data.EntityDataTypes
+import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes
+import com.github.retrooper.packetevents.util.Vector3d
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDestroyEntities
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnEntity
+import io.github.retrooper.packetevents.util.SpigotReflectionUtil
+import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
+import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
+import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
 import ru.astrainteractive.soulkeeper.core.util.toBukkitLocation
 import ru.astrainteractive.soulkeeper.module.souls.database.model.Soul
 import java.util.Optional
 import java.util.UUID
 
-internal class ShowArmorStandUseCaseImpl(
+internal class PacketEventsShowArmorStandUseCase(
     kyoriKrate: CachedKrate<KyoriComponentSerializer>,
     translationKrate: CachedKrate<PluginTranslation>
 ) : ShowArmorStandUseCase {
@@ -19,12 +32,12 @@ internal class ShowArmorStandUseCaseImpl(
         return SpigotReflectionUtil.generateEntityId()
     }
 
-    override fun destroy(player: Player, ids: Collection<Int>) {
+    private fun destroy(player: Player, ids: Collection<Int>) {
         val packet = WrapperPlayServerDestroyEntities(*ids.toIntArray())
         PacketEvents.getAPI().playerManager.sendPacket(player, packet)
     }
 
-    override fun show(id: Int, player: Player, soul: Soul) {
+    private fun show(id: Int, player: Player, soul: Soul) {
         val bukkitLocation = soul.location.toBukkitLocation()
         val vector3d = bukkitLocation.toVector().toVector3d()
         val packet = WrapperPlayServerSpawnEntity(
@@ -72,5 +85,29 @@ internal class ShowArmorStandUseCaseImpl(
         )
         PacketEvents.getAPI().playerManager.sendPacket(player, packet)
         PacketEvents.getAPI().playerManager.sendPacket(player, metadata)
+    }
+
+    override fun destroy(
+        player: OnlineMinecraftPlayer,
+        ids: Collection<Int>
+    ) {
+        val bukkitPlayer = Bukkit.getPlayer(player.uuid) ?: return
+        destroy(
+            bukkitPlayer,
+            ids
+        )
+    }
+
+    override fun show(
+        id: Int,
+        player: OnlineMinecraftPlayer,
+        soul: Soul
+    ) {
+        val bukkitPlayer = Bukkit.getPlayer(player.uuid) ?: return
+        show(
+            id,
+            bukkitPlayer,
+            soul
+        )
     }
 }

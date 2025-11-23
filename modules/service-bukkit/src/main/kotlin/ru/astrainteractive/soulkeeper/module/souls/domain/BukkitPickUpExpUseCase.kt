@@ -11,7 +11,7 @@ import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpExpUseCase.Output
 
-internal class PickUpExpUseCaseBukkit(
+internal class BukkitPickUpExpUseCase(
     private val collectXpSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
     private val soulsDao: SoulsDao,
 ) : PickUpExpUseCase,
