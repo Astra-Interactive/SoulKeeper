@@ -1,8 +1,8 @@
 package ru.astrainteractive.soulkeeper.module.souls.renderer.api
 
-import org.bukkit.entity.Player
+import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 
 interface SoulEffectRenderer {
-    suspend fun renderOnce(player: Player, souls: List<DatabaseSoul>)
+    suspend fun renderOnce(player: OnlineMinecraftPlayer, souls: List<DatabaseSoul>)
 }

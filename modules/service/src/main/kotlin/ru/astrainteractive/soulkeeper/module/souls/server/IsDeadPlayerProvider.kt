@@ -1,0 +1,7 @@
+package ru.astrainteractive.soulkeeper.module.souls.server
+
+import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
+
+interface IsDeadPlayerProvider {
+    fun isDead(player: OnlineMinecraftPlayer): Boolean
+}

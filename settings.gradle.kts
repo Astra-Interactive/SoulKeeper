@@ -7,6 +7,7 @@ pluginManagement {
         mavenCentral()
         mavenLocal()
         google()
+        maven("https://maven.minecraftforge.net")
     }
 }
 
@@ -25,6 +26,7 @@ dependencyResolutionManagement {
         maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven("https://papermc.io/repo/repository/maven-public/")
         maven("https://repo.papermc.io/repository/maven-public/")
+        maven("https://repo.codemc.io/repository/maven-releases")
         maven("https://repo.glaremasters.me/repository/towny/")
         maven("https://nexus.scarsz.me/content/groups/public/")
         maven("https://repo.dmulloy2.net/repository/public/")
@@ -44,10 +46,13 @@ rootProject.name = "SoulKeeper"
 
 // Spigot
 include(":instances:bukkit")
+include(":instances:forge")
 // Modules
 include(":modules:core")
 include(":modules:core-bukkit")
 include(":modules:dao")
 include(":modules:service")
+include(":modules:service-bukkit")
+include(":modules:service-forge")
 include(":modules:event-bukkit")
 include(":modules:command-bukkit")
