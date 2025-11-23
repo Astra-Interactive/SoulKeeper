@@ -1,4 +1,4 @@
-package ru.astrainteractive.aspekt
+package ru.astrainteractive.soulkeeper
 
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -7,12 +7,12 @@ import net.minecraftforge.event.server.ServerStartedEvent
 import net.minecraftforge.event.server.ServerStoppingEvent
 import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.fml.common.Mod
-import ru.astrainteractive.aspekt.di.RootModule
 import ru.astrainteractive.astralibs.event.flowEvent
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.server.util.ForgeUtil
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
+import ru.astrainteractive.soulkeeper.di.RootModule
 import javax.annotation.ParametersAreNonnullByDefault
 
 @Mod("aspekt")

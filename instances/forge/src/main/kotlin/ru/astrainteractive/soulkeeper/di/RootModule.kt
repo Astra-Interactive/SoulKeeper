@@ -1,4 +1,4 @@
-package ru.astrainteractive.aspekt.di
+package ru.astrainteractive.soulkeeper.di
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +11,6 @@ import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
 import java.io.File
 
-
 class RootModule {
 
     private val dataFolder by lazy {
@@ -21,7 +20,7 @@ class RootModule {
             .toFile()
             .also(File::mkdirs)
     }
-    private val coreModule: CoreModule = CoreModule(
+    val coreModule: CoreModule = CoreModule(
         dispatchers = object : KotlinDispatchers {
             override val Main: CoroutineDispatcher = ForgeMainDispatcher
             override val IO: CoroutineDispatcher = Dispatchers.IO
