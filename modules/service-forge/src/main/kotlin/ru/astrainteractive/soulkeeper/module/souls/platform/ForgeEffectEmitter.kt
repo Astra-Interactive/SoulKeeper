@@ -60,7 +60,6 @@ class ForgeEffectEmitter : EffectEmitter {
             else -> particleType as ParticleOptions
         }
 
-
         serverLevel.sendParticles(
             serverPlayer,
             particleOptions,

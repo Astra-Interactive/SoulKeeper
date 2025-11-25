@@ -7,6 +7,8 @@ import ru.astrainteractive.astralibs.coroutine.ForgeMainDispatcher
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
+import ru.astrainteractive.soulkeeper.module.event.di.ForgeEventModule
+import ru.astrainteractive.soulkeeper.module.souls.di.ForgePlatformServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
 import java.io.File
@@ -34,17 +36,27 @@ class RootModule {
         dataFolder = coreModule.dataFolder,
         scope = coreModule.ioScope
     )
+    private val forgePlatformServiceModule = ForgePlatformServiceModule(
+        coreModule = coreModule,
+        soulsDaoModule = soulsDaoModule
+    )
 
     private val serviceModule = ServiceModule(
         coreModule = coreModule,
         soulsDaoModule = soulsDaoModule,
-        platformServiceModule = bukkitPlatformServiceModule
+        platformServiceModule = forgePlatformServiceModule
+    )
+    private val forgeEventModule = ForgeEventModule(
+        coreModule = coreModule,
+        soulsDaoModule = soulsDaoModule,
+        effectEmitter = forgePlatformServiceModule.effectEmitter
     )
 
     private val lifecycles: List<Lifecycle>
         get() = listOfNotNull(
             coreModule.lifecycle,
             soulsDaoModule.lifecycle,
+            forgeEventModule.lifecycle,
             serviceModule.lifecycle,
         )
 

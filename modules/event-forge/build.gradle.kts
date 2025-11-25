@@ -1,29 +1,20 @@
 plugins {
     kotlin("jvm")
-    kotlin("plugin.serialization")
     alias(libs.plugins.forgegradle)
 }
 
 dependencies {
-    // Kotlin
+    implementation(libs.kotlin.coroutines.core)
     implementation(libs.kotlin.serialization.json)
-    implementation(libs.exposed.core)
-    implementation(libs.exposed.dao)
-    implementation(libs.exposed.jdbc)
     // AstraLibs
     implementation(libs.minecraft.astralibs.core)
     implementation(libs.minecraft.astralibs.core.forge)
-    implementation(libs.minecraft.astralibs.command)
-    // klibs
-    implementation(libs.klibs.kstorage)
     implementation(libs.klibs.mikro.core)
-    implementation(libs.klibs.mikro.extensions)
-    // Test
-    testImplementation(libs.tests.kotlin.test)
-    // Local
+    // klibs
     implementation(projects.modules.core)
     implementation(projects.modules.dao)
     implementation(projects.modules.service)
+    implementation(projects.modules.serviceForge)
 }
 
 dependencies {

@@ -10,12 +10,14 @@ import ru.astrainteractive.soulkeeper.module.souls.platform.IsDeadPlayerProvider
 import ru.astrainteractive.soulkeeper.module.souls.platform.event.EventProvider
 
 interface PlatformServiceModule {
-    val showArmorStandUseCase: ShowArmorStandUseCase
-    val pickUpExpUseCase: PickUpExpUseCase
-    val pickUpItemsUseCase: PickUpItemsUseCase
-    val isDeadPlayerProvider: IsDeadPlayerProvider
+
     val platformServer: PlatformServer
     val effectEmitter: EffectEmitter
     val minecraftNativeBridge: MinecraftNativeBridge
     val eventProvider: EventProvider
+    val isDeadPlayerProvider: IsDeadPlayerProvider
+
+    val showArmorStandUseCase: ShowArmorStandUseCase
+    val pickUpExpUseCase: PickUpExpUseCase
+    val pickUpItemsUseCase: PickUpItemsUseCase
 }

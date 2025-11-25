@@ -1,7 +1,8 @@
 package ru.astrainteractive.soulkeeper.module.souls.domain
 
-import org.bukkit.Bukkit
 import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
+import ru.astrainteractive.astralibs.server.util.ForgeUtil
+import ru.astrainteractive.astralibs.server.util.getOnlinePlayer
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
@@ -10,7 +11,7 @@ import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSo
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpExpUseCase.Output
 import ru.astrainteractive.soulkeeper.module.souls.platform.EffectEmitter
 
-internal class BukkitPickUpExpUseCase(
+internal class ForgePickUpExpUseCase(
     private val collectXpSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
     private val soulsDao: SoulsDao,
     private val effectEmitter: EffectEmitter
@@ -24,8 +25,8 @@ internal class BukkitPickUpExpUseCase(
             player = player,
             sound = collectXpSoundProvider.invoke()
         )
-        Bukkit.getPlayer(player.uuid)?.giveExp(soul.exp)
-        soulsDao.updateSoul(soul = soul.copy(exp = 0))
+        ForgeUtil.getOnlinePlayer(player.uuid)?.giveExperiencePoints(soul.exp)
+        soulsDao.updateSoul(soul.copy(exp = 0))
         return Output.ExpCollected
     }
 }

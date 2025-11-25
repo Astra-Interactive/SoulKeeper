@@ -24,20 +24,22 @@ class BukkitPlatformServiceModule(
     bukkitCoreModule: BukkitCoreModule,
     soulsDaoModule: SoulsDaoModule,
 ) : PlatformServiceModule {
-    override val showArmorStandUseCase: ShowArmorStandUseCase = ShowArmorStandUseCaseFactory(coreModule).create()
-    override val pickUpExpUseCase: PickUpExpUseCase = BukkitPickUpExpUseCase(
-        collectXpSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectXp },
-        soulsDao = soulsDaoModule.soulsDao
-    )
-    override val pickUpItemsUseCase: PickUpItemsUseCase = BukkitPickUpItemsUseCase(
-        collectItemSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectItem },
-        soulsDao = soulsDaoModule.soulsDao
-    )
-    override val isDeadPlayerProvider: IsDeadPlayerProvider = BukkitIsDeadPlayerProvider
     override val platformServer: PlatformServer = BukkitPlatformServer()
     override val effectEmitter: EffectEmitter = BukkitEffectEmitter
     override val minecraftNativeBridge: MinecraftNativeBridge = BukkitMinecraftNativeBridge()
     override val eventProvider: EventProvider = BukkitEventProvider(
         plugin = bukkitCoreModule.plugin
+    )
+    override val isDeadPlayerProvider: IsDeadPlayerProvider = BukkitIsDeadPlayerProvider
+
+    override val showArmorStandUseCase: ShowArmorStandUseCase = ShowArmorStandUseCaseFactory(coreModule).create()
+    override val pickUpExpUseCase: PickUpExpUseCase = BukkitPickUpExpUseCase(
+        collectXpSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectXp },
+        soulsDao = soulsDaoModule.soulsDao,
+        effectEmitter = effectEmitter
+    )
+    override val pickUpItemsUseCase: PickUpItemsUseCase = BukkitPickUpItemsUseCase(
+        collectItemSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectItem },
+        soulsDao = soulsDaoModule.soulsDao
     )
 }

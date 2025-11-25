@@ -1,28 +1,28 @@
 package ru.astrainteractive.soulkeeper.module.event.di
 
-import org.bukkit.event.HandlerList
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
-import ru.astrainteractive.soulkeeper.core.di.BukkitCoreModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
-import ru.astrainteractive.soulkeeper.module.event.event.BukkitSoulEvents
+import ru.astrainteractive.soulkeeper.module.event.event.ForgeSoulEvents
 import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
+import ru.astrainteractive.soulkeeper.module.souls.platform.EffectEmitter
 
-class BukkitEventModule(
+class ForgeEventModule(
     coreModule: CoreModule,
-    bukkitCoreModule: BukkitCoreModule,
-    soulsDaoModule: SoulsDaoModule
+    soulsDaoModule: SoulsDaoModule,
+    effectEmitter: EffectEmitter
 ) {
-    private val event = BukkitSoulEvents(
+    @Suppress("UnusedPrivateProperty")
+    private val event = ForgeSoulEvents(
         soulsDao = soulsDaoModule.soulsDao,
         soulsConfigKrate = coreModule.soulsConfigKrate,
+        effectEmitter = effectEmitter,
+        mainScope = coreModule.mainScope
     )
+
     val lifecycle = Lifecycle.Lambda(
         onEnable = {
-            event.onEnable(bukkitCoreModule.plugin)
         },
         onDisable = {
-            event.onDisable()
-            HandlerList.unregisterAll(bukkitCoreModule.plugin)
         }
     )
 }

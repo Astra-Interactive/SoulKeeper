@@ -34,6 +34,7 @@ dependencies {
     shadow(projects.modules.dao)
     shadow(projects.modules.service)
     shadow(projects.modules.serviceForge)
+    shadow(projects.modules.eventForge)
 }
 
 minecraft {

@@ -23,7 +23,7 @@ import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatOb
 import java.time.Instant
 import kotlin.time.Duration.Companion.seconds
 
-internal class SoulEvents(
+internal class BukkitSoulEvents(
     private val soulsDao: SoulsDao,
     soulsConfigKrate: CachedKrate<SoulsConfig>
 ) : EventListener {
@@ -72,9 +72,9 @@ internal class SoulEvents(
                 else -> event.player.location
             }.toDatabaseLocation(),
             hasItems = soulItems.isNotEmpty(),
-            items = soulItems.map {
-                StringFormatObject(ItemStackSerializer.encodeToString(it))
-            },
+            items = soulItems
+                .map(ItemStackSerializer::encodeToString)
+                .map(::StringFormatObject),
         )
         bukkitSoul.location.toBukkitLocation().spawnParticleForPlayer(
             event.player,
