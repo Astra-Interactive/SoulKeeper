@@ -115,7 +115,6 @@ val shadowJar by tasks.getting(ShadowJar::class) {
         "net.dv8tion",
         "okio",
         "org.slf4j",
-        "kotlin",
         "kotlinx",
         "it.krzeminski",
         "net.thauvin",

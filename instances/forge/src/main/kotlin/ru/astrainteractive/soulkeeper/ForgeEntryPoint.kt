@@ -2,7 +2,7 @@ package ru.astrainteractive.soulkeeper
 
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import net.minecraftforge.event.RegisterCommandsEvent
+import kotlinx.coroutines.withContext
 import net.minecraftforge.event.server.ServerStartedEvent
 import net.minecraftforge.event.server.ServerStoppingEvent
 import net.minecraftforge.eventbus.api.EventPriority
@@ -23,6 +23,7 @@ class ForgeEntryPoint :
     private val rootModule by lazy { RootModule() }
 
     override fun onEnable() {
+        info { "#onEnable" }
         rootModule.lifecycle.onEnable()
     }
 
@@ -32,25 +33,25 @@ class ForgeEntryPoint :
     }
 
     override fun onReload() {
+        info { "#onReload" }
         rootModule.lifecycle.onReload()
     }
 
     val serverStartedEvent = flowEvent<ServerStartedEvent>(EventPriority.HIGHEST)
         .onEach {
             info { "#serverStartedEvent" }
-            onEnable()
-        }.launchIn(rootModule.coreModule.mainScope)
+            withContext(rootModule.coreModule.dispatchers.Main) {
+                onEnable()
+            }
+        }.launchIn(rootModule.coreModule.ioScope)
 
     val serverStoppingEvent = flowEvent<ServerStoppingEvent>(EventPriority.HIGHEST)
         .onEach {
             info { "#serverStoppingEvent" }
-            onDisable()
-        }.launchIn(rootModule.coreModule.mainScope)
-
-    val registerCommandsEvent = flowEvent<RegisterCommandsEvent>(EventPriority.HIGHEST)
-        .onEach { e ->
-            info { "#registerCommandsEvent" }
-        }.launchIn(rootModule.coreModule.mainScope)
+            withContext(rootModule.coreModule.dispatchers.Main) {
+                onDisable()
+            }
+        }.launchIn(rootModule.coreModule.ioScope)
 
     init {
         ForgeUtil.bootstrap()

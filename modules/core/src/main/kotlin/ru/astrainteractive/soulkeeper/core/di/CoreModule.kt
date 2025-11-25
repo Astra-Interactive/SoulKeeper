@@ -26,9 +26,11 @@ class CoreModule(
 ) : Logger by JUtiltLogger("CoreModule").withoutParentHandlers() {
 
     val ioScope = CoroutineFeature.IO.withTimings()
-    val mainScope = CoroutineFeature
-        .Default(dispatchers.Main)
-        .withTimings()
+    val mainScope by lazy {
+        CoroutineFeature
+            .Default(dispatchers.Main)
+            .withTimings()
+    }
 
     val yamlFormat: StringFormat = YamlStringFormat(
         configuration = Yaml.default.configuration.copy(

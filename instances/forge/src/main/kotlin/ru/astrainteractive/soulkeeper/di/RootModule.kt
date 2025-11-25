@@ -22,35 +22,46 @@ class RootModule {
             .toFile()
             .also(File::mkdirs)
     }
-    val coreModule: CoreModule = CoreModule(
-        dispatchers = object : KotlinDispatchers {
-            override val Main: CoroutineDispatcher = ForgeMainDispatcher
-            override val IO: CoroutineDispatcher = Dispatchers.IO
-            override val Default: CoroutineDispatcher = Dispatchers.Default
-            override val Unconfined: CoroutineDispatcher = Dispatchers.Unconfined
-        },
-        dataFolder = dataFolder
-    )
 
-    private val soulsDaoModule = SoulsDaoModule.Default(
-        dataFolder = coreModule.dataFolder,
-        scope = coreModule.ioScope
-    )
-    private val forgePlatformServiceModule = ForgePlatformServiceModule(
-        coreModule = coreModule,
-        soulsDaoModule = soulsDaoModule
-    )
+    val coreModule: CoreModule by lazy {
+        CoreModule(
+            dispatchers = object : KotlinDispatchers {
+                override val Main: CoroutineDispatcher = ForgeMainDispatcher
+                override val IO: CoroutineDispatcher = Dispatchers.IO
+                override val Default: CoroutineDispatcher = Dispatchers.Default
+                override val Unconfined: CoroutineDispatcher = Dispatchers.Unconfined
+            },
+            dataFolder = dataFolder
+        )
+    }
 
-    private val serviceModule = ServiceModule(
-        coreModule = coreModule,
-        soulsDaoModule = soulsDaoModule,
-        platformServiceModule = forgePlatformServiceModule
-    )
-    private val forgeEventModule = ForgeEventModule(
-        coreModule = coreModule,
-        soulsDaoModule = soulsDaoModule,
-        effectEmitter = forgePlatformServiceModule.effectEmitter
-    )
+    private val soulsDaoModule by lazy {
+        SoulsDaoModule.Default(
+            dataFolder = coreModule.dataFolder,
+            scope = coreModule.ioScope
+        )
+    }
+    private val forgePlatformServiceModule by lazy {
+        ForgePlatformServiceModule(
+            coreModule = coreModule,
+            soulsDaoModule = soulsDaoModule
+        )
+    }
+
+    private val serviceModule by lazy {
+        ServiceModule(
+            coreModule = coreModule,
+            soulsDaoModule = soulsDaoModule,
+            platformServiceModule = forgePlatformServiceModule
+        )
+    }
+    private val forgeEventModule by lazy {
+        ForgeEventModule(
+            coreModule = coreModule,
+            soulsDaoModule = soulsDaoModule,
+            effectEmitter = forgePlatformServiceModule.effectEmitter
+        )
+    }
 
     private val lifecycles: List<Lifecycle>
         get() = listOfNotNull(
