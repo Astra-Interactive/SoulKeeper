@@ -21,7 +21,7 @@ class RootModule(plugin: LifecyclePlugin) {
 
     private val soulsDaoModule = SoulsDaoModule.Default(
         dataFolder = coreModule.dataFolder,
-        scope = coreModule.ioScope
+        ioScope = coreModule.ioScope
     )
 
     private val bukkitPlatformServiceModule = BukkitPlatformServiceModule(

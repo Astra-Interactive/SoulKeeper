@@ -38,7 +38,7 @@ class RootModule {
     private val soulsDaoModule by lazy {
         SoulsDaoModule.Default(
             dataFolder = coreModule.dataFolder,
-            scope = coreModule.ioScope
+            ioScope = coreModule.ioScope
         )
     }
     private val forgePlatformServiceModule by lazy {

@@ -32,7 +32,7 @@ interface SoulsDaoModule {
 
     class Default(
         dataFolder: File,
-        scope: CoroutineScope
+        ioScope: CoroutineScope
     ) : SoulsDaoModule {
         override val databaseFlow: Flow<Database> = flow {
             if (!dataFolder.exists()) dataFolder.mkdirs()
@@ -47,7 +47,7 @@ interface SoulsDaoModule {
                 SchemaUtils.createMissingTablesAndColumns(SoulItemsTable)
             }
             emit(database)
-        }.shareIn(scope, SharingStarted.Eagerly, 1)
+        }.shareIn(ioScope, SharingStarted.Eagerly, 1)
 
         override val soulsDao: SoulsDao = SoulsDaoImpl(
             databaseFlow = databaseFlow,

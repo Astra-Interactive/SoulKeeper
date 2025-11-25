@@ -41,6 +41,7 @@ internal class ForgePickUpItemsUseCase(
     }
 
     override suspend fun invoke(player: OnlineMinecraftPlayer, soul: ItemDatabaseSoul): Output {
+        return Output.SomeItemsRemain // todo
         if (soul.items.isEmpty()) return Output.NoItemsPresent
         val serverPlayer = ForgeUtil.getOnlinePlayer(player.uuid) ?: return Output.SomeItemsRemain
 
