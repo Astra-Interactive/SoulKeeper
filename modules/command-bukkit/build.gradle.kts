@@ -15,7 +15,6 @@ dependencies {
     implementation(libs.minecraft.astralibs.core.bukkit)
     // klibs
     implementation(libs.klibs.mikro.core)
-    implementation(libs.klibs.mikro.core)
     implementation(projects.modules.core)
     implementation(projects.modules.dao)
     implementation(projects.modules.coreBukkit)
