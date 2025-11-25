@@ -16,7 +16,7 @@ internal class ForgePickUpExpUseCase(
     private val soulsDao: SoulsDao,
     private val effectEmitter: EffectEmitter
 ) : PickUpExpUseCase,
-    Logger by JUtiltLogger("AspeKt-PickUpExpUseCase") {
+    Logger by JUtiltLogger("SoulKeeper-PickUpExpUseCase") {
 
     override suspend fun invoke(player: OnlineMinecraftPlayer, soul: ItemDatabaseSoul): Output {
         if (soul.exp <= 0) return Output.NoExpPresent

@@ -12,7 +12,7 @@ import java.time.Instant
 internal class DeleteSoulWorker(
     private val soulsDao: SoulsDao,
     configKrate: CachedKrate<SoulsConfig>
-) : ServiceExecutor, Logger by JUtiltLogger("AspeKt-DeleteSoulWorker") {
+) : ServiceExecutor, Logger by JUtiltLogger("SoulKeeper-DeleteSoulWorker") {
     private val config by configKrate
 
     override suspend fun doWork() {

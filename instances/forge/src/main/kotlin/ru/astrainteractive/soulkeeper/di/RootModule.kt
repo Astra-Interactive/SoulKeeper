@@ -17,7 +17,7 @@ class RootModule {
 
     private val dataFolder by lazy {
         FMLPaths.CONFIGDIR.get()
-            .resolve("AspeKt")
+            .resolve("SoulKeeper")
             .toAbsolutePath()
             .toFile()
             .also(File::mkdirs)

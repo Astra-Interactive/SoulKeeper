@@ -52,7 +52,7 @@ internal class SoulCallWorker(
     private val soulArmorStandRenderer: ArmorStandRenderer,
     private val eventProvider: EventProvider,
     minecraftNativeBridge: MinecraftNativeBridge
-) : Logger by JUtiltLogger("AspeKt-SoulCallWorker"),
+) : Logger by JUtiltLogger("SoulKeeper-SoulCallWorker"),
     Lifecycle,
     MinecraftNativeBridge by minecraftNativeBridge {
     private val scope = CoroutineFeature.IO.withTimings()

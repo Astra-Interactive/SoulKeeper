@@ -12,7 +12,7 @@ import java.time.Instant
 internal class FreeSoulWorker(
     private val soulsDao: SoulsDao,
     configKrate: CachedKrate<SoulsConfig>
-) : ServiceExecutor, Logger by JUtiltLogger("AspeKt-FreeSoulWorker") {
+) : ServiceExecutor, Logger by JUtiltLogger("SoulKeeper-FreeSoulWorker") {
     private val config by configKrate
 
     override suspend fun doWork() {

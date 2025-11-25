@@ -14,7 +14,7 @@ import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 internal class GetNearestSoulUseCase(
     private val soulsDao: SoulsDao,
     private val minecraftNativeBridge: MinecraftNativeBridge,
-) : Logger by JUtiltLogger("AspeKt-GetNearestSoulUseCase"),
+) : Logger by JUtiltLogger("SoulKeeper-GetNearestSoulUseCase"),
     MinecraftNativeBridge by minecraftNativeBridge {
     suspend fun invoke(player: OnlineMinecraftPlayer): DatabaseSoul? {
         return soulsDao.getSoulsNear(player.asLocatable().getLocation().toDatabaseLocation(), 2)

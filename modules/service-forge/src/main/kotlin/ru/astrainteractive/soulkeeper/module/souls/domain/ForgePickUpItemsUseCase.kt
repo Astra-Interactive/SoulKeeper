@@ -20,7 +20,7 @@ internal class ForgePickUpItemsUseCase(
     private val soulsDao: SoulsDao,
     private val effectEmitter: EffectEmitter
 ) : PickUpItemsUseCase,
-    Logger by JUtiltLogger("AspeKt-PickUpItemsUseCase") {
+    Logger by JUtiltLogger("SoulKeeper-PickUpItemsUseCase") {
     /**
      * todo fix
      * @return items not added into inventory

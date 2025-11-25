@@ -31,7 +31,7 @@ import java.util.*
 @Suppress("TooManyFunctions")
 internal class SoulsDaoImpl(
     private val databaseFlow: Flow<Database>,
-) : SoulsDao, Logger by JUtiltLogger("AspeKt-SoulsDaoImpl") {
+) : SoulsDao, Logger by JUtiltLogger("SoulKeeper-SoulsDaoImpl") {
     private val mutex = Mutex()
     private val soulsChangedSharedFlow = MutableSharedFlow<Unit>()
 

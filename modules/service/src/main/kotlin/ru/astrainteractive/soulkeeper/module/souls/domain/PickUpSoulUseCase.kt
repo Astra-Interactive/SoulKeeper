@@ -21,7 +21,7 @@ internal class PickUpSoulUseCase(
     private val soulContentLeftSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
     private val soulContentLeftParticleProvider: () -> SoulsConfig.Particles.Particle,
     private val effectEmitter: EffectEmitter
-) : Logger by JUtiltLogger("AspeKt-PickUpSoulUseCase") {
+) : Logger by JUtiltLogger("SoulKeeper-PickUpSoulUseCase") {
     sealed interface Output {
         data object SomethingRest : Output
         data object AllPickedUp : Output

@@ -20,7 +20,7 @@ internal class PickUpWorker(
     private val soulsDao: SoulsDao,
     private val platformServer: PlatformServer,
     private val isDeadPlayerProvider: IsDeadPlayerProvider
-) : ServiceExecutor, Logger by JUtiltLogger("AspeKt-PickUpWorker") {
+) : ServiceExecutor, Logger by JUtiltLogger("SoulKeeper-PickUpWorker") {
     private val mutex = Mutex()
 
     private suspend fun processPickupSoulEvents() {

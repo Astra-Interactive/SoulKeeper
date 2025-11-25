@@ -15,10 +15,10 @@ import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.di.RootModule
 import javax.annotation.ParametersAreNonnullByDefault
 
-@Mod("aspekt")
+@Mod("soulkeeper")
 @ParametersAreNonnullByDefault
 class ForgeEntryPoint :
-    Logger by JUtiltLogger("AspeKt-ForgeEntryPoint"),
+    Logger by JUtiltLogger("SoulKeeper-ForgeEntryPoint"),
     Lifecycle {
     private val rootModule by lazy { RootModule() }
 

@@ -17,7 +17,7 @@ internal class BukkitPickUpItemsUseCase(
     private val collectItemSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
     private val soulsDao: SoulsDao,
 ) : PickUpItemsUseCase,
-    Logger by JUtiltLogger("AspeKt-PickUpItemsUseCase") {
+    Logger by JUtiltLogger("SoulKeeper-PickUpItemsUseCase") {
 
     override suspend fun invoke(player: OnlineMinecraftPlayer, soul: ItemDatabaseSoul): Output {
         if (soul.items.isEmpty()) return Output.NoItemsPresent
