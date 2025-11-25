@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import net.minecraft.server.level.ServerPlayer
-import net.minecraft.world.entity.ExperienceOrb
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.GameRules
@@ -45,16 +44,18 @@ internal class ForgeSoulEvents(
     private val soulsConfig by soulsConfigKrate
     private val mutex = Mutex()
 
+    @Suppress("LongMethod")
     private fun createOrUpdateSoul(
         onlineMinecraftPlayer: OnlineMinecraftPlayer,
         serverPlayer: ServerPlayer,
         droppedXp: Int?,
         soulItems: List<ItemStack>?
     ) {
-        val dbLocation = serverPlayer
+        val location = onlineMinecraftPlayer
             .asLocatable()
             .getLocation()
-            .toDatabaseLocation()
+        val dbLocation = location.toDatabaseLocation()
+        val dimension = serverPlayer.level().dimension()
         ioScope.launch(mutex) {
             val existingSoul = soulsDao.getSoulsNear(dbLocation, 1)
                 .getOrNull()
@@ -83,13 +84,12 @@ internal class ForgeSoulEvents(
                     ownerLastName = onlineMinecraftPlayer.name,
                     createdAt = Instant.now(),
                     isFree = soulsConfig.soulFreeAfter == 0.seconds,
-                    location = when (serverPlayer.level().dimension()) {
+                    location = when (dimension) {
                         Level.END -> {
-                            val location = onlineMinecraftPlayer.asLocatable().getLocation()
                             location.copy(y = location.y.coerceAtLeast(soulsConfig.endLocationLimitY))
                         }
 
-                        else -> onlineMinecraftPlayer.asLocatable().getLocation()
+                        else -> location
                     }.toDatabaseLocation(),
                     hasItems = soulItems.orEmpty().isNotEmpty(),
                     items = soulItems
@@ -97,19 +97,18 @@ internal class ForgeSoulEvents(
                         .map(ItemStackSerializer::encodeToString)
                         .map(::StringFormatObject),
                 )
-                effectEmitter.spawnParticleForPlayer(
-                    location = soul.location,
-                    player = onlineMinecraftPlayer,
-                    config = soulsConfig.particles.soulCreated,
-                )
-                effectEmitter.playSoundForPlayer(
-                    location = soul.location,
-                    player = onlineMinecraftPlayer,
-                    sound = soulsConfig.sounds.soulDropped,
-                )
                 soulsDao.insertSoul(soul)
             }
-
+            effectEmitter.spawnParticleForPlayer(
+                location = location,
+                player = onlineMinecraftPlayer,
+                config = soulsConfig.particles.soulCreated,
+            )
+            effectEmitter.playSoundForPlayer(
+                location = location,
+                player = onlineMinecraftPlayer,
+                sound = soulsConfig.sounds.soulDropped,
+            )
         }
     }
 
@@ -122,9 +121,10 @@ internal class ForgeSoulEvents(
 
             val droppedXp = when {
                 keepLevel -> 0
-                else -> event.droppedExperience
-                    .times(soulsConfig.retainedXp)
-                    .toInt()
+                else ->
+                    event.droppedExperience
+                        .times(soulsConfig.retainedXp)
+                        .toInt()
             }
 
             if (droppedXp <= 0) return@onEach
@@ -161,4 +161,3 @@ internal class ForgeSoulEvents(
             )
         }.launchIn(mainScope)
 }
-
