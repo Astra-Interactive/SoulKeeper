@@ -34,9 +34,9 @@ internal class ForgeSoulEvents(
     private val soulsDao: SoulsDao,
     private val effectEmitter: EffectEmitter,
     mainScope: CoroutineScope,
+    ioScope: CoroutineScope,
     soulsConfigKrate: CachedKrate<SoulsConfig>
 ) {
-    private val scope = CoroutineFeature.IO.withTimings()
     private val soulsConfig by soulsConfigKrate
 
     val playerDeathEvent = flowEvent<LivingDropsEvent>(EventPriority.HIGH)
@@ -95,7 +95,7 @@ internal class ForgeSoulEvents(
                 player = onlineMinecraftPlayer,
                 sound = soulsConfig.sounds.soulDropped,
             )
-            scope.launch {
+            ioScope.launch {
                 soulsDao.insertSoul(bukkitSoul)
             }
         }.launchIn(mainScope)

@@ -16,7 +16,8 @@ class ForgeEventModule(
         soulsDao = soulsDaoModule.soulsDao,
         soulsConfigKrate = coreModule.soulsConfigKrate,
         effectEmitter = effectEmitter,
-        mainScope = coreModule.mainScope
+        mainScope = coreModule.mainScope,
+        ioScope = coreModule.ioScope
     )
 
     val lifecycle = Lifecycle.Lambda(
