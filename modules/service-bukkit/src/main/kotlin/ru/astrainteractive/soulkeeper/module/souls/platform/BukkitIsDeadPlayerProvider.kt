@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.module.souls.server
+package ru.astrainteractive.soulkeeper.module.souls.platform
 
 import org.bukkit.Bukkit
 import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer

@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.module.souls.server.event.model
+package ru.astrainteractive.soulkeeper.module.souls.platform.event.model
 
 import ru.astrainteractive.astralibs.server.location.Location
 import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer

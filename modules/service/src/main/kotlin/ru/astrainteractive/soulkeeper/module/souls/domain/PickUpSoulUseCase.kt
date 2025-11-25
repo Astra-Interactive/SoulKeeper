@@ -8,7 +8,7 @@ import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
-import ru.astrainteractive.soulkeeper.module.souls.server.EffectEmitter
+import ru.astrainteractive.soulkeeper.module.souls.platform.EffectEmitter
 
 @Suppress("LongParameterList")
 internal class PickUpSoulUseCase(

@@ -8,7 +8,7 @@ import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.renderer.api.SoulEffectRenderer
-import ru.astrainteractive.soulkeeper.module.souls.server.EffectEmitter
+import ru.astrainteractive.soulkeeper.module.souls.platform.EffectEmitter
 
 class SoulParticleRenderer(
     private val dispatchers: KotlinDispatchers,

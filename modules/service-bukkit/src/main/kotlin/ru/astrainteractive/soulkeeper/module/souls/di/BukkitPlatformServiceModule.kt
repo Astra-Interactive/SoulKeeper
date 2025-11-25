@@ -12,12 +12,12 @@ import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpExpUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorStandUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.di.factory.ShowArmorStandUseCaseFactory
-import ru.astrainteractive.soulkeeper.module.souls.server.BukkitEffectEmitter
-import ru.astrainteractive.soulkeeper.module.souls.server.BukkitEventProvider
-import ru.astrainteractive.soulkeeper.module.souls.server.BukkitIsDeadPlayerProvider
-import ru.astrainteractive.soulkeeper.module.souls.server.EffectEmitter
-import ru.astrainteractive.soulkeeper.module.souls.server.IsDeadPlayerProvider
-import ru.astrainteractive.soulkeeper.module.souls.server.event.EventProvider
+import ru.astrainteractive.soulkeeper.module.souls.platform.BukkitEffectEmitter
+import ru.astrainteractive.soulkeeper.module.souls.platform.BukkitEventProvider
+import ru.astrainteractive.soulkeeper.module.souls.platform.BukkitIsDeadPlayerProvider
+import ru.astrainteractive.soulkeeper.module.souls.platform.EffectEmitter
+import ru.astrainteractive.soulkeeper.module.souls.platform.IsDeadPlayerProvider
+import ru.astrainteractive.soulkeeper.module.souls.platform.event.EventProvider
 
 class BukkitPlatformServiceModule(
     coreModule: CoreModule,

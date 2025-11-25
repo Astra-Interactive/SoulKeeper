@@ -5,9 +5,9 @@ import ru.astrainteractive.astralibs.server.PlatformServer
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpExpUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorStandUseCase
-import ru.astrainteractive.soulkeeper.module.souls.server.EffectEmitter
-import ru.astrainteractive.soulkeeper.module.souls.server.IsDeadPlayerProvider
-import ru.astrainteractive.soulkeeper.module.souls.server.event.EventProvider
+import ru.astrainteractive.soulkeeper.module.souls.platform.EffectEmitter
+import ru.astrainteractive.soulkeeper.module.souls.platform.IsDeadPlayerProvider
+import ru.astrainteractive.soulkeeper.module.souls.platform.event.EventProvider
 
 interface PlatformServiceModule {
     val showArmorStandUseCase: ShowArmorStandUseCase

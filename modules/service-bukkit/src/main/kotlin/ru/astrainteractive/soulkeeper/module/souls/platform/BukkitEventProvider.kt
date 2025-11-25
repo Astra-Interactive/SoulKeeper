@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.module.souls.server
+package ru.astrainteractive.soulkeeper.module.souls.platform
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterIsInstance
@@ -10,10 +10,10 @@ import org.bukkit.plugin.java.JavaPlugin
 import ru.astrainteractive.astralibs.event.flowEvent
 import ru.astrainteractive.astralibs.server.util.asAstraLocation
 import ru.astrainteractive.astralibs.server.util.asOnlineMinecraftPlayer
-import ru.astrainteractive.soulkeeper.module.souls.server.event.EventProvider
-import ru.astrainteractive.soulkeeper.module.souls.server.event.model.SharedPlayerJoinEvent
-import ru.astrainteractive.soulkeeper.module.souls.server.event.model.SharedPlayerLeaveEvent
-import ru.astrainteractive.soulkeeper.module.souls.server.event.model.SharedPlayerMoveEvent
+import ru.astrainteractive.soulkeeper.module.souls.platform.event.EventProvider
+import ru.astrainteractive.soulkeeper.module.souls.platform.event.model.SharedPlayerJoinEvent
+import ru.astrainteractive.soulkeeper.module.souls.platform.event.model.SharedPlayerLeaveEvent
+import ru.astrainteractive.soulkeeper.module.souls.platform.event.model.SharedPlayerMoveEvent
 
 internal class BukkitEventProvider(
     private val plugin: JavaPlugin
