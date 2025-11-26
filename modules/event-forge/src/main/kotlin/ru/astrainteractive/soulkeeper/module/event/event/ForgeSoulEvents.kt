@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.withContext
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.item.ItemStack
@@ -20,6 +21,7 @@ import ru.astrainteractive.astralibs.server.util.asOnlineMinecraftPlayer
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.klibs.mikro.core.coroutines.launch
+import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.klibs.mikro.core.util.tryCast
@@ -37,6 +39,7 @@ internal class ForgeSoulEvents(
     private val soulsDao: SoulsDao,
     private val effectEmitter: EffectEmitter,
     private val ioScope: CoroutineScope,
+    private val dispatchers: KotlinDispatchers,
     mainScope: CoroutineScope,
     soulsConfigKrate: CachedKrate<SoulsConfig>
 ) : Logger by JUtiltLogger("SoulKeeper-ForgeSoulEvents") {
@@ -98,16 +101,18 @@ internal class ForgeSoulEvents(
                 )
                 soulsDao.insertSoul(soul)
             }
-            effectEmitter.spawnParticleForPlayer(
-                location = location,
-                player = onlineMinecraftPlayer,
-                config = soulsConfig.particles.soulCreated,
-            )
-            effectEmitter.playSoundForPlayer(
-                location = location,
-                player = onlineMinecraftPlayer,
-                sound = soulsConfig.sounds.soulDropped,
-            )
+            withContext(dispatchers.Main) {
+                effectEmitter.spawnParticleForPlayer(
+                    location = location,
+                    player = onlineMinecraftPlayer,
+                    config = soulsConfig.particles.soulCreated,
+                )
+                effectEmitter.playSoundForPlayer(
+                    location = location,
+                    player = onlineMinecraftPlayer,
+                    sound = soulsConfig.sounds.soulDropped,
+                )
+            }
         }
     }
 
