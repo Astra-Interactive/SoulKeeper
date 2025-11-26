@@ -2,7 +2,6 @@ package ru.astrainteractive.soulkeeper
 
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.withContext
 import net.minecraftforge.event.server.ServerStartedEvent
 import net.minecraftforge.event.server.ServerStoppingEvent
 import net.minecraftforge.eventbus.api.EventPriority
@@ -40,18 +39,14 @@ class ForgeEntryPoint :
     val serverStartedEvent = flowEvent<ServerStartedEvent>(EventPriority.HIGHEST)
         .onEach {
             info { "#serverStartedEvent" }
-            withContext(rootModule.coreModule.dispatchers.Main) {
-                onEnable()
-            }
-        }.launchIn(rootModule.coreModule.ioScope)
+            onEnable()
+        }.launchIn(rootModule.coreModule.mainScope)
 
     val serverStoppingEvent = flowEvent<ServerStoppingEvent>(EventPriority.HIGHEST)
         .onEach {
             info { "#serverStoppingEvent" }
-            withContext(rootModule.coreModule.dispatchers.Main) {
-                onDisable()
-            }
-        }.launchIn(rootModule.coreModule.ioScope)
+            onDisable()
+        }.launchIn(rootModule.coreModule.mainScope)
 
     init {
         ForgeUtil.bootstrap()

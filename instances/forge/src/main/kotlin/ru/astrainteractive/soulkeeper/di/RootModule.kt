@@ -2,16 +2,22 @@ package ru.astrainteractive.soulkeeper.di
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import net.minecraftforge.fml.DistExecutor
+import net.minecraftforge.fml.loading.FMLEnvironment
 import net.minecraftforge.fml.loading.FMLPaths
+import ru.astrainteractive.astralibs.async.CoroutineTimings
 import ru.astrainteractive.astralibs.coroutine.ForgeMainDispatcher
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
+import ru.astrainteractive.klibs.mikro.core.util.tryCast
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.module.event.di.ForgeEventModule
 import ru.astrainteractive.soulkeeper.module.souls.di.ForgePlatformServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
 import java.io.File
+import kotlin.coroutines.AbstractCoroutineContextElement
+import kotlin.coroutines.CoroutineContext
 
 class RootModule {
 
@@ -23,10 +29,32 @@ class RootModule {
             .also(File::mkdirs)
     }
 
+    class ForgeMainDispatcher : CoroutineDispatcher() {
+
+        override fun isDispatchNeeded(context: CoroutineContext): Boolean {
+            return true
+        }
+
+        override fun dispatch(context: CoroutineContext, block: Runnable) {
+            DistExecutor.safeRunWhenOn(FMLEnvironment.dist) {
+                val key = context.tryCast<AbstractCoroutineContextElement>()?.key
+                val timingsKey = key?.tryCast<CoroutineTimings.Key>()
+                val timedRunnable = timingsKey?.let(context::get)
+
+                if (timedRunnable == null) {
+                    DistExecutor.SafeRunnable { block.run() }
+                } else {
+                    timedRunnable.queue.add(block)
+                    DistExecutor.SafeRunnable { timedRunnable.run() }
+                }
+            }
+        }
+    }
+
     val coreModule: CoreModule by lazy {
         CoreModule(
             dispatchers = object : KotlinDispatchers {
-                override val Main: CoroutineDispatcher = ForgeMainDispatcher
+                override val Main: CoroutineDispatcher = ForgeMainDispatcher()
                 override val IO: CoroutineDispatcher = Dispatchers.IO
                 override val Default: CoroutineDispatcher = Dispatchers.Default
                 override val Unconfined: CoroutineDispatcher = Dispatchers.Unconfined

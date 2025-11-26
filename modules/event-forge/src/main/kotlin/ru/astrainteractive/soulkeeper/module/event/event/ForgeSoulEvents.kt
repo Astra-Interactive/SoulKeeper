@@ -4,7 +4,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.item.ItemEntity
@@ -84,6 +83,7 @@ internal class ForgeSoulEvents(
                     ownerLastName = onlineMinecraftPlayer.name,
                     createdAt = Instant.now(),
                     isFree = soulsConfig.soulFreeAfter == 0.seconds,
+                    hasItems = soulItems.orEmpty().isNotEmpty(),
                     location = when (dimension) {
                         Level.END -> {
                             location.copy(y = location.y.coerceAtLeast(soulsConfig.endLocationLimitY))
@@ -91,7 +91,6 @@ internal class ForgeSoulEvents(
 
                         else -> location
                     }.toDatabaseLocation(),
-                    hasItems = soulItems.orEmpty().isNotEmpty(),
                     items = soulItems
                         .orEmpty()
                         .map(ItemStackSerializer::encodeToString)
@@ -112,7 +111,7 @@ internal class ForgeSoulEvents(
         }
     }
 
-    val expDropEvent = flowEvent<LivingExperienceDropEvent>(EventPriority.HIGH)
+    val expDropEvent = flowEvent<LivingExperienceDropEvent>(EventPriority.LOWEST)
         .filter { !it.isCanceled }
         .onEach { event ->
             val serverPlayer = event.entity.tryCast<ServerPlayer>() ?: return@onEach
@@ -138,7 +137,7 @@ internal class ForgeSoulEvents(
             )
         }.launchIn(mainScope)
 
-    val playerDeathEvent = flowEvent<LivingDropsEvent>(EventPriority.HIGH)
+    val livingDropsEvent = flowEvent<LivingDropsEvent>(EventPriority.LOWEST)
         .filter { event -> !event.isCanceled }
         .onEach { event ->
             val serverPlayer = event.entity.tryCast<ServerPlayer>() ?: return@onEach
