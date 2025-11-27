@@ -1,6 +1,5 @@
 package ru.astrainteractive.soulkeeper.module.souls.domain
 
-import net.minecraft.server.level.ServerPlayerGameMode
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.item.ItemStack
 import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer

@@ -156,10 +156,9 @@ internal class ForgeSoulEvents(
         }
     }
 
-    val expDropEvent = flowEvent<LivingExperienceDropEvent>(EventPriority.LOWEST)
+    val expDropEvent = flowEvent<LivingExperienceDropEvent>(EventPriority.HIGHEST)
         .filter { !it.isCanceled }
         .onEach { event ->
-            return@onEach
             val serverPlayer = event.entity.tryCast<ServerPlayer>() ?: return@onEach
             val keepLevel = event.entity.level().gameRules.getBoolean(GameRules.RULE_KEEPINVENTORY)
             val onlineMinecraftPlayer = serverPlayer.asOnlineMinecraftPlayer()
@@ -185,7 +184,7 @@ internal class ForgeSoulEvents(
         }
         .launchIn(mainScope)
 
-    val livingDropsEvent = flowEvent<LivingDropsEvent>(EventPriority.LOWEST)
+    val livingDropsEvent = flowEvent<LivingDropsEvent>(EventPriority.HIGHEST)
         .filter { event -> !event.isCanceled }
         .onEach { event ->
             val serverPlayer = event.entity.tryCast<ServerPlayer>() ?: return@onEach
