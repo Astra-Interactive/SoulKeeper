@@ -1,14 +1,12 @@
 package ru.astrainteractive.soulkeeper.module.event.event
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import net.minecraft.resources.ResourceKey
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.item.ItemStack
@@ -18,6 +16,7 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent
 import net.minecraftforge.eventbus.api.EventPriority
 import ru.astrainteractive.astralibs.event.flowEvent
+import ru.astrainteractive.astralibs.server.location.Location
 import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
 import ru.astrainteractive.astralibs.server.util.asLocatable
 import ru.astrainteractive.astralibs.server.util.asOnlineMinecraftPlayer
@@ -29,13 +28,16 @@ import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.klibs.mikro.core.util.tryCast
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
-import ru.astrainteractive.soulkeeper.core.util.toDatabaseLocation
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
+import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
 import ru.astrainteractive.soulkeeper.module.souls.platform.EffectEmitter
 import ru.astrainteractive.soulkeeper.module.souls.platform.ItemStackSerializer
 import java.time.Instant
+import kotlin.collections.isNotEmpty
+import kotlin.collections.map
+import kotlin.collections.orEmpty
 import kotlin.time.Duration.Companion.seconds
 
 internal class ForgeSoulEvents(
@@ -48,44 +50,69 @@ internal class ForgeSoulEvents(
 ) : Logger by JUtiltLogger("SoulKeeper-ForgeSoulEvents") {
     private val soulsConfig by soulsConfigKrate
     private val mutex = Mutex()
+    private suspend fun spawnSoulEffects(
+        location: Location,
+        onlineMinecraftPlayer: OnlineMinecraftPlayer
+    ) {
+        withContext(dispatchers.Main) {
+            effectEmitter.spawnParticleForPlayer(
+                location = location,
+                player = onlineMinecraftPlayer,
+                config = soulsConfig.particles.soulCreated,
+            )
+            effectEmitter.playSoundForPlayer(
+                location = location,
+                player = onlineMinecraftPlayer,
+                sound = soulsConfig.sounds.soulDropped,
+            )
+        }
+    }
 
-    @Suppress("UnusedPrivateProperty")
-    private val deathEvent = channelFlow {
-        val mutex = Mutex()
+    private suspend fun updateSoul(
+        soul: ItemDatabaseSoul,
+        droppedXp: Int?,
+        soulItems: List<ItemStack>?
+    ) {
+        val updatedItems = soulItems
+            ?.map(ItemStackSerializer::encodeToString)
+            ?.map(::StringFormatObject)
+            ?: soul.items
+        soulsDao.updateSoul(
+            soul = soul.copy(
+                exp = droppedXp ?: soul.exp,
+                items = updatedItems,
+                hasItems = updatedItems.isNotEmpty()
+            )
+        )
+    }
 
-        val expMap = java.util.concurrent.ConcurrentHashMap<Any, LivingExperienceDropEvent>()
-        val dropsMap = java.util.concurrent.ConcurrentHashMap<Any, LivingDropsEvent>()
-
-        flowEvent<LivingExperienceDropEvent>(EventPriority.HIGHEST)
-            .filter { it.entity is ServerPlayer }
-            .onEach { event ->
-                val id = event.entity.id
-                mutex.withLock {
-                    val matched = dropsMap.remove(id)
-                    if (matched != null) {
-                        send(event to matched)
-                    } else {
-                        expMap[id] = event
-                    }
+    private suspend fun createSoul(
+        onlineMinecraftPlayer: OnlineMinecraftPlayer,
+        droppedXp: Int?,
+        soulItems: List<ItemStack>?,
+        location: Location,
+        dimension: ResourceKey<Level>
+    ) {
+        val soul = DefaultSoul(
+            exp = droppedXp ?: 0,
+            ownerUUID = onlineMinecraftPlayer.uuid,
+            ownerLastName = onlineMinecraftPlayer.name,
+            createdAt = Instant.now(),
+            isFree = soulsConfig.soulFreeAfter == 0.seconds,
+            hasItems = soulItems.orEmpty().isNotEmpty(),
+            location = when (dimension) {
+                Level.END -> {
+                    location.copy(y = location.y.coerceAtLeast(soulsConfig.endLocationLimitY))
                 }
-            }
-            .launchIn(this)
 
-        flowEvent<LivingDropsEvent>(EventPriority.HIGHEST)
-            .filter { it.entity is ServerPlayer }
-            .onEach { event ->
-                val id = event.entity.id
-                mutex.withLock {
-                    val matched = expMap.remove(id)
-                    if (matched != null) {
-                        send(matched to event)
-                    } else {
-                        dropsMap[id] = event
-                    }
-                }
-            }
-            .launchIn(this)
-    }.onEach { (expEvent, dropEvent) ->
+                else -> location
+            },
+            items = soulItems
+                .orEmpty()
+                .map(ItemStackSerializer::encodeToString)
+                .map(::StringFormatObject),
+        )
+        soulsDao.insertSoul(soul)
     }
 
     @Suppress("LongMethod")
@@ -95,84 +122,55 @@ internal class ForgeSoulEvents(
         droppedXp: Int?,
         soulItems: List<ItemStack>?
     ) {
-        val location = onlineMinecraftPlayer
-            .asLocatable()
-            .getLocation()
-        val dbLocation = location.toDatabaseLocation()
-        val dimension = serverPlayer.level().dimension()
         ioScope.launch(mutex) {
-            val existingSoul = soulsDao.getSoulsNear(dbLocation, 1)
+            val location = onlineMinecraftPlayer
+                .asLocatable()
+                .getLocation()
+
+            val existingSoul = soulsDao.getSoulsNear(location, 1)
                 .getOrNull()
                 .orEmpty()
                 .firstOrNull { soul -> soul.ownerUUID == onlineMinecraftPlayer.uuid }
                 ?.let { dbSoul -> soulsDao.toItemDatabaseSoul(dbSoul) }
                 ?.getOrNull()
+
             if (existingSoul != null) {
-                val updatedItems = soulItems
-                    .orEmpty()
-                    .map(ItemStackSerializer::encodeToString)
-                    .map(::StringFormatObject)
-                    .takeIf { items -> items.isNotEmpty() }
-                    ?: existingSoul.items
-                soulsDao.updateSoul(
-                    soul = existingSoul.copy(
-                        exp = droppedXp ?: existingSoul.exp,
-                        items = updatedItems,
-                        hasItems = updatedItems.isNotEmpty()
-                    )
+                updateSoul(
+                    soul = existingSoul,
+                    droppedXp = droppedXp,
+                    soulItems = soulItems
                 )
             } else {
-                val soul = existingSoul ?: DefaultSoul(
-                    exp = droppedXp ?: 0,
-                    ownerUUID = onlineMinecraftPlayer.uuid,
-                    ownerLastName = onlineMinecraftPlayer.name,
-                    createdAt = Instant.now(),
-                    isFree = soulsConfig.soulFreeAfter == 0.seconds,
-                    hasItems = soulItems.orEmpty().isNotEmpty(),
-                    location = when (dimension) {
-                        Level.END -> {
-                            location.copy(y = location.y.coerceAtLeast(soulsConfig.endLocationLimitY))
-                        }
-
-                        else -> location
-                    }.toDatabaseLocation(),
-                    items = soulItems
-                        .orEmpty()
-                        .map(ItemStackSerializer::encodeToString)
-                        .map(::StringFormatObject),
-                )
-                soulsDao.insertSoul(soul)
-            }
-            withContext(dispatchers.Main) {
-                effectEmitter.spawnParticleForPlayer(
+                createSoul(
                     location = location,
-                    player = onlineMinecraftPlayer,
-                    config = soulsConfig.particles.soulCreated,
-                )
-                effectEmitter.playSoundForPlayer(
-                    location = location,
-                    player = onlineMinecraftPlayer,
-                    sound = soulsConfig.sounds.soulDropped,
+                    onlineMinecraftPlayer = onlineMinecraftPlayer,
+                    droppedXp = droppedXp,
+                    soulItems = soulItems,
+                    dimension = serverPlayer.level().dimension()
                 )
             }
+            spawnSoulEffects(
+                location = location,
+                onlineMinecraftPlayer = onlineMinecraftPlayer
+            )
         }
     }
 
     val expDropEvent = flowEvent<LivingExperienceDropEvent>(EventPriority.LOWEST)
         .filter { !it.isCanceled }
         .onEach { event ->
-            error { "#expDropEvent ${event.entity}" }
             return@onEach
             val serverPlayer = event.entity.tryCast<ServerPlayer>() ?: return@onEach
-            val onlineMinecraftPlayer = serverPlayer.asOnlineMinecraftPlayer()
             val keepLevel = event.entity.level().gameRules.getBoolean(GameRules.RULE_KEEPINVENTORY)
+            val onlineMinecraftPlayer = serverPlayer.asOnlineMinecraftPlayer()
 
             val droppedXp = when {
                 keepLevel -> 0
-                else ->
+                else -> {
                     event.droppedExperience
                         .times(soulsConfig.retainedXp)
                         .toInt()
+                }
             }
 
             if (droppedXp <= 0) return@onEach
@@ -184,16 +182,15 @@ internal class ForgeSoulEvents(
                 droppedXp = droppedXp,
                 soulItems = null
             )
-        }.launchIn(mainScope)
+        }
+        .launchIn(mainScope)
 
     val livingDropsEvent = flowEvent<LivingDropsEvent>(EventPriority.LOWEST)
         .filter { event -> !event.isCanceled }
         .onEach { event ->
-            error { "#livingDropsEvent ${event.entity}" }
-            return@onEach
             val serverPlayer = event.entity.tryCast<ServerPlayer>() ?: return@onEach
-            val onlineMinecraftPlayer = serverPlayer.asOnlineMinecraftPlayer()
             val keepInventory = event.entity.level().gameRules.getBoolean(GameRules.RULE_KEEPINVENTORY)
+            val onlineMinecraftPlayer = serverPlayer.asOnlineMinecraftPlayer()
 
             val soulItems = when {
                 keepInventory -> emptyList()
@@ -209,5 +206,6 @@ internal class ForgeSoulEvents(
                 droppedXp = null,
                 soulItems = soulItems
             )
-        }.launchIn(mainScope)
+        }
+        .launchIn(mainScope)
 }

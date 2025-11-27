@@ -30,7 +30,6 @@ import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.util.ThrottleExecutor
 import ru.astrainteractive.soulkeeper.core.util.combineInstantly
-import ru.astrainteractive.soulkeeper.core.util.toDatabaseLocation
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.platform.event.EventProvider
@@ -96,7 +95,7 @@ internal class SoulCallWorker(
             flow2 = soulsDao.getSoulsChangeFlow(),
             transform = { event, _ -> event }
         ).filterNotNull().map { event ->
-            val location = event.player.asLocatable().getLocation().toDatabaseLocation()
+            val location = event.player.asLocatable().getLocation()
             soulsDao.getSoulsNear(location, config.soulCallRadius)
                 .getOrNull()
                 .orEmpty()
