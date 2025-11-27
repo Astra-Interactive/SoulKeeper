@@ -1,10 +1,13 @@
 package ru.astrainteractive.soulkeeper.module.event.event
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.item.ItemEntity
@@ -45,6 +48,45 @@ internal class ForgeSoulEvents(
 ) : Logger by JUtiltLogger("SoulKeeper-ForgeSoulEvents") {
     private val soulsConfig by soulsConfigKrate
     private val mutex = Mutex()
+
+    @Suppress("UnusedPrivateProperty")
+    private val deathEvent = channelFlow {
+        val mutex = Mutex()
+
+        val expMap = java.util.concurrent.ConcurrentHashMap<Any, LivingExperienceDropEvent>()
+        val dropsMap = java.util.concurrent.ConcurrentHashMap<Any, LivingDropsEvent>()
+
+        flowEvent<LivingExperienceDropEvent>(EventPriority.HIGHEST)
+            .filter { it.entity is ServerPlayer }
+            .onEach { event ->
+                val id = event.entity.id
+                mutex.withLock {
+                    val matched = dropsMap.remove(id)
+                    if (matched != null) {
+                        send(event to matched)
+                    } else {
+                        expMap[id] = event
+                    }
+                }
+            }
+            .launchIn(this)
+
+        flowEvent<LivingDropsEvent>(EventPriority.HIGHEST)
+            .filter { it.entity is ServerPlayer }
+            .onEach { event ->
+                val id = event.entity.id
+                mutex.withLock {
+                    val matched = expMap.remove(id)
+                    if (matched != null) {
+                        send(matched to event)
+                    } else {
+                        dropsMap[id] = event
+                    }
+                }
+            }
+            .launchIn(this)
+    }.onEach { (expEvent, dropEvent) ->
+    }
 
     @Suppress("LongMethod")
     private fun createOrUpdateSoul(
@@ -119,6 +161,8 @@ internal class ForgeSoulEvents(
     val expDropEvent = flowEvent<LivingExperienceDropEvent>(EventPriority.LOWEST)
         .filter { !it.isCanceled }
         .onEach { event ->
+            error { "#expDropEvent ${event.entity}" }
+            return@onEach
             val serverPlayer = event.entity.tryCast<ServerPlayer>() ?: return@onEach
             val onlineMinecraftPlayer = serverPlayer.asOnlineMinecraftPlayer()
             val keepLevel = event.entity.level().gameRules.getBoolean(GameRules.RULE_KEEPINVENTORY)
@@ -145,6 +189,8 @@ internal class ForgeSoulEvents(
     val livingDropsEvent = flowEvent<LivingDropsEvent>(EventPriority.LOWEST)
         .filter { event -> !event.isCanceled }
         .onEach { event ->
+            error { "#livingDropsEvent ${event.entity}" }
+            return@onEach
             val serverPlayer = event.entity.tryCast<ServerPlayer>() ?: return@onEach
             val onlineMinecraftPlayer = serverPlayer.asOnlineMinecraftPlayer()
             val keepInventory = event.entity.level().gameRules.getBoolean(GameRules.RULE_KEEPINVENTORY)

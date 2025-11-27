@@ -5,6 +5,7 @@ import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.service.TickFlowService
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.module.souls.domain.GetNearestSoulUseCase
+import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpExpUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpSoulUseCase
 import ru.astrainteractive.soulkeeper.module.souls.renderer.ArmorStandRenderer
 import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulParticleRenderer
@@ -66,13 +67,19 @@ class ServiceModule(
         minecraftNativeBridge = platformServiceModule.minecraftNativeBridge
     )
 
+    private val pickUpExpUseCase: PickUpExpUseCase = PickUpExpUseCase(
+        collectXpSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectXp },
+        soulsDao = soulsDaoModule.soulsDao,
+        effectEmitter = platformServiceModule.effectEmitter,
+        experiencedFactory = platformServiceModule.onlineMinecraftPlayerExperiencedFactory
+    )
     private val pickUpSoulService = TickFlowService(
         coroutineContext = coreModule.dispatchers.IO,
         delay = flowOf(3.seconds),
         executor = PickUpWorker(
             pickUpSoulUseCase = PickUpSoulUseCase(
                 dispatchers = coreModule.dispatchers,
-                pickUpExpUseCase = platformServiceModule.pickUpExpUseCase,
+                pickUpExpUseCase = pickUpExpUseCase,
                 pickUpItemsUseCase = platformServiceModule.pickUpItemsUseCase,
                 soulsDao = soulsDaoModule.soulsDao,
                 soulGoneParticleProvider = { coreModule.soulsConfigKrate.cachedValue.particles.soulGone },

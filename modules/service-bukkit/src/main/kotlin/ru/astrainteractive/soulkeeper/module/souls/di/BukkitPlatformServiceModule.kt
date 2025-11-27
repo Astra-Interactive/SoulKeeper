@@ -6,14 +6,13 @@ import ru.astrainteractive.astralibs.server.MinecraftNativeBridge
 import ru.astrainteractive.astralibs.server.PlatformServer
 import ru.astrainteractive.soulkeeper.core.di.BukkitCoreModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
-import ru.astrainteractive.soulkeeper.module.souls.domain.BukkitPickUpExpUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.BukkitPickUpItemsUseCase
-import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpExpUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorStandUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.di.factory.ShowArmorStandUseCaseFactory
 import ru.astrainteractive.soulkeeper.module.souls.platform.BukkitEffectEmitter
 import ru.astrainteractive.soulkeeper.module.souls.platform.BukkitEventProvider
+import ru.astrainteractive.soulkeeper.module.souls.platform.BukkitExperienced
 import ru.astrainteractive.soulkeeper.module.souls.platform.BukkitIsDeadPlayerProvider
 import ru.astrainteractive.soulkeeper.module.souls.platform.EffectEmitter
 import ru.astrainteractive.soulkeeper.module.souls.platform.IsDeadPlayerProvider
@@ -31,13 +30,9 @@ class BukkitPlatformServiceModule(
         plugin = bukkitCoreModule.plugin
     )
     override val isDeadPlayerProvider: IsDeadPlayerProvider = BukkitIsDeadPlayerProvider
+    override val onlineMinecraftPlayerExperiencedFactory = BukkitExperienced.OnlineMinecraftPlayerFactory
 
     override val showArmorStandUseCase: ShowArmorStandUseCase = ShowArmorStandUseCaseFactory(coreModule).create()
-    override val pickUpExpUseCase: PickUpExpUseCase = BukkitPickUpExpUseCase(
-        collectXpSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectXp },
-        soulsDao = soulsDaoModule.soulsDao,
-        effectEmitter = effectEmitter
-    )
     override val pickUpItemsUseCase: PickUpItemsUseCase = BukkitPickUpItemsUseCase(
         collectItemSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectItem },
         soulsDao = soulsDaoModule.soulsDao
