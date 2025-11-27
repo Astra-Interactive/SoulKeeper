@@ -21,34 +21,32 @@ internal class ForgePickUpItemsUseCase(
     private val effectEmitter: EffectEmitter
 ) : PickUpItemsUseCase,
     Logger by JUtiltLogger("SoulKeeper-PickUpItemsUseCase") {
-    /**
-     * todo fix
-     * @return items not added into inventory
-     */
     private fun Inventory.addItem(items: List<ItemStack>): List<ItemStack> {
         val inventory = this
-        return buildList {
-            items.forEach { item ->
-                var remaining = item.count
-                while (remaining > 0) {
-                    val singleStack = item.copy().apply { count = minOf(remaining, maxStackSize) }
-                    val addedIntoInventory = inventory.add(singleStack)
-                    if (!addedIntoInventory) add(singleStack)
-                    remaining -= singleStack.count
-                }
+
+        val leftovers = items.mapNotNull { stack ->
+            val copiedItemStack = stack.copy()
+            inventory.add(copiedItemStack)
+
+            if (!copiedItemStack.isEmpty) {
+                copiedItemStack.copy()
+            } else {
+                null
             }
-        }.filterNotNull()
+        }
+        inventory.setChanged()
+
+        return leftovers
     }
 
     override suspend fun invoke(player: OnlineMinecraftPlayer, soul: ItemDatabaseSoul): Output {
-        return Output.SomeItemsRemain // todo
         if (soul.items.isEmpty()) return Output.NoItemsPresent
         val serverPlayer = ForgeUtil.getOnlinePlayer(player.uuid) ?: return Output.SomeItemsRemain
 
         val items: List<ItemStack> = soul.items
             .map(StringFormatObject::raw)
             .map(ItemStackSerializer::decodeFromString)
-            .mapNotNull { it.getOrNull() }
+            .mapNotNull { result -> result.getOrNull() }
 
         val notAddedItems = serverPlayer.inventory.addItem(items)
         if (notAddedItems.size != items.size) {
