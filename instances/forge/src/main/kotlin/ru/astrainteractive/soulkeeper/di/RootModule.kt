@@ -6,6 +6,7 @@ import net.minecraftforge.fml.loading.FMLPaths
 import ru.astrainteractive.astralibs.coroutine.ForgeMainDispatcher
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
+import ru.astrainteractive.soulkeeper.command.di.CommandModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.module.event.di.ForgeEventModule
 import ru.astrainteractive.soulkeeper.module.souls.di.ForgePlatformServiceModule
@@ -13,7 +14,7 @@ import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
 import java.io.File
 
-class RootModule {
+class RootModule(private val plugin: Lifecycle) {
 
     private val dataFolder by lazy {
         FMLPaths.CONFIGDIR.get()
@@ -62,6 +63,11 @@ class RootModule {
             effectEmitter = forgePlatformServiceModule.effectEmitter
         )
     }
+    private val commandModule = CommandModule(
+        coreModule = coreModule,
+        soulsDaoModule = soulsDaoModule,
+        plugin = plugin
+    )
 
     private val lifecycles: List<Lifecycle>
         get() = listOfNotNull(
@@ -69,6 +75,7 @@ class RootModule {
             soulsDaoModule.lifecycle,
             forgeEventModule.lifecycle,
             serviceModule.lifecycle,
+            commandModule.lifecycle
         )
 
     val lifecycle = Lifecycle.Lambda(

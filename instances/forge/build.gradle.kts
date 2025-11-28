@@ -31,6 +31,7 @@ dependencies {
     shadow(libs.kyori.gson)
     // Local
     shadow(projects.modules.core)
+    shadow(projects.modules.commandForge)
     shadow(projects.modules.dao)
     shadow(projects.modules.service)
     shadow(projects.modules.serviceForge)

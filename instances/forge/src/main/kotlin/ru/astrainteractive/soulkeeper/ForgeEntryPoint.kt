@@ -19,7 +19,7 @@ import javax.annotation.ParametersAreNonnullByDefault
 class ForgeEntryPoint :
     Logger by JUtiltLogger("SoulKeeper-ForgeEntryPoint"),
     Lifecycle {
-    private val rootModule by lazy { RootModule() }
+    private val rootModule by lazy { RootModule(this) }
 
     override fun onEnable() {
         info { "#onEnable" }
