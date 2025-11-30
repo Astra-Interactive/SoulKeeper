@@ -4,7 +4,7 @@ import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
 import ru.astrainteractive.astralibs.server.util.ForgeUtil
 import ru.astrainteractive.astralibs.server.util.getOnlinePlayer
 
-class ForgeExperienced(
+class NeoForgeExperienced(
     private val player: OnlineMinecraftPlayer
 ) : Experienced {
     override fun giveExperience(experience: Int) {
@@ -13,7 +13,7 @@ class ForgeExperienced(
 
     object OnlineMinecraftPlayerFactory : Experienced.Factory<OnlineMinecraftPlayer> {
         override fun create(owner: OnlineMinecraftPlayer): Experienced {
-            return ForgeExperienced(owner)
+            return NeoForgeExperienced(owner)
         }
     }
 }

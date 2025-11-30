@@ -12,9 +12,9 @@ import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.GameRules
 import net.minecraft.world.level.Level
-import net.minecraftforge.event.entity.living.LivingDropsEvent
-import net.minecraftforge.event.entity.living.LivingExperienceDropEvent
-import net.minecraftforge.eventbus.api.EventPriority
+import net.neoforged.bus.api.EventPriority
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent
+import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent
 import ru.astrainteractive.astralibs.event.flowEvent
 import ru.astrainteractive.astralibs.server.location.Location
 import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer

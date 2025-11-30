@@ -2,7 +2,7 @@ package ru.astrainteractive.soulkeeper.command.reload
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import net.minecraft.commands.CommandSourceStack
-import ru.astrainteractive.astralibs.command.registrar.ForgeCommandRegistrarContext
+import ru.astrainteractive.astralibs.command.registrar.NeoForgeCommandRegistrarContext
 import ru.astrainteractive.astralibs.command.util.command
 import ru.astrainteractive.astralibs.command.util.requirePermission
 import ru.astrainteractive.astralibs.command.util.runs
@@ -17,7 +17,7 @@ import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
 
 internal class SoulsReloadCommandRegistrar(
     private val plugin: Lifecycle,
-    private val registrarContext: ForgeCommandRegistrarContext,
+    private val registrarContext: NeoForgeCommandRegistrarContext,
     translationKrate: CachedKrate<PluginTranslation>,
     kyoriKrate: CachedKrate<KyoriComponentSerializer>
 ) : KyoriComponentSerializer by kyoriKrate.unwrap() {

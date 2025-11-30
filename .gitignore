@@ -21,3 +21,5 @@ modules/dto/build
 plugin/build
 # velocity
 velocity/build
+**/junit_jvm_args.txt
+**/junit_test_args.txt

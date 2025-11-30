@@ -1,11 +1,10 @@
 package ru.astrainteractive.soulkeeper.module.souls.platform
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.mapNotNull
 import net.minecraft.server.level.ServerPlayer
-import net.minecraftforge.event.TickEvent
-import net.minecraftforge.event.entity.player.PlayerEvent
+import net.neoforged.neoforge.event.entity.player.PlayerEvent
+import net.neoforged.neoforge.event.tick.PlayerTickEvent
 import ru.astrainteractive.astralibs.event.flowEvent
 import ru.astrainteractive.astralibs.server.util.asLocatable
 import ru.astrainteractive.astralibs.server.util.asOnlineMinecraftPlayer
@@ -15,12 +14,11 @@ import ru.astrainteractive.soulkeeper.module.souls.platform.event.model.SharedPl
 import ru.astrainteractive.soulkeeper.module.souls.platform.event.model.SharedPlayerLeaveEvent
 import ru.astrainteractive.soulkeeper.module.souls.platform.event.model.SharedPlayerMoveEvent
 
-object ForgeEventProvider : EventProvider {
+object NeoForgeEventProvider : EventProvider {
     override fun getPlayerMoveEvent(): Flow<SharedPlayerMoveEvent> {
-        return flowEvent<TickEvent.PlayerTickEvent>()
-            .filter { it.phase == TickEvent.Phase.END }
+        return flowEvent<PlayerTickEvent>()
             .mapNotNull { event ->
-                val serverPlayer = event.player
+                val serverPlayer = event.entity
                     .tryCast<ServerPlayer>()
                     ?: return@mapNotNull null
                 SharedPlayerMoveEvent(

@@ -2,16 +2,17 @@ package ru.astrainteractive.soulkeeper.module.souls.platform
 
 import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.core.particles.ParticleTypes
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundSource
-import net.minecraftforge.registries.ForgeRegistries
+import net.neoforged.neoforge.registries.NeoForgeRegistries
 import ru.astrainteractive.astralibs.server.location.Location
 import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
 import ru.astrainteractive.astralibs.server.util.ForgeUtil
 import ru.astrainteractive.astralibs.server.util.getOnlinePlayer
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 
-class ForgeEffectEmitter : EffectEmitter {
+class NeoForgeEffectEmitter : EffectEmitter {
     override fun playSoundForPlayer(
         location: Location,
         player: OnlineMinecraftPlayer,
@@ -19,9 +20,7 @@ class ForgeEffectEmitter : EffectEmitter {
     ) {
         val serverPlayer = ForgeUtil.getOnlinePlayer(player.uuid) ?: return
 
-        val soundEvent = ForgeRegistries.SOUND_EVENTS
-            .getValue(ResourceLocation(sound.id))
-            ?: return
+        val soundEvent = BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.parse(sound.id)) ?: return
 
         serverPlayer.playNotifySound(
             soundEvent,
@@ -39,9 +38,10 @@ class ForgeEffectEmitter : EffectEmitter {
         val serverPlayer = ForgeUtil.getOnlinePlayer(player.uuid) ?: return
         val serverLevel = serverPlayer.serverLevel()
 
-        val particleType = ForgeRegistries.PARTICLE_TYPES
-            .getValue(ResourceLocation(config.key))
-            ?: ParticleTypes.DUST
+        NeoForgeRegistries.INGREDIENT_TYPES
+
+
+        val particleType = BuiltInRegistries.PARTICLE_TYPE.get(ResourceLocation.parse(config.key)) ?: ParticleTypes.DUST
 
         val dustOptions = config.dustOptions
         val particleOptions = when (particleType) {

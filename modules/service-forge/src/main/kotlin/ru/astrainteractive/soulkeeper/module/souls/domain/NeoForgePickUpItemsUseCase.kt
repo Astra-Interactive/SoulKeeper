@@ -15,7 +15,7 @@ import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase.Out
 import ru.astrainteractive.soulkeeper.module.souls.platform.EffectEmitter
 import ru.astrainteractive.soulkeeper.module.souls.platform.ItemStackSerializer
 
-internal class ForgePickUpItemsUseCase(
+internal class NeoForgePickUpItemsUseCase(
     private val collectItemSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
     private val soulsDao: SoulsDao,
     private val effectEmitter: EffectEmitter

@@ -1,13 +1,12 @@
 pluginManagement {
-    include(":modules:core")
     repositories {
+        mavenLocal()
+        maven("https://maven.neoforged.net/releases")
         maven("https://plugins.gradle.org/m2/")
         maven("https://jitpack.io")
         gradlePluginPortal()
         mavenCentral()
-        mavenLocal()
         google()
-        maven("https://maven.minecraftforge.net")
     }
 }
 
@@ -19,8 +18,8 @@ buildscript {
 
 dependencyResolutionManagement {
     repositories {
-        gradlePluginPortal()
         mavenLocal()
+        gradlePluginPortal()
         mavenCentral()
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
         maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")

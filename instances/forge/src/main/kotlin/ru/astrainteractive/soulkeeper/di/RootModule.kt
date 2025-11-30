@@ -2,14 +2,14 @@ package ru.astrainteractive.soulkeeper.di
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import net.minecraftforge.fml.loading.FMLPaths
-import ru.astrainteractive.astralibs.coroutine.ForgeMainDispatcher
+import net.neoforged.fml.loading.FMLPaths
+import ru.astrainteractive.astralibs.coroutine.NeoForgeMainDispatcher
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.soulkeeper.command.di.CommandModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.module.event.di.ForgeEventModule
-import ru.astrainteractive.soulkeeper.module.souls.di.ForgePlatformServiceModule
+import ru.astrainteractive.soulkeeper.module.souls.di.NeoForgePlatformServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
 import java.io.File
@@ -27,7 +27,7 @@ class RootModule(private val plugin: Lifecycle) {
     val coreModule: CoreModule by lazy {
         CoreModule(
             dispatchers = object : KotlinDispatchers {
-                override val Main: CoroutineDispatcher = ForgeMainDispatcher()
+                override val Main: CoroutineDispatcher = NeoForgeMainDispatcher()
                 override val IO: CoroutineDispatcher = Dispatchers.IO
                 override val Default: CoroutineDispatcher = Dispatchers.Default
                 override val Unconfined: CoroutineDispatcher = Dispatchers.Unconfined
@@ -43,7 +43,7 @@ class RootModule(private val plugin: Lifecycle) {
         )
     }
     private val forgePlatformServiceModule by lazy {
-        ForgePlatformServiceModule(
+        NeoForgePlatformServiceModule(
             coreModule = coreModule,
             soulsDaoModule = soulsDaoModule
         )

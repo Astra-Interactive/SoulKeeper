@@ -1,6 +1,6 @@
 package ru.astrainteractive.soulkeeper.command.di
 
-import ru.astrainteractive.astralibs.command.registrar.ForgeCommandRegistrarContext
+import ru.astrainteractive.astralibs.command.registrar.NeoForgeCommandRegistrarContext
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.soulkeeper.command.reload.SoulsReloadCommandRegistrar
 import ru.astrainteractive.soulkeeper.command.souls.SoulsCommandExecutor
@@ -13,7 +13,7 @@ class CommandModule(
     private val soulsDaoModule: SoulsDaoModule,
     private val plugin: Lifecycle
 ) {
-    private val paperCommandRegistrar = ForgeCommandRegistrarContext(
+    private val paperCommandRegistrar = NeoForgeCommandRegistrarContext(
         mainScope = coreModule.mainScope,
     )
     val lifecycle = Lifecycle.Lambda(

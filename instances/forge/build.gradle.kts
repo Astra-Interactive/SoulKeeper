@@ -1,25 +1,21 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import ru.astrainteractive.gradleplugin.property.extension.ModelPropertyValueExt.requireJinfo
 import ru.astrainteractive.gradleplugin.property.extension.ModelPropertyValueExt.requireProjectInfo
 
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
-    alias(libs.plugins.forgegradle)
+    alias(libs.plugins.neoforgegradle)
     alias(libs.plugins.klibs.minecraft.resource.processor)
     alias(libs.plugins.gradle.shadow)
 }
 
 dependencies {
-    minecraft(
-        "net.minecraftforge",
-        "forge",
-        "${libs.versions.minecraft.mojang.version.get()}-${libs.versions.minecraft.forgeversion.get()}"
-    )
     // Kotlin
     shadow(libs.kotlin.coroutines.core)
     // AstraLibs
     shadow(libs.minecraft.astralibs.core)
-    shadow(libs.minecraft.astralibs.core.forge)
+    shadow(libs.minecraft.astralibs.core.neoforge)
     shadow(libs.minecraft.astralibs.command)
     shadow(libs.kotlin.serialization.kaml)
     shadow(libs.klibs.mikro.core)
@@ -38,34 +34,73 @@ dependencies {
     shadow(projects.modules.eventForge)
 }
 
-minecraft {
-    mappings("official", libs.versions.minecraft.mojang.version.get())
-    accessTransformer(rootProject.file("build").resolve("accesstransformer.cfg"))
+repositories {
+    mavenLocal()
+}
+
+dependencies {
+    compileOnly(libs.minecraft.neoforgeversion)
+}
+
+tasks.withType<JavaCompile> {
+    javaCompiler.set(
+        javaToolchains.compilerFor {
+            requireJinfo.jtarget.majorVersion
+                .let(JavaLanguageVersion::of)
+                .let(languageVersion::set)
+        }
+    )
+}
+
+configurations.runtimeElements {
+    setExtendsFrom(emptySet())
 }
 
 val destination = rootDir
     .resolve("build")
-    .resolve("forge")
+    .resolve("neoforge")
     .resolve("mods")
     .takeIf(File::exists)
     ?: File(rootDir, "jars")
 
-val reobfShadowJar = reobf.create("shadowJar")
-
-minecraftProcessResource {
-    forge()
+tasks.named<ProcessResources>("processResources") {
+    filteringCharset = "UTF-8"
+    duplicatesStrategy = DuplicatesStrategy.WARN
+    val sourceSets = project.extensions.getByName("sourceSets") as org.gradle.api.tasks.SourceSetContainer
+    val resDirs = sourceSets
+        .map(SourceSet::getResources)
+        .map(SourceDirectorySet::getSrcDirs)
+    from(resDirs) {
+        include("META-INF/neoforge.mods.toml")
+        expand(
+            mapOf(
+                "minecraft_version" to "minecraft_version",
+                "minecraft_version_range" to "minecraft_version_range",
+                "neo_version" to "neo_version",
+                "neo_version_range" to "neo_version_range",
+                "kff_version" to "kff_version",
+                "kff_version_range" to "kff_version_range",
+                "loader_version_range" to "loader_version_range",
+                "mod_id" to "mod_id",
+                "mod_name" to "mod_name",
+                "mod_license" to "mod_license",
+                "mod_version" to "mod_version",
+                "mod_authors" to "mod_authors",
+                "mod_description" to "mod_description"
+            )
+        )
+    }
 }
 
 val shadowJar by tasks.getting(ShadowJar::class) {
     mergeServiceFiles()
     dependsOn(tasks.named<ProcessResources>("processResources"))
-    finalizedBy(reobfShadowJar)
     configurations = listOf(project.configurations.shadow.get())
     isReproducibleFileOrder = true
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveClassifier = null as String?
     archiveVersion = requireProjectInfo.versionString
-    archiveBaseName = "${requireProjectInfo.name}-forge"
+    archiveBaseName = "${requireProjectInfo.name}-neoforge"
     destinationDirectory = destination
     dependencies {
         // deps

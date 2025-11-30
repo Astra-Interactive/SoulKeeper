@@ -4,7 +4,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.LongArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import net.minecraft.commands.CommandSourceStack
-import ru.astrainteractive.astralibs.command.registrar.ForgeCommandRegistrarContext
+import ru.astrainteractive.astralibs.command.registrar.NeoForgeCommandRegistrarContext
 import ru.astrainteractive.astralibs.command.util.argument
 import ru.astrainteractive.astralibs.command.util.command
 import ru.astrainteractive.astralibs.command.util.literal
@@ -16,7 +16,7 @@ import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 
 internal class SoulsListCommandRegistrar(
     kyoriKrate: CachedKrate<KyoriComponentSerializer>,
-    private val registrarContext: ForgeCommandRegistrarContext,
+    private val registrarContext: NeoForgeCommandRegistrarContext,
     private val soulsCommandExecutor: SoulsCommandExecutor
 ) : KyoriComponentSerializer by kyoriKrate.unwrap() {
     private fun createNode(): LiteralArgumentBuilder<CommandSourceStack> {

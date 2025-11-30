@@ -2,10 +2,10 @@ package ru.astrainteractive.soulkeeper
 
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import net.minecraftforge.event.server.ServerStartedEvent
-import net.minecraftforge.event.server.ServerStoppingEvent
-import net.minecraftforge.eventbus.api.EventPriority
-import net.minecraftforge.fml.common.Mod
+import net.neoforged.bus.api.EventPriority
+import net.neoforged.fml.common.Mod
+import net.neoforged.neoforge.event.server.ServerStartedEvent
+import net.neoforged.neoforge.event.server.ServerStoppingEvent
 import ru.astrainteractive.astralibs.event.flowEvent
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.server.util.ForgeUtil
