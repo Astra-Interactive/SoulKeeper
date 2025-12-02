@@ -28,7 +28,9 @@ internal class NeoForgePickUpItemsUseCase(
     private fun Inventory.addItems(items: List<ItemStack>): List<ItemStack> {
         return items
             .mapNotNull { stack ->
-                add(stack)
+                if (!this.player.isDeadOrDying) {
+                    add(stack)
+                }
                 stack.copy()
             }
             .filterNot(ItemStack::isEmpty)
@@ -40,6 +42,7 @@ internal class NeoForgePickUpItemsUseCase(
         val serverPlayer = NeoForgeUtil.getOnlinePlayer(player.uuid) ?: return Output.SomeItemsRemain
         if (serverPlayer.abilities.instabuild) return Output.SomeItemsRemain
         if (serverPlayer.gameMode.isCreative) return Output.SomeItemsRemain
+        if (serverPlayer.isDeadOrDying) return Output.SomeItemsRemain
 
         val notAddedItems = serverPlayer.inventory
             .addItems(

@@ -31,10 +31,16 @@ internal class PickUpSoulUseCase(
         return withContext(dispatchers.Main) {
             pickUpExpUseCase.invoke(player, bukkitSoul)
 
-            val isAllItemsPickedUp = pickUpItemsUseCase.invoke(
+            val pickUpOutput = pickUpItemsUseCase.invoke(
                 player = player,
                 soul = bukkitSoul
-            ) !is PickUpItemsUseCase.Output.SomeItemsRemain
+            )
+
+            val isAllItemsPickedUp = when (pickUpOutput) {
+                PickUpItemsUseCase.Output.NoItemsPresent,
+                PickUpItemsUseCase.Output.ItemsCollected -> true
+                PickUpItemsUseCase.Output.SomeItemsRemain -> false
+            }
 
             if (!isAllItemsPickedUp) {
                 effectEmitter.playSoundForPlayer(

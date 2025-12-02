@@ -99,7 +99,6 @@ internal class ForgeSoulEvents(
             ownerLastName = onlineMinecraftPlayer.name,
             createdAt = Instant.now(),
             isFree = soulsConfig.soulFreeAfter == 0.seconds,
-            hasItems = soulItems.orEmpty().isNotEmpty(),
             location = when (dimension) {
                 Level.END -> {
                     location.copy(y = location.y.coerceAtLeast(soulsConfig.endLocationLimitY))

@@ -10,7 +10,8 @@ data class DefaultSoul(
     override val createdAt: Instant,
     override val isFree: Boolean,
     override val location: Location,
-    override val hasItems: Boolean,
     override val exp: Int,
     val items: List<StringFormatObject>
-) : Soul
+) : Soul {
+    override val hasItems: Boolean = items.isNotEmpty()
+}
