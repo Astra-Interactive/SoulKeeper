@@ -6,7 +6,6 @@ plugins {
     alias(libs.plugins.neoforgegradle)
 }
 
-
 dependencies {
     implementation(libs.kotlin.coroutines.core)
     implementation(libs.kotlin.serialization.json)

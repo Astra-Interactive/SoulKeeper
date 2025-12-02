@@ -16,7 +16,7 @@ import ru.astrainteractive.soulkeeper.module.souls.platform.event.model.SharedPl
 
 object NeoForgeEventProvider : EventProvider {
     override fun getPlayerMoveEvent(): Flow<SharedPlayerMoveEvent> {
-        return flowEvent<PlayerTickEvent>()
+        return flowEvent<PlayerTickEvent.Post>()
             .mapNotNull { event ->
                 val serverPlayer = event.entity
                     .tryCast<ServerPlayer>()

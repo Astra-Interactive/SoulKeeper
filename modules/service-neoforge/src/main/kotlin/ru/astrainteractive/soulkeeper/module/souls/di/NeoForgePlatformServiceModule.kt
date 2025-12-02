@@ -10,11 +10,11 @@ import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorStandUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.StubShowArmorStandUseCase
 import ru.astrainteractive.soulkeeper.module.souls.platform.EffectEmitter
+import ru.astrainteractive.soulkeeper.module.souls.platform.IsDeadPlayerProvider
 import ru.astrainteractive.soulkeeper.module.souls.platform.NeoForgeEffectEmitter
 import ru.astrainteractive.soulkeeper.module.souls.platform.NeoForgeEventProvider
 import ru.astrainteractive.soulkeeper.module.souls.platform.NeoForgeExperienced
 import ru.astrainteractive.soulkeeper.module.souls.platform.NeoForgeIsDeadPlayerProvider
-import ru.astrainteractive.soulkeeper.module.souls.platform.IsDeadPlayerProvider
 import ru.astrainteractive.soulkeeper.module.souls.platform.event.EventProvider
 
 class NeoForgePlatformServiceModule(

@@ -11,16 +11,14 @@ import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
 class CommandModule(
     private val coreModule: CoreModule,
     private val soulsDaoModule: SoulsDaoModule,
-    private val plugin: Lifecycle
+    private val plugin: Lifecycle,
 ) {
-    private val paperCommandRegistrar = NeoForgeCommandRegistrarContext(
-        mainScope = coreModule.mainScope,
-    )
+    private val commandRegistrar = NeoForgeCommandRegistrarContext(coreModule.unconfinedScope)
     val lifecycle = Lifecycle.Lambda(
         onEnable = {
             SoulsListCommandRegistrar(
                 kyoriKrate = coreModule.kyoriComponentSerializer,
-                registrarContext = paperCommandRegistrar,
+                registrarContext = commandRegistrar,
                 soulsCommandExecutor = SoulsCommandExecutor(
                     ioScope = coreModule.ioScope,
                     soulsDao = soulsDaoModule.soulsDao,
@@ -32,10 +30,9 @@ class CommandModule(
                 plugin = plugin,
                 translationKrate = coreModule.translation,
                 kyoriKrate = coreModule.kyoriComponentSerializer,
-                registrarContext = paperCommandRegistrar
+                registrarContext = commandRegistrar
             ).register()
         },
-        onDisable = {
-        }
+        onDisable = {}
     )
 }

@@ -26,6 +26,7 @@ class RootModule(private val plugin: Lifecycle) {
 
     val coreModule: CoreModule by lazy {
         CoreModule(
+            dataFolder = dataFolder,
             dispatchers = object : KotlinDispatchers {
                 override val Main: CoroutineDispatcher by lazy {
                     NeoForgeMainDispatcher()
@@ -33,8 +34,7 @@ class RootModule(private val plugin: Lifecycle) {
                 override val IO: CoroutineDispatcher = Dispatchers.IO
                 override val Default: CoroutineDispatcher = Dispatchers.Default
                 override val Unconfined: CoroutineDispatcher = Dispatchers.Unconfined
-            },
-            dataFolder = dataFolder
+            }
         )
     }
 
@@ -68,7 +68,7 @@ class RootModule(private val plugin: Lifecycle) {
     private val commandModule = CommandModule(
         coreModule = coreModule,
         soulsDaoModule = soulsDaoModule,
-        plugin = plugin
+        plugin = plugin,
     )
 
     private val lifecycles: List<Lifecycle>

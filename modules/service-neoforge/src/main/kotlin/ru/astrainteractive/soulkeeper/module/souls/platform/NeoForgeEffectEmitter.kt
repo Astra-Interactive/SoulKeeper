@@ -40,7 +40,6 @@ class NeoForgeEffectEmitter : EffectEmitter {
 
         NeoForgeRegistries.INGREDIENT_TYPES
 
-
         val particleType = BuiltInRegistries.PARTICLE_TYPE.get(ResourceLocation.parse(config.key)) ?: ParticleTypes.DUST
 
         val dustOptions = config.dustOptions
