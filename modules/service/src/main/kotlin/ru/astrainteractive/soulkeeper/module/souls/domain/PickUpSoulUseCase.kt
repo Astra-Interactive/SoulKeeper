@@ -47,7 +47,6 @@ internal class PickUpSoulUseCase(
                     player = player,
                     config = soulContentLeftParticleProvider.invoke()
                 )
-                info { "not all items picked up: $bukkitSoul" }
                 return@withContext Output.SomethingRest
             }
             soulsDao.deleteSoul(bukkitSoul.id)

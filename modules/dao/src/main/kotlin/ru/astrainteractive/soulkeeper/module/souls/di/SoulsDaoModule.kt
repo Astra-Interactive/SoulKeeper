@@ -39,7 +39,6 @@ interface SoulsDaoModule {
                 .connect()
             TransactionManager.manager.defaultIsolationLevel = java.sql.Connection.TRANSACTION_SERIALIZABLE
             transaction(database) {
-//                addLogger(Slf4jSqlDebugLogger)
                 SchemaUtils.create(SoulTable)
                 SchemaUtils.createMissingTablesAndColumns(SoulTable)
                 SchemaUtils.createMissingTablesAndColumns(SoulItemsTable)
