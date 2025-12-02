@@ -45,15 +45,15 @@ rootProject.name = "SoulKeeper"
 
 // Spigot
 include(":instances:bukkit")
-include(":instances:forge")
+include(":instances:neoforge")
 // Modules
 include(":modules:core")
 include(":modules:core-bukkit")
 include(":modules:dao")
 include(":modules:service")
 include(":modules:service-bukkit")
-include(":modules:service-forge")
+include(":modules:service-neoforge")
 include(":modules:event-bukkit")
-include(":modules:event-forge")
+include(":modules:event-neoforge")
 include(":modules:command-bukkit")
-include(":modules:command-forge")
+include(":modules:command-neoforge")
