@@ -107,6 +107,9 @@ val shadowJar by tasks.getting(ShadowJar::class) {
         // deps
         exclude(dependency("org.jetbrains:annotations"))
         // deps paths
+        // Without kotlin deps
+        exclude("kotlin/**")
+
         exclude("co/touchlab/stately/**")
         exclude("club/minnced/opus/**")
         exclude("com/google/**")
