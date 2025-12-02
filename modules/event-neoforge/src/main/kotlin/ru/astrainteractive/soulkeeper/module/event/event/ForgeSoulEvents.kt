@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import net.minecraft.resources.ResourceKey
 import net.minecraft.server.level.ServerPlayer
@@ -22,7 +23,6 @@ import ru.astrainteractive.astralibs.server.util.asLocatable
 import ru.astrainteractive.astralibs.server.util.asOnlineMinecraftPlayer
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
-import ru.astrainteractive.klibs.mikro.core.coroutines.launch
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
@@ -76,7 +76,8 @@ internal class ForgeSoulEvents(
         val updatedItems = soulItems
             ?.map(ItemStackSerializer::encodeToString)
             ?.map(::StringFormatObject)
-            ?: soul.items
+            .orEmpty()
+            .plus(soul.items)
         soulsDao.updateSoul(
             soul = soul.copy(
                 exp = droppedXp ?: soul.exp,
@@ -115,13 +116,13 @@ internal class ForgeSoulEvents(
     }
 
     @Suppress("LongMethod")
-    private fun createOrUpdateSoul(
+    private suspend fun createOrUpdateSoul(
         onlineMinecraftPlayer: OnlineMinecraftPlayer,
         serverPlayer: ServerPlayer,
         droppedXp: Int?,
         soulItems: List<ItemStack>?
     ) {
-        ioScope.launch(mutex) {
+        mutex.withLock {
             val location = onlineMinecraftPlayer
                 .asLocatable()
                 .getLocation()
@@ -186,6 +187,7 @@ internal class ForgeSoulEvents(
     val livingDropsEvent = flowEvent<LivingDropsEvent>(EventPriority.HIGHEST)
         .filter { event -> !event.isCanceled }
         .onEach { event ->
+            info { "#livingDropsEvent ${event.drops.size} ${event.drops}" }
             val serverPlayer = event.entity.tryCast<ServerPlayer>() ?: return@onEach
             val keepInventory = event.entity.level().gameRules.getBoolean(GameRules.RULE_KEEPINVENTORY)
             val onlineMinecraftPlayer = serverPlayer.asOnlineMinecraftPlayer()

@@ -8,6 +8,8 @@ dependencies {
     // AstraLibs
     implementation(libs.minecraft.astralibs.core)
     implementation(libs.minecraft.astralibs.command)
+
+    implementation(libs.minecraft.paper.api)
     // klibs
     implementation(libs.klibs.mikro.core)
     implementation(projects.modules.core)

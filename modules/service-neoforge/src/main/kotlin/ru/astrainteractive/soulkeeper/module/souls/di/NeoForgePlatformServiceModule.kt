@@ -32,6 +32,7 @@ class NeoForgePlatformServiceModule(
     override val pickUpItemsUseCase: PickUpItemsUseCase = NeoForgePickUpItemsUseCase(
         collectItemSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectItem },
         soulsDao = soulsDaoModule.soulsDao,
-        effectEmitter = effectEmitter
+        effectEmitter = effectEmitter,
+        isDeadPlayerProvider = isDeadPlayerProvider
     )
 }

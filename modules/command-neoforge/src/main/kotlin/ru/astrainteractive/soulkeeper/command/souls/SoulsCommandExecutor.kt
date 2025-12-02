@@ -154,86 +154,86 @@ internal class SoulsCommandExecutor(
         }
     }
 
-    @Suppress("LongMethod")
     fun execute(input: SoulsCommand.Intent) {
+        ioScope.launch {
+            executeInternal(input)
+        }
+    }
+
+    @Suppress("LongMethod")
+    private suspend fun executeInternal(input: SoulsCommand.Intent) {
         when (input) {
             is SoulsCommand.Intent.List -> {
-                ioScope.launch {
-                    val filteredSouls = getFilteredSouls(input.sender)
-                    val maxPages = filteredSouls.size.div(SoulsCommand.PAGE_SIZE)
-                    val pageSouls = getPageSouls(filteredSouls, input.page)
-                    if (pageSouls.isEmpty()) {
-                        val title = translation.souls.noSoulsOnPage(input.page.plus(1)).component
-                        input.sender.sendSystemMessage(title.toNative())
-                        return@launch
-                    }
-
-                    translation.souls.listSoulsTitle.component
-                        .toNative()
-                        .run(input.sender::sendSystemMessage)
-
-                    pageSouls.forEachIndexed { i, soul ->
-                        createListingItemComponent(
-                            soul = soul,
-                            page = input.page,
-                            i = i,
-                            location = input.sender
-                                .player
-                                ?.asLocatable()
-                                ?.getLocation()
-                        ).append(
-                            addSpace = true,
-                            other = createFreeSoulComponent(
-                                sender = input.sender,
-                                soul = soul
-                            )
-                        ).append(
-                            addSpace = true,
-                            other = createTeleportSoulComponent(
-                                sender = input.sender,
-                                soul = soul
-                            )
-                        ).toNative().run(input.sender::sendSystemMessage)
-                    }
-                    createPagingMessage(input, maxPages)
-                        .toNative()
-                        .run(input.sender::sendSystemMessage)
+                val filteredSouls = getFilteredSouls(input.sender)
+                val maxPages = filteredSouls.size.div(SoulsCommand.PAGE_SIZE)
+                val pageSouls = getPageSouls(filteredSouls, input.page)
+                if (pageSouls.isEmpty()) {
+                    val title = translation.souls.noSoulsOnPage(input.page.plus(1)).component
+                    input.sender.sendSystemMessage(title.toNative())
+                    return
                 }
+
+                translation.souls.listSoulsTitle.component
+                    .toNative()
+                    .run(input.sender::sendSystemMessage)
+
+                pageSouls.forEachIndexed { i, soul ->
+                    createListingItemComponent(
+                        soul = soul,
+                        page = input.page,
+                        i = i,
+                        location = input.sender
+                            .player
+                            ?.asLocatable()
+                            ?.getLocation()
+                    ).append(
+                        addSpace = true,
+                        other = createFreeSoulComponent(
+                            sender = input.sender,
+                            soul = soul
+                        )
+                    ).append(
+                        addSpace = true,
+                        other = createTeleportSoulComponent(
+                            sender = input.sender,
+                            soul = soul
+                        )
+                    ).toNative().run(input.sender::sendSystemMessage)
+                }
+                createPagingMessage(input, maxPages)
+                    .toNative()
+                    .run(input.sender::sendSystemMessage)
             }
 
             is SoulsCommand.Intent.Free -> {
-                ioScope.launch {
-                    val newSoul = soulsDao.getSoul(input.soulId)
-                        .getOrNull()
-                        ?.copy(isFree = true)
-                    if (newSoul == null) {
-                        input.sender.sendSystemMessage(translation.souls.soulNotFound.component.toNative())
-                        return@launch
-                    }
-                    soulsDao.updateSoul(newSoul)
-                        .onSuccess {
-                            input.sender.sendSystemMessage(translation.souls.soulFreed.component.toNative())
-                        }
-                        .onFailure {
-                            input.sender.sendSystemMessage(translation.souls.couldNotFreeSoul.component.toNative())
-                        }
+                val newSoul = soulsDao.getSoul(input.soulId)
+                    .getOrNull()
+                    ?.copy(isFree = true)
+                if (newSoul == null) {
+                    input.sender.sendSystemMessage(translation.souls.soulNotFound.component.toNative())
+                    return
                 }
+                soulsDao.updateSoul(newSoul)
+                    .onSuccess {
+                        input.sender.sendSystemMessage(translation.souls.soulFreed.component.toNative())
+                    }
+                    .onFailure {
+                        input.sender.sendSystemMessage(translation.souls.couldNotFreeSoul.component.toNative())
+                    }
             }
 
             is SoulsCommand.Intent.TeleportToSoul -> {
-                ioScope.launch {
-                    val player = input.sender.player ?: return@launch
-                    val location = soulsDao.getSoul(input.soulId)
-                        .getOrNull()
-                        ?.location
-                    if (location == null) {
-                        input.sender.sendSystemMessage(translation.souls.soulNotFound.component.toNative())
-                        return@launch
-                    }
-                    player.asOnlineMinecraftPlayer()
-                        .asTeleportable()
-                        .teleport(location)
+                val player = input.sender.player ?: return
+                val location = soulsDao.getSoul(input.soulId)
+                    .getOrNull()
+                    ?.location
+                if (location == null) {
+                    input.sender.sendSystemMessage(translation.souls.soulNotFound.component.toNative())
+                    return
                 }
+                player.asOnlineMinecraftPlayer()
+                    .asTeleportable()
+                    .teleport(location)
             }
         }
     }
