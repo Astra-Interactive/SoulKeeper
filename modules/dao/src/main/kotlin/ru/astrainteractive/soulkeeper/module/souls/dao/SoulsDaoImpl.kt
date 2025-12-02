@@ -1,11 +1,13 @@
 package ru.astrainteractive.soulkeeper.module.souls.dao
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
@@ -33,6 +35,17 @@ internal class SoulsDaoImpl(
     private val databaseFlow: Flow<Database>,
 ) : SoulsDao, Logger by JUtiltLogger("SoulKeeper-SoulsDaoImpl") {
     private val mutex = Mutex()
+    private suspend fun <T> safeRun(
+        tag: String,
+        block: suspend () -> T
+    ): Result<T> = runCatching {
+        withContext(Dispatchers.IO) {
+            mutex.withLock {
+                block.invoke()
+            }
+        }
+    }.onFailure { error { "#$tag error: ${it.message}. ${it.cause}" } }
+
     private val soulsChangedSharedFlow = MutableSharedFlow<Unit>()
 
     override fun getSoulsChangeFlow(): Flow<Unit> {
@@ -57,154 +70,135 @@ internal class SoulsDaoImpl(
         )
     }
 
-    private fun <T> Result<T>.logFailure(key: String): Result<T> {
-        onFailure { error { "#$key error: ${it.message}. ${it.cause}" } }
-        return this
+    override suspend fun getSouls(): Result<List<DatabaseSoul>> = safeRun("getSouls") {
+        transaction(databaseFlow.first()) {
+            SoulTable.selectAll()
+                .orderBy(SoulTable.broken_created_at to SortOrder.DESC)
+                .orderBy(SoulTable.created_at to SortOrder.DESC)
+                .map(::toDatabaseSoul)
+        }
     }
 
-    override suspend fun getSouls(): Result<List<DatabaseSoul>> = runCatching {
-        mutex.withLock {
-            transaction(databaseFlow.first()) {
-                SoulTable.selectAll()
-                    .orderBy(SoulTable.broken_created_at to SortOrder.DESC)
-                    .orderBy(SoulTable.created_at to SortOrder.DESC)
-                    .map(::toDatabaseSoul)
-            }
+    override suspend fun getSoul(id: Long): Result<DatabaseSoul> = safeRun("getSoul") {
+        transaction(databaseFlow.first()) {
+            SoulTable
+                .selectAll()
+                .limit(1)
+                .orderBy(SoulTable.broken_created_at to SortOrder.DESC)
+                .orderBy(SoulTable.created_at to SortOrder.DESC)
+                .map(::toDatabaseSoul)
+                .first()
         }
-    }.logFailure("getSouls")
+    }
 
-    override suspend fun getSoul(id: Long): Result<DatabaseSoul> = runCatching {
-        mutex.withLock {
-            transaction(databaseFlow.first()) {
-                SoulTable
-                    .selectAll()
-                    .limit(1)
-                    .orderBy(SoulTable.broken_created_at to SortOrder.DESC)
-                    .orderBy(SoulTable.created_at to SortOrder.DESC)
-                    .map(::toDatabaseSoul)
-                    .first()
-            }
+    override suspend fun getPlayerSouls(
+        uuid: UUID
+    ): Result<List<DatabaseSoul>> = safeRun("getPlayerSouls") {
+        transaction(databaseFlow.first()) {
+            SoulTable.selectAll()
+                .where { SoulTable.ownerUUID.eq(uuid.toString()) }
+                .map(::toDatabaseSoul)
         }
-    }.logFailure("getSouls")
-
-    override suspend fun getPlayerSouls(uuid: UUID): Result<List<DatabaseSoul>> = runCatching {
-        mutex.withLock {
-            transaction(databaseFlow.first()) {
-                SoulTable.selectAll()
-                    .where { SoulTable.ownerUUID.eq(uuid.toString()) }
-                    .map(::toDatabaseSoul)
-            }
-        }
-    }.logFailure("getPlayerSouls")
+    }
 
     override suspend fun insertSoul(
         soul: DefaultSoul,
-    ): Result<DatabaseSoul> = runCatching {
-        mutex.withLock {
-            transaction(databaseFlow.first()) {
-                val soulId = SoulTable.insertAndGetId {
-                    it[SoulTable.ownerUUID] = soul.ownerUUID.toString()
-                    it[SoulTable.ownerLastName] = soul.ownerLastName
-                    it[SoulTable.broken_created_at] = soul.createdAt
-                    it[SoulTable.created_at] = soul.createdAt
+    ): Result<DatabaseSoul> = safeRun("insertSoul") {
+        transaction(databaseFlow.first()) {
+            val soulId = SoulTable.insertAndGetId {
+                it[SoulTable.ownerUUID] = soul.ownerUUID.toString()
+                it[SoulTable.ownerLastName] = soul.ownerLastName
+                it[SoulTable.broken_created_at] = soul.createdAt
+                it[SoulTable.created_at] = soul.createdAt
+                it[SoulTable.isFree] = soul.isFree
+                it[SoulTable.locationWorld] = soul.location.worldName
+                it[SoulTable.exp] = soul.exp
+                it[SoulTable.locationX] = soul.location.x
+                it[SoulTable.locationY] = soul.location.y
+                it[SoulTable.locationZ] = soul.location.z
+            }
+
+            SoulItemsTable.batchInsert(soul.items) { item ->
+                this[SoulItemsTable.soulId] = soulId
+                this[SoulItemsTable.itemStack] = item
+            }
+
+            SoulTable.selectAll()
+                .where { SoulTable.id eq soulId }
+                .limit(1)
+                .map(::toDatabaseSoul)
+                .first()
+        }
+    }.onSuccess { soulsChangedSharedFlow.emit(Unit) }
+
+    override suspend fun getSoulsNear(
+        location: Location,
+        radius: Int
+    ): Result<List<DatabaseSoul>> = safeRun("getSoulsNear") {
+        transaction(databaseFlow.first()) {
+            SoulTable.selectAll()
+                .where { SoulTable.locationWorld.eq(location.worldName) }
+                .andWhere { SoulTable.locationX.between(location.x - radius, location.x + radius) }
+                .andWhere { SoulTable.locationY.between(location.y - radius, location.y + radius) }
+                .andWhere { SoulTable.locationZ.between(location.z - radius, location.z + radius) }
+                .map(::toDatabaseSoul)
+                .filter { it.location.dist(location) < radius }
+        }
+    }
+
+    override suspend fun deleteSoul(id: Long): Result<Unit> = safeRun("deleteSoul") {
+        transaction(databaseFlow.first()) {
+            SoulItemsTable.deleteWhere { SoulItemsTable.soulId.eq(id) }
+            SoulTable.deleteWhere { SoulTable.id.eq(id) }
+        }
+    }.onSuccess { soulsChangedSharedFlow.emit(Unit) }.map { }
+
+    override suspend fun updateSoul(soul: DatabaseSoul): Result<Unit> = safeRun("updateSoul") {
+        transaction(databaseFlow.first()) {
+            SoulTable.update(
+                where = { SoulTable.id.eq(soul.id) },
+                body = {
                     it[SoulTable.isFree] = soul.isFree
-                    it[SoulTable.locationWorld] = soul.location.worldName
                     it[SoulTable.exp] = soul.exp
-                    it[SoulTable.locationX] = soul.location.x
-                    it[SoulTable.locationY] = soul.location.y
-                    it[SoulTable.locationZ] = soul.location.z
                 }
+            )
+        }
+    }.onSuccess { soulsChangedSharedFlow.emit(Unit) }.map { }
 
-                SoulItemsTable.batchInsert(soul.items) { item ->
-                    this[SoulItemsTable.soulId] = soulId
-                    this[SoulItemsTable.itemStack] = item
+    override suspend fun updateSoul(soul: ItemDatabaseSoul): Result<Unit> = safeRun("updateSoul") {
+        transaction(databaseFlow.first()) {
+            SoulTable.update(
+                where = { SoulTable.id.eq(soul.id) },
+                body = {
+                    it[SoulTable.isFree] = soul.isFree
+                    it[SoulTable.exp] = soul.exp
                 }
-
-                SoulTable.selectAll()
-                    .where { SoulTable.id eq soulId }
-                    .limit(1)
-                    .map(::toDatabaseSoul)
-                    .first()
+            )
+            SoulItemsTable.deleteWhere { SoulItemsTable.soulId.eq(soul.id) }
+            SoulItemsTable.batchInsert(soul.items) { item ->
+                this[SoulItemsTable.soulId] = soul.id
+                this[SoulItemsTable.itemStack] = item
             }
         }
-    }.logFailure("insertSoul").onSuccess { soulsChangedSharedFlow.emit(Unit) }
+    }.onSuccess { soulsChangedSharedFlow.emit(Unit) }.map { }
 
-    override suspend fun getSoulsNear(location: Location, radius: Int): Result<List<DatabaseSoul>> = runCatching {
-        mutex.withLock {
-            transaction(databaseFlow.first()) {
-                SoulTable.selectAll()
-                    .where { SoulTable.locationWorld.eq(location.worldName) }
-                    .andWhere { SoulTable.locationX.between(location.x - radius, location.x + radius) }
-                    .andWhere { SoulTable.locationY.between(location.y - radius, location.y + radius) }
-                    .andWhere { SoulTable.locationZ.between(location.z - radius, location.z + radius) }
-                    .map(::toDatabaseSoul)
-                    .filter { it.location.dist(location) < radius }
-            }
+    override suspend fun toItemDatabaseSoul(
+        soul: DatabaseSoul
+    ): Result<ItemDatabaseSoul> = safeRun("toItemDatabaseSoul") {
+        transaction(databaseFlow.first()) {
+            ItemDatabaseSoul(
+                id = soul.id,
+                ownerUUID = soul.ownerUUID,
+                ownerLastName = soul.ownerLastName,
+                createdAt = soul.createdAt,
+                isFree = soul.isFree,
+                location = soul.location,
+                hasItems = soul.hasItems,
+                exp = soul.exp,
+                items = SoulItemsTable.selectAll()
+                    .where { SoulItemsTable.soulId eq soul.id }
+                    .map { it[SoulItemsTable.itemStack] }
+            )
         }
-    }.logFailure("getSoulsNear")
-
-    override suspend fun deleteSoul(id: Long): Result<Unit> = runCatching {
-        mutex.withLock {
-            transaction(databaseFlow.first()) {
-                SoulItemsTable.deleteWhere { SoulItemsTable.soulId.eq(id) }
-                SoulTable.deleteWhere { SoulTable.id.eq(id) }
-            }
-        }
-        Unit
-    }.logFailure("deleteSoul").onSuccess { soulsChangedSharedFlow.emit(Unit) }
-
-    override suspend fun updateSoul(soul: DatabaseSoul): Result<Unit> = runCatching {
-        mutex.withLock {
-            transaction(databaseFlow.first()) {
-                SoulTable.update(
-                    where = { SoulTable.id.eq(soul.id) },
-                    body = {
-                        it[SoulTable.isFree] = soul.isFree
-                        it[SoulTable.exp] = soul.exp
-                    }
-                )
-            }
-        }
-        Unit
-    }.logFailure("deleteSoul").onSuccess { soulsChangedSharedFlow.emit(Unit) }
-
-    override suspend fun updateSoul(soul: ItemDatabaseSoul): Result<Unit> = runCatching {
-        mutex.withLock {
-            transaction(databaseFlow.first()) {
-                SoulTable.update(
-                    where = { SoulTable.id.eq(soul.id) },
-                    body = {
-                        it[SoulTable.isFree] = soul.isFree
-                        it[SoulTable.exp] = soul.exp
-                    }
-                )
-                SoulItemsTable.deleteWhere { SoulItemsTable.soulId.eq(soul.id) }
-                SoulItemsTable.batchInsert(soul.items) { item ->
-                    this[SoulItemsTable.soulId] = soul.id
-                    this[SoulItemsTable.itemStack] = item
-                }
-            }
-        }
-        Unit
-    }.logFailure("deleteSoul").onSuccess { soulsChangedSharedFlow.emit(Unit) }
-
-    override suspend fun toItemDatabaseSoul(soul: DatabaseSoul): Result<ItemDatabaseSoul> = runCatching {
-        mutex.withLock {
-            transaction(databaseFlow.first()) {
-                ItemDatabaseSoul(
-                    id = soul.id,
-                    ownerUUID = soul.ownerUUID,
-                    ownerLastName = soul.ownerLastName,
-                    createdAt = soul.createdAt,
-                    isFree = soul.isFree,
-                    location = soul.location,
-                    hasItems = soul.hasItems,
-                    exp = soul.exp,
-                    items = SoulItemsTable.selectAll()
-                        .where { SoulItemsTable.soulId eq soul.id }
-                        .map { it[SoulItemsTable.itemStack] }
-                )
-            }
-        }
-    }.logFailure("deleteSoul").onSuccess { soulsChangedSharedFlow.emit(Unit) }
+    }.onSuccess { soulsChangedSharedFlow.emit(Unit) }
 }
