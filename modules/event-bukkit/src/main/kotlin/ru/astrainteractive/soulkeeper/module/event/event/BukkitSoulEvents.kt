@@ -6,7 +6,7 @@ import org.bukkit.World
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
-import ru.astrainteractive.astralibs.async.withTimings
+import ru.astrainteractive.astralibs.coroutines.withTimings
 import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
@@ -71,7 +71,6 @@ internal class BukkitSoulEvents(
 
                 else -> event.player.location
             }.toDatabaseLocation(),
-            hasItems = soulItems.isNotEmpty(),
             items = soulItems
                 .map(ItemStackSerializer::encodeToString)
                 .map(::StringFormatObject),

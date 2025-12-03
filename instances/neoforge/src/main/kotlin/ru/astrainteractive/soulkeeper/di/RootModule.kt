@@ -3,7 +3,7 @@ package ru.astrainteractive.soulkeeper.di
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import net.neoforged.fml.loading.FMLPaths
-import ru.astrainteractive.astralibs.coroutine.NeoForgeMainDispatcher
+import ru.astrainteractive.astralibs.coroutines.NeoForgeMainDispatcher
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.soulkeeper.command.di.CommandModule

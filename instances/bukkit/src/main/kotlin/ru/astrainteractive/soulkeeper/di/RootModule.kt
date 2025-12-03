@@ -1,7 +1,7 @@
 package ru.astrainteractive.soulkeeper.di
 
 import org.bukkit.event.HandlerList
-import ru.astrainteractive.astralibs.async.DefaultBukkitDispatchers
+import ru.astrainteractive.astralibs.coroutines.DefaultBukkitDispatchers
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
 import ru.astrainteractive.soulkeeper.command.di.CommandModule

@@ -43,7 +43,6 @@ import kotlin.time.Duration.Companion.seconds
 internal class ForgeSoulEvents(
     private val soulsDao: SoulsDao,
     private val effectEmitter: EffectEmitter,
-    private val ioScope: CoroutineScope,
     private val dispatchers: KotlinDispatchers,
     mainScope: CoroutineScope,
     soulsConfigKrate: CachedKrate<SoulsConfig>

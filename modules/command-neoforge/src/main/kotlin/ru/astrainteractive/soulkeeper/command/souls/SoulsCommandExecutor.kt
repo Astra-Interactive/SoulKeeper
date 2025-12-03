@@ -27,6 +27,7 @@ import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.Soul
 import kotlin.collections.filter
 
+@Suppress("TooManyFunctions")
 internal class SoulsCommandExecutor(
     private val ioScope: CoroutineScope,
     private val soulsDao: SoulsDao,
