@@ -1,6 +1,5 @@
 pluginManagement {
     repositories {
-        mavenLocal()
         maven("https://maven.neoforged.net/releases")
         maven("https://plugins.gradle.org/m2/")
         maven("https://jitpack.io")
@@ -18,7 +17,6 @@ buildscript {
 
 dependencyResolutionManagement {
     repositories {
-        mavenLocal()
         gradlePluginPortal()
         mavenCentral()
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")

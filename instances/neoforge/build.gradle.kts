@@ -35,10 +35,6 @@ dependencies {
     shadow(projects.modules.eventNeoforge)
 }
 
-repositories {
-    mavenLocal()
-}
-
 dependencies {
     compileOnly(libs.minecraft.neoforgeversion)
 }

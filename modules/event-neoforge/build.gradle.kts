@@ -20,10 +20,6 @@ dependencies {
     implementation(projects.modules.serviceNeoforge)
 }
 
-repositories {
-    mavenLocal()
-}
-
 dependencies {
     compileOnly(libs.minecraft.neoforgeversion)
 }
