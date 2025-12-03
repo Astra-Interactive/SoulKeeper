@@ -1,5 +1,7 @@
 package ru.astrainteractive.soulkeeper.module.souls.service
 
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.astrainteractive.astralibs.server.PlatformServer
@@ -37,10 +39,11 @@ internal class PickUpWorker(
             }
     }
 
+    private suspend fun doWorkInternal() {
+        mutex.withLock { processPickupSoulEvents() }
+    }
+
     override suspend fun doWork() {
-        if (mutex.isLocked) return
-        mutex.withLock {
-            processPickupSoulEvents()
-        }
+        supervisorScope { launch { doWorkInternal() } }
     }
 }
