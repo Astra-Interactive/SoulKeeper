@@ -55,7 +55,7 @@ shadowJar.configure {
         exclude(dependency(libs.exposed.dao.get()))
     }
     archiveVersion.set(projectInfo.versionString)
-    archiveBaseName.set("${projectInfo.name}-bukkit")
+    archiveBaseName = "${requireProjectInfo.name}-${project.name}"
     destinationDirectory = rootDir.resolve("build")
         .resolve("bukkit")
         .resolve("plugins")

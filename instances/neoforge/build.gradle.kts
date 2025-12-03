@@ -101,7 +101,7 @@ val shadowJar by tasks.getting(ShadowJar::class) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveClassifier = null as String?
     archiveVersion = requireProjectInfo.versionString
-    archiveBaseName = "${requireProjectInfo.name}-neoforge"
+    archiveBaseName = "${requireProjectInfo.name}-${project.name}"
     destinationDirectory = destination
     dependencies {
         // deps
