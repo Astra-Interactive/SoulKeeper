@@ -26,10 +26,7 @@ dependencies {
     shadow(libs.kyori.legacy)
     shadow(libs.kyori.gson)
     // Local
-    shadow(projects.modules.core)
     shadow(projects.modules.commandNeoforge)
-    shadow(projects.modules.dao)
-    shadow(projects.modules.service)
     shadow(projects.modules.serviceNeoforge)
     shadow(projects.modules.eventNeoforge)
 }

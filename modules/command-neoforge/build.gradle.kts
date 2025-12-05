@@ -22,9 +22,6 @@ dependencies {
     // Test
     testImplementation(libs.tests.kotlin.test)
     // Local
-    implementation(projects.modules.core)
-    implementation(projects.modules.dao)
-    implementation(projects.modules.service)
 }
 
 dependencies {

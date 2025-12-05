@@ -13,9 +13,6 @@ dependencies {
     implementation(libs.minecraft.astralibs.core)
     implementation(libs.klibs.mikro.core)
     // klibs
-    implementation(projects.modules.core)
-    implementation(projects.modules.dao)
-    implementation(projects.modules.service)
     implementation(projects.modules.serviceNeoforge)
 }
 

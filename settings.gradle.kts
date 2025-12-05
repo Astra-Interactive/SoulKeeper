@@ -42,16 +42,8 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "SoulKeeper"
 
 // Spigot
-include(":instances:bukkit")
 include(":instances:neoforge")
 // Modules
-include(":modules:core")
-include(":modules:core-bukkit")
-include(":modules:dao")
-include(":modules:service")
-include(":modules:service-bukkit")
 include(":modules:service-neoforge")
-include(":modules:event-bukkit")
 include(":modules:event-neoforge")
-include(":modules:command-bukkit")
 include(":modules:command-neoforge")
