@@ -32,15 +32,7 @@ dependencies {
     compileOnly(libs.minecraft.neoforgeversion)
 }
 
-tasks.withType<JavaCompile> {
-    javaCompiler.set(
-        javaToolchains.compilerFor {
-            requireJinfo.jtarget.majorVersion
-                .let(JavaLanguageVersion::of)
-                .let(languageVersion::set)
-        }
-    )
-}
+java.toolchain.languageVersion = JavaLanguageVersion.of(requireJinfo.jtarget.majorVersion)
 
 configurations.runtimeElements {
     setExtendsFrom(emptySet())
