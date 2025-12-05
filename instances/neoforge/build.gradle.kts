@@ -16,7 +16,6 @@ dependencies {
     shadow(libs.kotlin.coroutines.core)
     // AstraLibs
     shadow(libs.minecraft.astralibs.core)
-    shadow(libs.minecraft.astralibs.core.neoforge)
     shadow(libs.minecraft.astralibs.command)
     shadow(libs.kotlin.serialization.kaml)
     shadow(libs.klibs.mikro.core)

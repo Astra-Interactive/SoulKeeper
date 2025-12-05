@@ -3,7 +3,6 @@ package ru.astrainteractive.soulkeeper.di
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import net.neoforged.fml.loading.FMLPaths
-import ru.astrainteractive.astralibs.coroutines.NeoForgeMainDispatcher
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.soulkeeper.command.di.CommandModule
@@ -29,7 +28,7 @@ class RootModule(private val plugin: Lifecycle) {
             dataFolder = dataFolder,
             dispatchers = object : KotlinDispatchers {
                 override val Main: CoroutineDispatcher by lazy {
-                    NeoForgeMainDispatcher()
+                    TODO()
                 }
                 override val IO: CoroutineDispatcher = Dispatchers.IO
                 override val Default: CoroutineDispatcher = Dispatchers.Default

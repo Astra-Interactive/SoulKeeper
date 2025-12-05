@@ -12,7 +12,6 @@ dependencies {
     implementation(libs.kotlin.coroutines.core)
     // AstraLibs
     implementation(libs.minecraft.astralibs.core)
-    implementation(libs.minecraft.astralibs.core.neoforge)
     implementation(libs.minecraft.astralibs.command)
     // klibs
     implementation(libs.klibs.kstorage)

@@ -11,7 +11,6 @@ dependencies {
     implementation(libs.kotlin.serialization.json)
     // AstraLibs
     implementation(libs.minecraft.astralibs.core)
-    implementation(libs.minecraft.astralibs.core.neoforge)
     implementation(libs.klibs.mikro.core)
     // klibs
     implementation(projects.modules.core)
