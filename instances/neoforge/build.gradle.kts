@@ -1,13 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import ru.astrainteractive.gradleplugin.model.Developer
-import ru.astrainteractive.gradleplugin.property.extension.ModelPropertyValueExt.requireJinfo
-import ru.astrainteractive.gradleplugin.property.extension.ModelPropertyValueExt.requireProjectInfo
-
 plugins {
     kotlin("jvm")
-    kotlin("plugin.serialization")
     alias(libs.plugins.neoforgegradle)
-    alias(libs.plugins.klibs.minecraft.resource.processor)
     alias(libs.plugins.gradle.shadow)
 }
 
@@ -35,15 +29,7 @@ dependencies {
     compileOnly(libs.minecraft.neoforgeversion)
 }
 
-tasks.withType<JavaCompile> {
-    javaCompiler.set(
-        javaToolchains.compilerFor {
-            requireJinfo.jtarget.majorVersion
-                .let(JavaLanguageVersion::of)
-                .let(languageVersion::set)
-        }
-    )
-}
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 configurations.runtimeElements {
     setExtendsFrom(emptySet())
@@ -66,21 +52,21 @@ tasks.named<ProcessResources>("processResources") {
     from(resDirs) {
         include("META-INF/neoforge.mods.toml")
         expand(
-            mapOf(
-                "minecraft_version" to libs.versions.minecraft.mojang.version.get(),
-                "minecraft_version_range" to listOf(libs.versions.minecraft.mojang.version.get())
-                    .joinToString(","),
-                "neo_version" to "neo_version",
-                "neo_version_range" to "[${libs.versions.minecraft.neoforgeversion.get()},)",
-                "mod_id" to requireProjectInfo.name.lowercase(),
-                "mod_name" to requireProjectInfo.name,
-                "mod_license" to "mod_license",
-                "mod_version" to requireProjectInfo.versionString,
-                "mod_authors" to requireProjectInfo.developersList
-                    .map(Developer::id)
-                    .joinToString(","),
-                "mod_description" to requireProjectInfo.description
-            )
+//            mapOf(
+//                "minecraft_version" to libs.versions.minecraft.mojang.version.get(),
+//                "minecraft_version_range" to listOf(libs.versions.minecraft.mojang.version.get())
+//                    .joinToString(","),
+//                "neo_version" to "neo_version",
+//                "neo_version_range" to "[${libs.versions.minecraft.neoforgeversion.get()},)",
+//                "mod_id" to requireProjectInfo.name.lowercase(),
+//                "mod_name" to requireProjectInfo.name,
+//                "mod_license" to "mod_license",
+//                "mod_version" to requireProjectInfo.versionString,
+//                "mod_authors" to requireProjectInfo.developersList
+//                    .map(Developer::id)
+//                    .joinToString(","),
+//                "mod_description" to requireProjectInfo.description
+//            )
         )
     }
 }
@@ -92,8 +78,8 @@ val shadowJar by tasks.getting(ShadowJar::class) {
     isReproducibleFileOrder = true
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveClassifier = null as String?
-    archiveVersion = requireProjectInfo.versionString
-    archiveBaseName = "${requireProjectInfo.name}-${project.name}"
+    archiveVersion = "1.0.0"
+    archiveBaseName = "mod-${project.name}"
     destinationDirectory = destination
     dependencies {
         // deps
@@ -168,5 +154,5 @@ val shadowJar by tasks.getting(ShadowJar::class) {
         "ru.astrainteractive.astralibs",
         "club.minnced.discord",
         "club.minnced.opus",
-    ).forEach { pattern -> relocate(pattern, "${requireProjectInfo.group}.shade.$pattern") }
+    ).forEach { pattern -> relocate(pattern, "shade.$pattern") }
 }

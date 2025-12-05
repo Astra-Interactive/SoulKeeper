@@ -1,8 +1,5 @@
-import ru.astrainteractive.gradleplugin.property.extension.ModelPropertyValueExt.requireJinfo
-
 plugins {
     kotlin("jvm")
-    kotlin("plugin.serialization")
     alias(libs.plugins.neoforgegradle)
 }
 
@@ -27,15 +24,7 @@ dependencies {
     compileOnly(libs.minecraft.neoforgeversion)
 }
 
-tasks.withType<JavaCompile> {
-    javaCompiler.set(
-        javaToolchains.compilerFor {
-            requireJinfo.jtarget.majorVersion
-                .let(JavaLanguageVersion::of)
-                .let(languageVersion::set)
-        }
-    )
-}
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 configurations.runtimeElements {
     setExtendsFrom(emptySet())
