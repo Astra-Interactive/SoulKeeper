@@ -165,7 +165,7 @@ internal class ForgeSoulEvents(
             val droppedXp = when {
                 keepLevel -> 0
                 else -> {
-                    event.droppedExperience
+                    event.originalExperience
                         .times(soulsConfig.retainedXp)
                         .toInt()
                 }
