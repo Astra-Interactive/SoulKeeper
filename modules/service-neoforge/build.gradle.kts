@@ -1,9 +1,6 @@
-import ru.astrainteractive.gradleplugin.property.extension.ModelPropertyValueExt.requireJinfo
-
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
-    alias(libs.plugins.neoforgegradle)
 }
 
 dependencies {
@@ -29,11 +26,22 @@ dependencies {
 }
 
 dependencies {
+    compileOnly(
+        files(
+            rootProject.project(projects.instances.neoforge.path)
+                .file(".gradle")
+                .resolve("repositories")
+                .resolve("ng_dummy_ng")
+                .resolve("net")
+                .resolve("neoforged")
+                .resolve("neoforge")
+                .resolve(libs.versions.minecraft.neoforgeversion.get())
+                .resolve("neoforge-${libs.versions.minecraft.neoforgeversion.get()}.jar")
+        )
+    )
     compileOnly(libs.minecraft.neoforgeversion)
-}
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(requireJinfo.jtarget.majorVersion)
-
-configurations.runtimeElements {
-    setExtendsFrom(emptySet())
+    compileOnly("org.joml:joml:1.10.8")
+    compileOnly("com.mojang:datafixerupper:8.0.16")
+    compileOnly("com.mojang:brigadier:1.3.10")
+    compileOnly("net.neoforged:bus:8.0.2")
 }
