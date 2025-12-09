@@ -129,6 +129,7 @@ val shadowJar by tasks.getting(ShadowJar::class) {
     // Be sure to relocate EXACT PACKAGES!!
     // For example, relocate org.some.package instead of org
     // Becuase relocation org will break other non-relocated dependencies such as org.minecraft
+    // Don't relocate `org.jetbrains.exposed` and `kotlin`
     listOf(
         "ch.qos.logback",
         "club.minnced.discord",
@@ -141,7 +142,6 @@ val shadowJar by tasks.getting(ShadowJar::class) {
         "gnu.trove",
         "it.krzeminski",
         "javax.xml",
-//        "kotlin",
         "kotlinx",
         "net.dv8tion",
         "net.kyori",
@@ -150,10 +150,7 @@ val shadowJar by tasks.getting(ShadowJar::class) {
         "okio",
         "org.apache",
         "org.h2",
-        "org.jetbrains.exposed.dao",
-        "org.jetbrains.exposed.exceptions",
-        "org.jetbrains.exposed.jdbc",
-        "org.jetbrains.exposed.sql",
+        "org.sqlite",
         "org.jetbrains.kotlin",
         "org.jetbrains.kotlinx",
         "org.json",
