@@ -27,42 +27,44 @@ internal class PickUpSoulUseCase(
         data object AllPickedUp : Output
     }
 
-    suspend fun invoke(player: OnlineMinecraftPlayer, bukkitSoul: ItemDatabaseSoul): Output {
+    suspend fun invoke(player: OnlineMinecraftPlayer, soul: ItemDatabaseSoul): Output {
         return withContext(dispatchers.Main) {
-            pickUpExpUseCase.invoke(player, bukkitSoul)
+            pickUpExpUseCase.invoke(player, soul)
+            val updatedSoul = soul.copy(exp = 0)
 
             val pickUpOutput = pickUpItemsUseCase.invoke(
                 player = player,
-                soul = bukkitSoul
+                soul = updatedSoul
             )
 
             val isAllItemsPickedUp = when (pickUpOutput) {
                 PickUpItemsUseCase.Output.NoItemsPresent,
                 PickUpItemsUseCase.Output.ItemsCollected -> true
+
                 PickUpItemsUseCase.Output.SomeItemsRemain -> false
             }
 
             if (!isAllItemsPickedUp) {
                 effectEmitter.playSoundForPlayer(
-                    location = bukkitSoul.location,
+                    location = updatedSoul.location,
                     player = player,
                     sound = soulContentLeftSoundProvider.invoke()
                 )
                 effectEmitter.spawnParticleForPlayer(
-                    location = bukkitSoul.location,
+                    location = updatedSoul.location,
                     player = player,
                     config = soulContentLeftParticleProvider.invoke()
                 )
                 return@withContext Output.SomethingRest
             }
-            soulsDao.deleteSoul(bukkitSoul.id)
+            soulsDao.deleteSoul(updatedSoul.id)
             effectEmitter.playSoundForPlayer(
-                location = bukkitSoul.location,
+                location = updatedSoul.location,
                 player = player,
                 sound = soulDisappearSoundProvider.invoke()
             )
             effectEmitter.spawnParticleForPlayer(
-                location = bukkitSoul.location,
+                location = updatedSoul.location,
                 player = player,
                 config = soulGoneParticleProvider.invoke()
             )

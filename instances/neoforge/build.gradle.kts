@@ -35,23 +35,6 @@ dependencies {
     shadow(projects.modules.eventNeoforge)
 }
 
-dependencies {
-    compileOnly(libs.minecraft.neoforgeversion)
-}
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(requireJinfo.jtarget.majorVersion)
-
-configurations.runtimeElements {
-    setExtendsFrom(emptySet())
-}
-
-val destination = rootDir
-    .resolve("build")
-    .resolve("neoforge")
-    .resolve("mods")
-    .takeIf(File::exists)
-    ?: File(rootDir, "jars")
-
 tasks.named<ProcessResources>("processResources") {
     filteringCharset = "UTF-8"
     duplicatesStrategy = DuplicatesStrategy.WARN
@@ -90,17 +73,27 @@ val shadowJar by tasks.getting(ShadowJar::class) {
     archiveClassifier = null as String?
     archiveVersion = requireProjectInfo.versionString
     archiveBaseName = "${requireProjectInfo.name}-${project.name}"
-    destinationDirectory = destination
+    destinationDirectory = rootDir
+        .resolve("build")
+        .resolve("neoforge")
+        .resolve("mods")
+        .takeIf(File::exists)
+        ?: File(rootDir, "jars")
     dependencies {
-        // deps
+        // Dependencies
         exclude(dependency("org.jetbrains:annotations"))
-        // deps paths
-        // Without kotlin deps
-        exclude("kotlin/**")
-
-        exclude("co/touchlab/stately/**")
+        // Root
+        exclude("_COROUTINE/**")
+        exclude("DebugProbesKt.bin")
+        exclude("jetty-dir.css")
+        exclude("license/**")
+        exclude("**LICENCE**")
+        exclude("**LICENSE**")
+        // Other dependencies
         exclude("club/minnced/opus/**")
+        exclude("co/touchlab/stately/**")
         exclude("com/google/**")
+        exclude("com/ibm/icu/**")
         exclude("com/sun/**")
         exclude("google/protobuf/**")
         exclude("io/github/**")
@@ -109,60 +102,77 @@ val shadowJar by tasks.getting(ShadowJar::class) {
         exclude("javax/annotation/**")
         exclude("javax/servlet/**")
         exclude("natives/**")
+        exclude("net/luckperms/**")
         exclude("nl/altindag/**")
-        exclude("org/eclipse/**")
-        exclude("org/apache/commons/logging/**")
         exclude("org/bouncycastle/**")
         exclude("org/checkerframework/**")
         exclude("org/conscrypt/**")
+        exclude("org/eclipse/**")
         exclude("tomp2p/opuswrapper/**")
-        exclude("DebugProbesKt.bin")
-        exclude("_COROUTINE/**")
-        // meta
-        exclude("META-INF/*.kotlin_module")
+        // META
+        exclude("META-INF/**.md")
+        exclude("META-INF/**.MD")
+        exclude("META-INF/**.txt**")
+        exclude("META-INF/**LICENCE**")
         exclude("META-INF/com.android.tools/**")
         exclude("META-INF/gradle-plugins/**")
+        exclude("META-INF/imports/**")
+        exclude("META-INF/license/**")
         exclude("META-INF/maven/**")
-        exclude("META-INF/proguard/**")
+        exclude("META-INF/native-image/**")
         exclude("META-INF/native/**")
-        exclude("META-INF/**LICENCE**")
+        exclude("META-INF/proguard/**")
+        exclude("META-INF/rewrite/**")
+        exclude("META-INF/versions/**")
     }
+
     // Be sure to relocate EXACT PACKAGES!!
     // For example, relocate org.some.package instead of org
     // Becuase relocation org will break other non-relocated dependencies such as org.minecraft
     listOf(
-        "com.fasterxml",
-        "net.kyori",
-        "org.h2",
-        "com.neovisionaries",
-        "gnu.trove",
-        "org.json",
-        "org.apache",
-        "org.telegram",
-        "okhttp3",
-        "net.dv8tion",
-        "okio",
-        "org.slf4j",
-        "kotlinx",
-        "it.krzeminski",
-        "net.thauvin",
-        "org.jetbrains.exposed.dao",
-        "org.jetbrains.exposed.exceptions",
-        "org.jetbrains.exposed.sql",
-        "org.jetbrains.exposed.jdbc",
-        "org.jetbrains.kotlin",
-        "org.jetbrains.kotlinx",
-        "ch.qos",
-        "com.arkivanov",
-        "com.ibm",
-        "dev.icerock",
-        "javax.xml",
-        "org.w3c",
-        "org.xml",
-        "com.charleskorn.kaml",
-        "ru.astrainteractive.klibs",
-        "ru.astrainteractive.astralibs",
+        "ch.qos.logback",
         "club.minnced.discord",
         "club.minnced.opus",
+        "com.arkivanov",
+        "com.charleskorn.kaml",
+        "com.fasterxml",
+        "com.neovisionaries",
+        "dev.icerock",
+        "gnu.trove",
+        "it.krzeminski",
+        "javax.xml",
+//        "kotlin",
+        "kotlinx",
+        "net.dv8tion",
+        "net.kyori",
+        "net.thauvin",
+        "okhttp3",
+        "okio",
+        "org.apache",
+        "org.h2",
+        "org.jetbrains.exposed.dao",
+        "org.jetbrains.exposed.exceptions",
+        "org.jetbrains.exposed.jdbc",
+        "org.jetbrains.exposed.sql",
+        "org.jetbrains.kotlin",
+        "org.jetbrains.kotlinx",
+        "org.json",
+        "org.slf4j",
+        "org.telegram",
+        "org.w3c.css",
+        "org.w3c.dom",
+        "org.xml.sax",
+        "ru.astrainteractive.astralibs",
+        "ru.astrainteractive.klibs",
     ).forEach { pattern -> relocate(pattern, "${requireProjectInfo.group}.shade.$pattern") }
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(requireJinfo.jtarget.majorVersion)
+
+dependencies {
+    compileOnly(libs.minecraft.neoforgeversion)
+}
+
+configurations.runtimeElements {
+    setExtendsFrom(emptySet())
 }

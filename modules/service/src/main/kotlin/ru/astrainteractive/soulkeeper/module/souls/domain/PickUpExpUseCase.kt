@@ -1,6 +1,8 @@
 package ru.astrainteractive.soulkeeper.module.souls.domain
 
 import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
+import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
+import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
@@ -12,7 +14,7 @@ class PickUpExpUseCase(
     private val soulsDao: SoulsDao,
     private val effectEmitter: EffectEmitter,
     private val experiencedFactory: Experienced.Factory<OnlineMinecraftPlayer>
-) {
+): Logger by JUtiltLogger("PickUpExpUseCase") {
     sealed interface Output {
         data object NoExpPresent : Output
         data object ExpCollected : Output
