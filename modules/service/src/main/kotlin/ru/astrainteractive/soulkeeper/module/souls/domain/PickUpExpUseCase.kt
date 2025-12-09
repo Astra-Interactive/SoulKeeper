@@ -14,7 +14,7 @@ class PickUpExpUseCase(
     private val soulsDao: SoulsDao,
     private val effectEmitter: EffectEmitter,
     private val experiencedFactory: Experienced.Factory<OnlineMinecraftPlayer>
-): Logger by JUtiltLogger("PickUpExpUseCase") {
+) : Logger by JUtiltLogger("PickUpExpUseCase") {
     sealed interface Output {
         data object NoExpPresent : Output
         data object ExpCollected : Output
