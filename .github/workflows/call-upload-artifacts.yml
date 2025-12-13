@@ -10,6 +10,8 @@ jobs:
         include:
           - id: "bukkit"
             task: ":instances:bukkit:shadowJar"
+          - id: "neoforge"
+            task: ":instances:neoforge:shadowJar"
     steps:
       - name: Checkout Git repo
         uses: actions/checkout@v4

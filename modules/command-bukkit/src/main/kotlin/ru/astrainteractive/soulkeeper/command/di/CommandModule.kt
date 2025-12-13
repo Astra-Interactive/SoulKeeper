@@ -35,7 +35,7 @@ class CommandModule(
                 translationKrate = coreModule.translation,
                 kyoriKrate = coreModule.kyoriComponentSerializer,
                 registrarContext = paperCommandRegistrar
-            )
+            ).register()
         },
         onDisable = {
         }

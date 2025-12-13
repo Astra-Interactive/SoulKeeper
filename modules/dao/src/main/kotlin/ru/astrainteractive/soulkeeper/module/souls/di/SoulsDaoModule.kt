@@ -10,8 +10,6 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.Slf4jSqlDebugLogger
-import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
@@ -32,7 +30,7 @@ interface SoulsDaoModule {
 
     class Default(
         dataFolder: File,
-        scope: CoroutineScope
+        ioScope: CoroutineScope
     ) : SoulsDaoModule {
         override val databaseFlow: Flow<Database> = flow {
             if (!dataFolder.exists()) dataFolder.mkdirs()
@@ -41,13 +39,12 @@ interface SoulsDaoModule {
                 .connect()
             TransactionManager.manager.defaultIsolationLevel = java.sql.Connection.TRANSACTION_SERIALIZABLE
             transaction(database) {
-                addLogger(Slf4jSqlDebugLogger)
                 SchemaUtils.create(SoulTable)
                 SchemaUtils.createMissingTablesAndColumns(SoulTable)
                 SchemaUtils.createMissingTablesAndColumns(SoulItemsTable)
             }
             emit(database)
-        }.shareIn(scope, SharingStarted.Eagerly, 1)
+        }.shareIn(ioScope, SharingStarted.Eagerly, 1)
 
         override val soulsDao: SoulsDao = SoulsDaoImpl(
             databaseFlow = databaseFlow,

@@ -8,7 +8,7 @@ import ru.astrainteractive.soulkeeper.di.RootModule
 class SoulKeeper :
     LifecyclePlugin(),
     Logger by JUtiltLogger("SoulKeeper") {
-    private val rootModule by lazy { RootModule.RootModuleImpl(this) }
+    private val rootModule by lazy { RootModule(this) }
 
     override fun onEnable() {
         rootModule.lifecycle.onEnable()

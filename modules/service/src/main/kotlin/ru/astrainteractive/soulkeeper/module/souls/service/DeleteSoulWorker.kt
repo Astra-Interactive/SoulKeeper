@@ -1,5 +1,7 @@
 package ru.astrainteractive.soulkeeper.module.souls.service
 
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import ru.astrainteractive.astralibs.service.ServiceExecutor
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
@@ -12,10 +14,10 @@ import java.time.Instant
 internal class DeleteSoulWorker(
     private val soulsDao: SoulsDao,
     configKrate: CachedKrate<SoulsConfig>
-) : ServiceExecutor, Logger by JUtiltLogger("AspeKt-DeleteSoulWorker") {
+) : ServiceExecutor, Logger by JUtiltLogger("SoulKeeper-DeleteSoulWorker") {
     private val config by configKrate
 
-    override suspend fun doWork() {
+    private suspend fun doWorkInternal() {
         val soulsToDelete = soulsDao.getSouls()
             .getOrNull()
             .orEmpty()
@@ -25,9 +27,12 @@ internal class DeleteSoulWorker(
             }
         if (soulsToDelete.isEmpty()) return
 
-        info { "#execute found ${soulsToDelete.size} souls to delete" }
         soulsToDelete.forEach { soul ->
             soulsDao.deleteSoul(soul.id)
         }
+    }
+
+    override suspend fun doWork() {
+        supervisorScope { launch { doWorkInternal() } }
     }
 }

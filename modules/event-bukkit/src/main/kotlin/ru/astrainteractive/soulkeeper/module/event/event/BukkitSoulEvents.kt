@@ -6,7 +6,7 @@ import org.bukkit.World
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
-import ru.astrainteractive.astralibs.async.withTimings
+import ru.astrainteractive.astralibs.coroutines.withTimings
 import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
@@ -23,7 +23,7 @@ import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatOb
 import java.time.Instant
 import kotlin.time.Duration.Companion.seconds
 
-internal class SoulEvents(
+internal class BukkitSoulEvents(
     private val soulsDao: SoulsDao,
     soulsConfigKrate: CachedKrate<SoulsConfig>
 ) : EventListener {
@@ -71,10 +71,9 @@ internal class SoulEvents(
 
                 else -> event.player.location
             }.toDatabaseLocation(),
-            hasItems = soulItems.isNotEmpty(),
-            items = soulItems.map {
-                StringFormatObject(ItemStackSerializer.encodeToString(it))
-            },
+            items = soulItems
+                .map(ItemStackSerializer::encodeToString)
+                .map(::StringFormatObject),
         )
         bukkitSoul.location.toBukkitLocation().spawnParticleForPlayer(
             event.player,

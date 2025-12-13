@@ -16,9 +16,9 @@ import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
 
 internal class SoulsReloadCommandRegistrar(
     private val plugin: LifecyclePlugin,
+    private val registrarContext: PaperCommandRegistrarContext,
     translationKrate: CachedKrate<PluginTranslation>,
-    kyoriKrate: CachedKrate<KyoriComponentSerializer>,
-    private val registrarContext: PaperCommandRegistrarContext
+    kyoriKrate: CachedKrate<KyoriComponentSerializer>
 ) : KyoriComponentSerializer by kyoriKrate.unwrap() {
     private val translation by translationKrate
 

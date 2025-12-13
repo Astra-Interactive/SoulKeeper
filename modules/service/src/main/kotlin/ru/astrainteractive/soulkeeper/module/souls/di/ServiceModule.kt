@@ -3,13 +3,10 @@ package ru.astrainteractive.soulkeeper.module.souls.di
 import kotlinx.coroutines.flow.flowOf
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.service.TickFlowService
-import ru.astrainteractive.soulkeeper.core.di.BukkitCoreModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.module.souls.domain.GetNearestSoulUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpExpUseCase
-import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpSoulUseCase
-import ru.astrainteractive.soulkeeper.module.souls.domain.di.factory.ShowArmorStandUseCaseFactory
 import ru.astrainteractive.soulkeeper.module.souls.renderer.ArmorStandRenderer
 import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulParticleRenderer
 import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulSoundRenderer
@@ -21,23 +18,25 @@ import kotlin.time.Duration.Companion.seconds
 
 class ServiceModule(
     coreModule: CoreModule,
-    bukkitCoreModule: BukkitCoreModule,
-    soulsDaoModule: SoulsDaoModule
-) {
+    soulsDaoModule: SoulsDaoModule,
+    platformServiceModule: PlatformServiceModule
 
-    private val showArmorStandUseCase = ShowArmorStandUseCaseFactory(coreModule).create()
+) {
 
     private val armorStandRenderer = ArmorStandRenderer(
         soulsConfigKrate = coreModule.soulsConfigKrate,
-        showArmorStandUseCase = showArmorStandUseCase
+        showArmorStandUseCase = platformServiceModule.showArmorStandUseCase,
+        platformServer = platformServiceModule.platformServer
     )
     private val soulParticleRenderer = SoulParticleRenderer(
         soulsConfigKrate = coreModule.soulsConfigKrate,
-        dispatchers = coreModule.dispatchers
+        dispatchers = coreModule.dispatchers,
+        effectEmitter = platformServiceModule.effectEmitter
     )
     private val soulSoundRenderer = SoulSoundRenderer(
         dispatchers = coreModule.dispatchers,
-        soulsConfigKrate = coreModule.soulsConfigKrate
+        soulsConfigKrate = coreModule.soulsConfigKrate,
+        effectEmitter = platformServiceModule.effectEmitter
     )
 
     private val deleteSoulService = TickFlowService(
@@ -60,27 +59,28 @@ class ServiceModule(
 
     private val soulCallWorker = SoulCallWorker(
         soulsDao = soulsDaoModule.soulsDao,
-        plugin = bukkitCoreModule.plugin,
         config = coreModule.soulsConfigKrate.cachedValue,
         soulParticleRenderer = soulParticleRenderer,
         soulSoundRenderer = soulSoundRenderer,
-        soulArmorStandRenderer = armorStandRenderer
+        soulArmorStandRenderer = armorStandRenderer,
+        eventProvider = platformServiceModule.eventProvider,
+        minecraftNativeBridge = platformServiceModule.minecraftNativeBridge
     )
 
+    private val pickUpExpUseCase: PickUpExpUseCase = PickUpExpUseCase(
+        collectXpSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectXp },
+        soulsDao = soulsDaoModule.soulsDao,
+        effectEmitter = platformServiceModule.effectEmitter,
+        experiencedFactory = platformServiceModule.onlineMinecraftPlayerExperiencedFactory
+    )
     private val pickUpSoulService = TickFlowService(
         coroutineContext = coreModule.dispatchers.IO,
         delay = flowOf(3.seconds),
         executor = PickUpWorker(
             pickUpSoulUseCase = PickUpSoulUseCase(
                 dispatchers = coreModule.dispatchers,
-                pickUpExpUseCase = PickUpExpUseCase(
-                    collectXpSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectXp },
-                    soulsDao = soulsDaoModule.soulsDao
-                ),
-                pickUpItemsUseCase = PickUpItemsUseCase(
-                    collectItemSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectItem },
-                    soulsDao = soulsDaoModule.soulsDao
-                ),
+                pickUpExpUseCase = pickUpExpUseCase,
+                pickUpItemsUseCase = platformServiceModule.pickUpItemsUseCase,
                 soulsDao = soulsDaoModule.soulsDao,
                 soulGoneParticleProvider = { coreModule.soulsConfigKrate.cachedValue.particles.soulGone },
                 soulDisappearSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.soulDisappear },
@@ -89,12 +89,16 @@ class ServiceModule(
                 },
                 soulContentLeftSoundProvider = {
                     coreModule.soulsConfigKrate.cachedValue.sounds.soulContentLeft
-                }
+                },
+                effectEmitter = platformServiceModule.effectEmitter
             ),
             getNearestSoulUseCase = GetNearestSoulUseCase(
-                soulsDao = soulsDaoModule.soulsDao
+                soulsDao = soulsDaoModule.soulsDao,
+                minecraftNativeBridge = platformServiceModule.minecraftNativeBridge
             ),
-            soulsDao = soulsDaoModule.soulsDao
+            soulsDao = soulsDaoModule.soulsDao,
+            platformServer = platformServiceModule.platformServer,
+            isDeadPlayerProvider = platformServiceModule.isDeadPlayerProvider,
         )
     )
 
