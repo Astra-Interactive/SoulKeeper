@@ -16,7 +16,7 @@ dependencies {
     implementation(libs.klibs.mikro.core)
     implementation(libs.klibs.mikro.extensions)
     // kyori
-    implementation(libs.kyori.api)
+    implementation(libs.minecraft.kyori.api)
     // Test
     testImplementation(libs.tests.kotlin.test)
     // Local
