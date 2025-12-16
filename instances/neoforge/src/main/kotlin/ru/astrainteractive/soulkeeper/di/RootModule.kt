@@ -42,7 +42,8 @@ class RootModule(private val plugin: Lifecycle) {
     private val soulsDaoModule by lazy {
         SoulsDaoModule.Default(
             dataFolder = coreModule.dataFolder,
-            ioScope = coreModule.ioScope
+            ioScope = coreModule.ioScope,
+            dispatchers = coreModule.dispatchers
         )
     }
     private val forgePlatformServiceModule by lazy {
