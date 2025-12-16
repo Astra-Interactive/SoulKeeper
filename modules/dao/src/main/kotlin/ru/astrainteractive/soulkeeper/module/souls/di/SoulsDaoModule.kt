@@ -13,6 +13,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
+import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.exposed.model.DatabaseConfiguration
 import ru.astrainteractive.klibs.mikro.exposed.util.connect
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
@@ -30,7 +31,8 @@ interface SoulsDaoModule {
 
     class Default(
         dataFolder: File,
-        ioScope: CoroutineScope
+        ioScope: CoroutineScope,
+        dispatchers: KotlinDispatchers
     ) : SoulsDaoModule {
         override val databaseFlow: Flow<Database> = flow {
             if (!dataFolder.exists()) dataFolder.mkdirs()
@@ -52,7 +54,7 @@ interface SoulsDaoModule {
 
         override val lifecycle: Lifecycle = Lifecycle.Lambda(
             onDisable = {
-                GlobalScope.launch {
+                GlobalScope.launch(dispatchers.IO) {
                     TransactionManager.closeAndUnregister(databaseFlow.first())
                 }
             }

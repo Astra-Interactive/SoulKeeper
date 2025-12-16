@@ -2,6 +2,7 @@ package ru.astrainteractive.soulkeeper.di
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainCoroutineDispatcher
 import net.neoforged.fml.loading.FMLPaths
 import ru.astrainteractive.astralibs.coroutines.NeoForgeMainDispatcher
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
@@ -28,7 +29,7 @@ class RootModule(private val plugin: Lifecycle) {
         CoreModule(
             dataFolder = dataFolder,
             dispatchers = object : KotlinDispatchers {
-                override val Main: CoroutineDispatcher by lazy {
+                override val Main: MainCoroutineDispatcher by lazy {
                     NeoForgeMainDispatcher()
                 }
                 override val IO: CoroutineDispatcher = Dispatchers.IO
@@ -41,7 +42,8 @@ class RootModule(private val plugin: Lifecycle) {
     private val soulsDaoModule by lazy {
         SoulsDaoModule.Default(
             dataFolder = coreModule.dataFolder,
-            ioScope = coreModule.ioScope
+            ioScope = coreModule.ioScope,
+            dispatchers = coreModule.dispatchers
         )
     }
     private val forgePlatformServiceModule by lazy {
