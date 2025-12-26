@@ -118,12 +118,14 @@ val shadowJar by tasks.getting(ShadowJar::class) {
         exclude("META-INF/com.android.tools/**")
         exclude("META-INF/gradle-plugins/**")
         exclude("META-INF/imports/**")
+        exclude("META-INF/kotlin-reflection.kotlin_module")
         exclude("META-INF/license/**")
         exclude("META-INF/maven/**")
         exclude("META-INF/native-image/**")
         exclude("META-INF/native/**")
         exclude("META-INF/proguard/**")
         exclude("META-INF/rewrite/**")
+        exclude("META-INF/services/kotlin.reflect.**")
         exclude("META-INF/versions/**")
     }
 
@@ -151,11 +153,12 @@ val shadowJar by tasks.getting(ShadowJar::class) {
         "okio",
         "org.apache",
         "org.h2",
-        "org.sqlite",
+        "org.jetbrains.exposed",
         "org.jetbrains.kotlin",
         "org.jetbrains.kotlinx",
         "org.json",
         "org.slf4j",
+        "org.sqlite",
         "org.telegram",
         "org.w3c.css",
         "org.w3c.dom",
