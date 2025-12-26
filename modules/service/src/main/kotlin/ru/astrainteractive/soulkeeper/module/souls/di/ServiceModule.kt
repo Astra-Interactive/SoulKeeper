@@ -2,8 +2,8 @@ package ru.astrainteractive.soulkeeper.module.souls.di
 
 import kotlinx.coroutines.flow.flowOf
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
-import ru.astrainteractive.astralibs.service.TickFlowService
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
+import ru.astrainteractive.soulkeeper.core.service.ThrottleTickFlowService
 import ru.astrainteractive.soulkeeper.module.souls.domain.GetNearestSoulUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpExpUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpSoulUseCase
@@ -39,7 +39,7 @@ class ServiceModule(
         effectEmitter = platformServiceModule.effectEmitter
     )
 
-    private val deleteSoulService = TickFlowService(
+    private val deleteSoulService = ThrottleTickFlowService(
         coroutineContext = coreModule.dispatchers.IO,
         delay = flowOf(60.seconds),
         executor = DeleteSoulWorker(
@@ -48,7 +48,7 @@ class ServiceModule(
         )
     )
 
-    private val freeSoulService = TickFlowService(
+    private val freeSoulService = ThrottleTickFlowService(
         coroutineContext = coreModule.dispatchers.IO,
         delay = flowOf(60.seconds),
         executor = FreeSoulWorker(
@@ -71,9 +71,10 @@ class ServiceModule(
         collectXpSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectXp },
         soulsDao = soulsDaoModule.soulsDao,
         effectEmitter = platformServiceModule.effectEmitter,
-        experiencedFactory = platformServiceModule.onlineMinecraftPlayerExperiencedFactory
+        experiencedFactory = platformServiceModule.onlineMinecraftPlayerExperiencedFactory,
+        dispatchers = coreModule.dispatchers
     )
-    private val pickUpSoulService = TickFlowService(
+    private val pickUpSoulService = ThrottleTickFlowService(
         coroutineContext = coreModule.dispatchers.IO,
         delay = flowOf(3.seconds),
         executor = PickUpWorker(

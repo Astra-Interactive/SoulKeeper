@@ -35,6 +35,7 @@ class BukkitPlatformServiceModule(
     override val showArmorStandUseCase: ShowArmorStandUseCase = ShowArmorStandUseCaseFactory(coreModule).create()
     override val pickUpItemsUseCase: PickUpItemsUseCase = BukkitPickUpItemsUseCase(
         collectItemSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectItem },
-        soulsDao = soulsDaoModule.soulsDao
+        soulsDao = soulsDaoModule.soulsDao,
+        dispatchers = coreModule.dispatchers
     )
 }

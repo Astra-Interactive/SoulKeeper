@@ -1,9 +1,11 @@
 package ru.astrainteractive.soulkeeper.module.souls.domain
 
+import kotlinx.coroutines.withContext
 import net.minecraft.world.item.ItemStack
 import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
 import ru.astrainteractive.astralibs.server.util.NeoForgeUtil
 import ru.astrainteractive.astralibs.server.util.getOnlinePlayer
+import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
@@ -19,7 +21,8 @@ internal class NeoForgePickUpItemsUseCase(
     private val collectItemSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
     private val soulsDao: SoulsDao,
     private val effectEmitter: EffectEmitter,
-    private val isDeadPlayerProvider: IsDeadPlayerProvider
+    private val isDeadPlayerProvider: IsDeadPlayerProvider,
+    private val dispatchers: KotlinDispatchers
 ) : PickUpItemsUseCase,
     Logger by JUtiltLogger("SoulKeeper-PickUpItemsUseCase") {
     /**
@@ -47,14 +50,22 @@ internal class NeoForgePickUpItemsUseCase(
         if (serverPlayer.gameMode.isCreative) return Output.SomeItemsRemain
         if (isDeadPlayerProvider.isDead(player)) return Output.SomeItemsRemain
 
-        val notAddedItems = player.addItems(
-            items = soul.items
-                .map(StringFormatObject::raw)
-                .map(ItemStackSerializer::decodeFromString)
-                .mapNotNull { result -> result.getOrNull() }
-        )
+        val notAddedItems = withContext(dispatchers.Main) {
+            player.addItems(
+                items = soul.items
+                    .map(StringFormatObject::raw)
+                    .map(ItemStackSerializer::decodeFromString)
+                    .mapNotNull { result -> result.getOrNull() }
+            )
+        }
         if (notAddedItems.isEmpty()) {
-            effectEmitter.playSoundForPlayer(soul.location, player, collectItemSoundProvider.invoke())
+            withContext(dispatchers.Main) {
+                effectEmitter.playSoundForPlayer(
+                    location = soul.location,
+                    player = player,
+                    sound = collectItemSoundProvider.invoke()
+                )
+            }
         }
         soulsDao.updateSoul(
             soul.copy(

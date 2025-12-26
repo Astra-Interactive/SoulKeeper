@@ -83,6 +83,7 @@ val shadowJar by tasks.getting(ShadowJar::class) {
         // Dependencies
         exclude(dependency("org.jetbrains:annotations"))
         // Root
+        exclude("kotlin/**") // use kotlin-neoforge
         exclude("_COROUTINE/**")
         exclude("DebugProbesKt.bin")
         exclude("jetty-dir.css")

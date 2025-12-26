@@ -1,6 +1,8 @@
 package ru.astrainteractive.soulkeeper.module.souls.domain
 
+import kotlinx.coroutines.withContext
 import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
+import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
@@ -13,6 +15,7 @@ class PickUpExpUseCase(
     private val collectXpSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
     private val soulsDao: SoulsDao,
     private val effectEmitter: EffectEmitter,
+    private val dispatchers: KotlinDispatchers,
     private val experiencedFactory: Experienced.Factory<OnlineMinecraftPlayer>
 ) : Logger by JUtiltLogger("PickUpExpUseCase") {
     sealed interface Output {
@@ -22,12 +25,14 @@ class PickUpExpUseCase(
 
     suspend fun invoke(player: OnlineMinecraftPlayer, soul: ItemDatabaseSoul): Output {
         if (soul.exp <= 0) return Output.NoExpPresent
-        effectEmitter.playSoundForPlayer(
-            location = soul.location,
-            player = player,
-            sound = collectXpSoundProvider.invoke()
-        )
-        experiencedFactory.create(player).giveExperience(soul.exp)
+        withContext(dispatchers.Main) {
+            effectEmitter.playSoundForPlayer(
+                location = soul.location,
+                player = player,
+                sound = collectXpSoundProvider.invoke()
+            )
+            experiencedFactory.create(player).giveExperience(soul.exp)
+        }
         soulsDao.updateSoul(soul = soul.copy(exp = 0))
         return Output.ExpCollected
     }

@@ -4,7 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
@@ -55,7 +55,7 @@ interface SoulsDaoModule {
         override val lifecycle: Lifecycle = Lifecycle.Lambda(
             onDisable = {
                 GlobalScope.launch(dispatchers.IO) {
-                    TransactionManager.closeAndUnregister(databaseFlow.first())
+                    databaseFlow.firstOrNull()?.let(TransactionManager::closeAndUnregister)
                 }
             }
         )

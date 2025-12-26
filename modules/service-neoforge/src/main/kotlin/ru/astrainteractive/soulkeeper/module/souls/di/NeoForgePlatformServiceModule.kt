@@ -33,6 +33,7 @@ class NeoForgePlatformServiceModule(
         collectItemSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectItem },
         soulsDao = soulsDaoModule.soulsDao,
         effectEmitter = effectEmitter,
-        isDeadPlayerProvider = isDeadPlayerProvider
+        isDeadPlayerProvider = isDeadPlayerProvider,
+        dispatchers = coreModule.dispatchers
     )
 }

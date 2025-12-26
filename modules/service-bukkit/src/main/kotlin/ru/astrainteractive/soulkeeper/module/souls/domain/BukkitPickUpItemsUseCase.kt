@@ -1,7 +1,9 @@
 package ru.astrainteractive.soulkeeper.module.souls.domain
 
+import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
 import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
+import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
@@ -16,6 +18,7 @@ import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase.Out
 internal class BukkitPickUpItemsUseCase(
     private val collectItemSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
     private val soulsDao: SoulsDao,
+    private val dispatchers: KotlinDispatchers
 ) : PickUpItemsUseCase,
     Logger by JUtiltLogger("SoulKeeper-PickUpItemsUseCase") {
 
@@ -27,10 +30,23 @@ internal class BukkitPickUpItemsUseCase(
             .map(StringFormatObject::raw)
             .map(ItemStackSerializer::decodeFromString)
             .mapNotNull { itemStackResult -> itemStackResult.getOrNull() }
-        val notAddedItems = bukkitPlayer.inventory.addItem(*items.toTypedArray()).values.toList()
-        if (notAddedItems != soul.items) {
-            soul.location.toBukkitLocation().playSoundForPlayer(bukkitPlayer, collectItemSoundProvider.invoke())
+        val notAddedItems = withContext(dispatchers.Main) {
+            bukkitPlayer.inventory
+                .addItem(*items.toTypedArray())
+                .values
+                .toList()
         }
+        if (notAddedItems != soul.items) {
+            withContext(dispatchers.Main) {
+                soul.location
+                    .toBukkitLocation()
+                    .playSoundForPlayer(
+                        player = bukkitPlayer,
+                        sound = collectItemSoundProvider.invoke()
+                    )
+            }
+        }
+
         soulsDao.updateSoul(
             soul.copy(
                 items = notAddedItems

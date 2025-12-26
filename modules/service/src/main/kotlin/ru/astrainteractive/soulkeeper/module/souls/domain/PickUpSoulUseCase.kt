@@ -28,23 +28,23 @@ internal class PickUpSoulUseCase(
     }
 
     suspend fun invoke(player: OnlineMinecraftPlayer, soul: ItemDatabaseSoul): Output {
-        return withContext(dispatchers.Main) {
-            pickUpExpUseCase.invoke(player, soul)
-            val updatedSoul = soul.copy(exp = 0)
+        pickUpExpUseCase.invoke(player, soul)
+        val updatedSoul = soul.copy(exp = 0)
 
-            val pickUpOutput = pickUpItemsUseCase.invoke(
-                player = player,
-                soul = updatedSoul
-            )
+        val pickUpOutput = pickUpItemsUseCase.invoke(
+            player = player,
+            soul = updatedSoul
+        )
 
-            val isAllItemsPickedUp = when (pickUpOutput) {
-                PickUpItemsUseCase.Output.NoItemsPresent,
-                PickUpItemsUseCase.Output.ItemsCollected -> true
+        val isAllItemsPickedUp = when (pickUpOutput) {
+            PickUpItemsUseCase.Output.NoItemsPresent,
+            PickUpItemsUseCase.Output.ItemsCollected -> true
 
-                PickUpItemsUseCase.Output.SomeItemsRemain -> false
-            }
+            PickUpItemsUseCase.Output.SomeItemsRemain -> false
+        }
 
-            if (!isAllItemsPickedUp) {
+        if (!isAllItemsPickedUp) {
+            withContext(dispatchers.Main) {
                 effectEmitter.playSoundForPlayer(
                     location = updatedSoul.location,
                     player = player,
@@ -55,9 +55,11 @@ internal class PickUpSoulUseCase(
                     player = player,
                     config = soulContentLeftParticleProvider.invoke()
                 )
-                return@withContext Output.SomethingRest
             }
-            soulsDao.deleteSoul(updatedSoul.id)
+            return Output.SomethingRest
+        }
+        soulsDao.deleteSoul(updatedSoul.id)
+        withContext(dispatchers.Main) {
             effectEmitter.playSoundForPlayer(
                 location = updatedSoul.location,
                 player = player,
@@ -68,7 +70,7 @@ internal class PickUpSoulUseCase(
                 player = player,
                 config = soulGoneParticleProvider.invoke()
             )
-            return@withContext Output.AllPickedUp
         }
+        return Output.AllPickedUp
     }
 }
