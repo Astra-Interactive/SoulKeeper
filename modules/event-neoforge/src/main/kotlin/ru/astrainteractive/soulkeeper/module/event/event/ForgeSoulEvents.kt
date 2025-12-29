@@ -21,6 +21,7 @@ import ru.astrainteractive.astralibs.server.location.Location
 import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
 import ru.astrainteractive.astralibs.server.util.asLocatable
 import ru.astrainteractive.astralibs.server.util.asOnlineMinecraftPlayer
+import ru.astrainteractive.astralibs.server.util.toPlain
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
@@ -87,7 +88,7 @@ internal class ForgeSoulEvents(
     }
 
     private suspend fun createSoul(
-        onlineMinecraftPlayer: OnlineMinecraftPlayer,
+        serverPlayer: ServerPlayer,
         droppedXp: Int?,
         soulItems: List<ItemStack>?,
         location: Location,
@@ -95,8 +96,8 @@ internal class ForgeSoulEvents(
     ) {
         val soul = DefaultSoul(
             exp = droppedXp ?: 0,
-            ownerUUID = onlineMinecraftPlayer.uuid,
-            ownerLastName = onlineMinecraftPlayer.name,
+            ownerUUID = serverPlayer.uuid,
+            ownerLastName = serverPlayer.name.toPlain(),
             createdAt = Instant.now(),
             isFree = soulsConfig.soulFreeAfter == 0.seconds,
             location = when (dimension) {
@@ -116,20 +117,19 @@ internal class ForgeSoulEvents(
 
     @Suppress("LongMethod")
     private suspend fun createOrUpdateSoul(
-        onlineMinecraftPlayer: OnlineMinecraftPlayer,
         serverPlayer: ServerPlayer,
         droppedXp: Int?,
         soulItems: List<ItemStack>?
     ) {
         mutex.withLock {
-            val location = onlineMinecraftPlayer
+            val location = serverPlayer
                 .asLocatable()
                 .getLocation()
 
             val existingSoul = soulsDao.getSoulsNear(location, 1)
                 .getOrNull()
                 .orEmpty()
-                .firstOrNull { soul -> soul.ownerUUID == onlineMinecraftPlayer.uuid }
+                .firstOrNull { soul -> soul.ownerUUID == serverPlayer.uuid }
                 ?.let { dbSoul -> soulsDao.toItemDatabaseSoul(dbSoul) }
                 ?.getOrNull()
 
@@ -142,7 +142,7 @@ internal class ForgeSoulEvents(
             } else {
                 createSoul(
                     location = location,
-                    onlineMinecraftPlayer = onlineMinecraftPlayer,
+                    serverPlayer = serverPlayer,
                     droppedXp = droppedXp,
                     soulItems = soulItems,
                     dimension = serverPlayer.level().dimension()
@@ -150,7 +150,7 @@ internal class ForgeSoulEvents(
             }
             spawnSoulEffects(
                 location = location,
-                onlineMinecraftPlayer = onlineMinecraftPlayer
+                onlineMinecraftPlayer = serverPlayer.asOnlineMinecraftPlayer()
             )
         }
     }
@@ -160,7 +160,6 @@ internal class ForgeSoulEvents(
         .onEach { event ->
             val serverPlayer = event.entity.tryCast<ServerPlayer>() ?: return@onEach
             val keepLevel = event.entity.level().gameRules.getBoolean(GameRules.RULE_KEEPINVENTORY)
-            val onlineMinecraftPlayer = serverPlayer.asOnlineMinecraftPlayer()
 
             val droppedXp = when {
                 keepLevel -> 0
@@ -175,7 +174,6 @@ internal class ForgeSoulEvents(
             event.droppedExperience = 0
 
             createOrUpdateSoul(
-                onlineMinecraftPlayer = onlineMinecraftPlayer,
                 serverPlayer = serverPlayer,
                 droppedXp = droppedXp,
                 soulItems = null
@@ -189,7 +187,6 @@ internal class ForgeSoulEvents(
             info { "#livingDropsEvent ${event.drops.size} ${event.drops}" }
             val serverPlayer = event.entity.tryCast<ServerPlayer>() ?: return@onEach
             val keepInventory = event.entity.level().gameRules.getBoolean(GameRules.RULE_KEEPINVENTORY)
-            val onlineMinecraftPlayer = serverPlayer.asOnlineMinecraftPlayer()
 
             val soulItems = when {
                 keepInventory -> emptyList()
@@ -200,7 +197,6 @@ internal class ForgeSoulEvents(
             event.drops.clear()
 
             createOrUpdateSoul(
-                onlineMinecraftPlayer = onlineMinecraftPlayer,
                 serverPlayer = serverPlayer,
                 droppedXp = null,
                 soulItems = soulItems

@@ -14,7 +14,7 @@ services:
       # Forge --------------------
       TYPE: NEOFORGE
       VERSION: "1.21.1"
-      NEOFORGE_VERSION: "21.1.129"
+      NEOFORGE_VERSION: "21.1.209"
       # Paper --------------------
       #TYPE: PAPER
       #VERSION: 1.21.8
