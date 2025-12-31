@@ -1,5 +1,6 @@
 package ru.astrainteractive.soulkeeper.module.souls.di
 
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.flowOf
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
@@ -40,7 +41,7 @@ class ServiceModule(
     )
 
     private val deleteSoulService = ThrottleTickFlowService(
-        coroutineContext = coreModule.dispatchers.IO,
+        coroutineContext = SupervisorJob() + coreModule.dispatchers.IO,
         delay = flowOf(60.seconds),
         executor = DeleteSoulWorker(
             soulsDao = soulsDaoModule.soulsDao,
@@ -49,7 +50,7 @@ class ServiceModule(
     )
 
     private val freeSoulService = ThrottleTickFlowService(
-        coroutineContext = coreModule.dispatchers.IO,
+        coroutineContext = SupervisorJob() + coreModule.dispatchers.IO,
         delay = flowOf(60.seconds),
         executor = FreeSoulWorker(
             soulsDao = soulsDaoModule.soulsDao,
@@ -75,7 +76,7 @@ class ServiceModule(
         dispatchers = coreModule.dispatchers
     )
     private val pickUpSoulService = ThrottleTickFlowService(
-        coroutineContext = coreModule.dispatchers.IO,
+        coroutineContext = SupervisorJob() + coreModule.dispatchers.IO,
         delay = flowOf(3.seconds),
         executor = PickUpWorker(
             pickUpSoulUseCase = PickUpSoulUseCase(

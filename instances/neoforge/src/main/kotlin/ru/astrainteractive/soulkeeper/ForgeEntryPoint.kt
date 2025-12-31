@@ -1,5 +1,6 @@
 package ru.astrainteractive.soulkeeper
 
+import kotlinx.coroutines.cancel
 import net.neoforged.fml.common.Mod
 import ru.astrainteractive.astralibs.lifecycle.ForgeLifecycleServer
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
@@ -22,6 +23,7 @@ class ForgeEntryPoint :
 
     override fun onDisable() {
         rootModule.lifecycle.onDisable()
+        rootModule.coreModule.unconfinedScope.cancel()
     }
 
     override fun onReload() {

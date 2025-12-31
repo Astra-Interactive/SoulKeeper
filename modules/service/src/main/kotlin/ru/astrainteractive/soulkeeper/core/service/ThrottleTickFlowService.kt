@@ -2,6 +2,7 @@ package ru.astrainteractive.soulkeeper.core.service
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
@@ -20,7 +21,7 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 
 class ThrottleTickFlowService(
-    coroutineContext: CoroutineContext = Dispatchers.IO,
+    coroutineContext: CoroutineContext = SupervisorJob() + Dispatchers.IO,
     private val delay: Flow<Duration>,
     private val initialDelay: Flow<Duration> = flowOf(Duration.ZERO),
     private val executor: ServiceExecutor

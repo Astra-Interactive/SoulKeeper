@@ -80,6 +80,7 @@ class CoreModule(
         },
         onDisable = {
             ioScope.cancel()
+            mainScope.cancel()
         }
     )
 }
