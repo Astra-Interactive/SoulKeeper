@@ -2,10 +2,12 @@ package ru.astrainteractive.soulkeeper.module.souls.di
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import org.jetbrains.exposed.sql.Database
@@ -14,12 +16,15 @@ import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
+import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
+import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.klibs.mikro.exposed.model.DatabaseConfiguration
 import ru.astrainteractive.klibs.mikro.exposed.util.connect
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDaoImpl
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulItemsTable
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulTable
+import ru.astrainteractive.soulkeeper.module.souls.migration.H2ToSqliteMigration
 import java.io.File
 
 interface SoulsDaoModule {
@@ -33,20 +38,27 @@ interface SoulsDaoModule {
         dataFolder: File,
         ioScope: CoroutineScope,
         dispatchers: KotlinDispatchers
-    ) : SoulsDaoModule {
+    ) : SoulsDaoModule, Logger by JUtiltLogger("SoulsDaoModule") {
         override val databaseFlow: Flow<Database> = flow {
+            H2ToSqliteMigration(dataFolder).migrate()
             if (!dataFolder.exists()) dataFolder.mkdirs()
-            val database = dataFolder.resolve("souls_v2").absolutePath
-                .let(DatabaseConfiguration::H2)
+            val database = dataFolder.resolve("souls_v3")
+                .absolutePath
+                .let(DatabaseConfiguration::SQLite)
                 .connect()
             TransactionManager.manager.defaultIsolationLevel = java.sql.Connection.TRANSACTION_SERIALIZABLE
             transaction(database) {
                 SchemaUtils.create(SoulTable)
-                SchemaUtils.createMissingTablesAndColumns(SoulTable)
-                SchemaUtils.createMissingTablesAndColumns(SoulItemsTable)
+                SchemaUtils.create(SoulItemsTable)
             }
             emit(database)
-        }.shareIn(ioScope, SharingStarted.Eagerly, 1)
+        }
+            .retry { throwable ->
+                error(throwable) { "Could not connect to database" }
+                delay(5000L)
+                true
+            }
+            .shareIn(ioScope, SharingStarted.Eagerly, 1)
 
         override val soulsDao: SoulsDao = SoulsDaoImpl(
             databaseFlow = databaseFlow,
