@@ -45,15 +45,14 @@ minecraftProcessResource {
 
 val shadowJar = tasks.named<ShadowJar>("shadowJar")
 shadowJar.configure {
-    val projectInfo = requireProjectInfo
     mergeServiceFiles()
     dependsOn(configurations)
-    archiveClassifier.set(null as String?)
-    archiveVersion.set(projectInfo.versionString)
+    archiveClassifier = (null as String?)
+    archiveVersion = (requireProjectInfo.versionString)
     isReproducibleFileOrder = true
     archiveBaseName = "${requireProjectInfo.name}-${project.name}"
     destinationDirectory = rootDir.resolve("build")
-        .resolve("bukkit")
+        .resolve(project.name)
         .resolve("plugins")
         .takeIf(File::exists)
         ?: File(rootDir, "jars").also(File::mkdirs)
@@ -84,19 +83,8 @@ shadowJar.configure {
         include(dependency("org.bstats:bstats-bukkit:.*"))
         include(dependency("org.bstats:bstats-base:.*"))
     }
-    relocate("org.bstats", project.group.toString())
     listOf(
         "com.alessiodp.libby",
-//        "ch.qos.logback",
-//        "com.charleskorn.kaml",
-//        "com.ibm.icu",
-//        "it.krzeminski.snakeyaml",
-//        "net.thauvin.erik",
-//        "okio",
-//        "org.apache",
-//        "org.intellij",
-//        "org.slf4j",
-//        "org.jetbrains.annotations",
         "ru.astrainteractive.klibs",
         "ru.astrainteractive.astralibs"
     ).forEach { pattern ->
@@ -105,13 +93,5 @@ shadowJar.configure {
             destination = "${requireProjectInfo.group}.shade.$pattern"
         )
     }
-    relocate("org.bstats", projectInfo.group)
-//    listOf(
-//        "org.jetbrains.exposed",
-//        "kotlinx",
-//    ).forEach { pattern ->
-//        relocate(pattern, "${projectInfo.group}.$pattern") {
-//            exclude("kotlin/kotlin.kotlin_builtins")
-//        }
-//    }
+    relocate("org.bstats", requireProjectInfo.group)
 }
