@@ -54,6 +54,7 @@ tests-junit-jupiter-api = "6.0.1"
 tests-mockito = "5.21.0"
 tests-org-testing = "7.11.0"
 tests-turbine = "1.2.1"
+libby = "2.0.0-SNAPSHOT"
 
 [libraries]
 cache4k = { module = "io.github.reactivecircus.cache4k:cache4k-jvm", version.ref = "cache4k" }
@@ -71,19 +72,19 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 jda = { module = "net.dv8tion:JDA", version.ref = "jda" }
 klibs-kdi = { module = "ru.astrainteractive.klibs:kdi-jvm", version.ref = "klibs-kdi" }
-klibs-kstorage = { module = "ru.astrainteractive.klibs:kstorage", version.ref = "klibs-kstorage" }
-klibs-mikro-core = { module = "ru.astrainteractive.klibs:mikro-core", version.ref = "klibs-mikro" }
-klibs-mikro-extensions = { module = "ru.astrainteractive.klibs:mikro-extensions", version.ref = "klibs-mikro" }
+klibs-kstorage = { module = "ru.astrainteractive.klibs:kstorage-jvm", version.ref = "klibs-kstorage" }
+klibs-mikro-core = { module = "ru.astrainteractive.klibs:mikro-core-jvm", version.ref = "klibs-mikro" }
+klibs-mikro-extensions = { module = "ru.astrainteractive.klibs:mikro-extensions-jvm", version.ref = "klibs-mikro" }
 kotlin-benchmark-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "kotlin-benchmark" }
-kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
+kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-coreJvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }
 kotlin-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime-jvm", version.ref = "kotlin-datetime" }
 kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-version" }
-kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin-version" }
-kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization" }
-kotlin-serialization-kaml = { module = "com.charleskorn.kaml:kaml", version.ref = "kotlin-serialization-kaml" }
-kotlin-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "kotlin-json" }
+kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization-jvm", version.ref = "kotlin-version" }
+kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm", version.ref = "kotlin-serialization" }
+kotlin-serialization-kaml = { module = "com.charleskorn.kaml:kaml-jvm", version.ref = "kotlin-serialization-kaml" }
+kotlin-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf-jvm", version.ref = "kotlin-json" }
 kotlin-tooling-core = { module = "org.jetbrains.kotlin:kotlin-tooling-core", version.ref = "kotlin-version" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-contentNegitiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
@@ -137,6 +138,8 @@ tests-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
 tests-mockito = { module = "org.mockito:mockito-core", version.ref = "tests-mockito" }
 tests-org-testing = { module = "org.testng:testng", version.ref = "tests-org-testing" }
 tests-turbine = { module = "app.cash.turbine:turbine", version.ref = "tests-turbine" }
+libby-core = { module = "com.alessiodp.libby:libby-core", version.ref = "libby" }
+libby-standalone = { module = "com.alessiodp.libby:libby-standalone", version.ref = "libby" }
 
 [plugins]
 gradle-buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "gradle-buildconfig" }
