@@ -2,14 +2,15 @@ package ru.astrainteractive.libloader.api
 
 import com.alessiodp.libby.Library
 import com.alessiodp.libby.LibraryManager
+import com.alessiodp.libby.logging.Logger
 import ru.astrainteractive.libloader.async.JConcurrentExecutor
-import java.util.logging.Logger
 
 class LibbyLibraryLoader(
     private val libraryManager: LibraryManager,
     private val jConcurrentExecutor: JConcurrentExecutor
 ) : LibLoader {
-    private val logger = Logger.getLogger("LibraryLoader")
+    private val logger: Logger
+        get() = libraryManager.logger
 
     private fun setupRepositories(repositories: List<LibLoader.Repository>) {
         repositories.forEach { repository ->
@@ -43,16 +44,20 @@ class LibbyLibraryLoader(
     private fun loadLibraries(libraries: List<LibLoader.Library>) {
         with(jConcurrentExecutor) {
             libraries.forEachParallel { library ->
-                logger.info("Loading library $library")
-                libraryManager.loadLibrary(mapLibrary(library))
+                logger.debug("Loading library $library")
+                try {
+                    libraryManager.loadLibrary(mapLibrary(library))
+                } catch (e: Exception) {
+                    logger.error("Failed to load library $library", e)
+                }
             }
         }
     }
 
     override fun loadAll(libraries: List<LibLoader.Library>, repositories: List<LibLoader.Repository>) {
-        logger.info { "Loading libraries..." }
+        logger.info("Loading ${libraries.size} libraries...")
         setupRepositories(repositories)
         loadLibraries(libraries)
-        logger.info { "Libraries loaded!" }
+        logger.info("Libraries loaded!")
     }
 }

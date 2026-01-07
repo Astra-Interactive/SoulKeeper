@@ -35,6 +35,8 @@ dependencies {
     implementation(projects.modules.service)
     implementation(projects.modules.serviceBukkit)
     implementation(projects.modules.commandBukkit)
+    implementation(projects.modules.buildKonfig)
+    implementation(projects.modules.libLoader)
 }
 
 minecraftProcessResource {
@@ -43,46 +45,73 @@ minecraftProcessResource {
 
 val shadowJar = tasks.named<ShadowJar>("shadowJar")
 shadowJar.configure {
-
     val projectInfo = requireProjectInfo
-    isReproducibleFileOrder = true
     mergeServiceFiles()
     dependsOn(configurations)
     archiveClassifier.set(null as String?)
-
-    minimize {
-        exclude(dependency(libs.exposed.jdbc.get()))
-        exclude(dependency(libs.exposed.dao.get()))
-    }
     archiveVersion.set(projectInfo.versionString)
+    isReproducibleFileOrder = true
     archiveBaseName = "${requireProjectInfo.name}-${project.name}"
     destinationDirectory = rootDir.resolve("build")
         .resolve("bukkit")
         .resolve("plugins")
         .takeIf(File::exists)
         ?: File(rootDir, "jars").also(File::mkdirs)
-
-    relocate("org.bstats", projectInfo.group)
+    dependencies {
+        // deps
+        include(dependency(libs.minecraft.astralibs.core.asProvider()))
+        include(dependency(libs.minecraft.astralibs.core.bukkit))
+        include(dependency(libs.minecraft.astralibs.menu.bukkit))
+        include(dependency(libs.minecraft.astralibs.command.bukkit))
+        include(dependency(libs.minecraft.astralibs.command.asProvider()))
+        include(dependency(libs.klibs.kstorage))
+        include(dependency(libs.klibs.mikro.core))
+        include(dependency(libs.klibs.mikro.extensions))
+        // modules
+        include(dependency(projects.modules.buildKonfig))
+        include(dependency(projects.modules.commandBukkit))
+        include(dependency(projects.modules.core))
+        include(dependency(projects.modules.coreBukkit))
+        include(dependency(projects.modules.dao))
+        include(dependency(projects.modules.eventBukkit))
+        include(dependency(projects.modules.libLoader))
+        include(dependency(projects.modules.service))
+        include(dependency(projects.modules.serviceBukkit))
+        // core
+        include(dependency("com.alessiodp.libby:libby-core:.*"))
+        include(dependency("com.alessiodp.libby:libby-standalone:.*"))
+        include(dependency("org.jetbrains.kotlin:kotlin-stdlib:.*"))
+        include(dependency("org.bstats:bstats-bukkit:.*"))
+        include(dependency("org.bstats:bstats-base:.*"))
+    }
+    relocate("org.bstats", project.group.toString())
     listOf(
-        "ch.qos.logback",
-        "com.charleskorn.kaml",
-        "com.ibm.icu",
-        "it.krzeminski.snakeyaml",
-        "net.thauvin.erik",
-        "okio",
-        "org.apache",
-        "org.intellij",
-        "org.slf4j",
-        "org.jetbrains.annotations",
+        "com.alessiodp.libby",
+//        "ch.qos.logback",
+//        "com.charleskorn.kaml",
+//        "com.ibm.icu",
+//        "it.krzeminski.snakeyaml",
+//        "net.thauvin.erik",
+//        "okio",
+//        "org.apache",
+//        "org.intellij",
+//        "org.slf4j",
+//        "org.jetbrains.annotations",
         "ru.astrainteractive.klibs",
         "ru.astrainteractive.astralibs"
-    ).forEach { pattern -> relocate(pattern, "${projectInfo.group}.$pattern") }
-    listOf(
-        "org.jetbrains.exposed",
-        "kotlinx",
     ).forEach { pattern ->
-        relocate(pattern, "${projectInfo.group}.$pattern") {
-            exclude("kotlin/kotlin.kotlin_builtins")
-        }
+        relocate(
+            pattern = pattern,
+            destination = "${requireProjectInfo.group}.shade.$pattern"
+        )
     }
+    relocate("org.bstats", projectInfo.group)
+//    listOf(
+//        "org.jetbrains.exposed",
+//        "kotlinx",
+//    ).forEach { pattern ->
+//        relocate(pattern, "${projectInfo.group}.$pattern") {
+//            exclude("kotlin/kotlin.kotlin_builtins")
+//        }
+//    }
 }
