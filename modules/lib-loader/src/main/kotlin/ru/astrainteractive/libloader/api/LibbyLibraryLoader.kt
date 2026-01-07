@@ -3,6 +3,7 @@ package ru.astrainteractive.libloader.api
 import com.alessiodp.libby.Library
 import com.alessiodp.libby.LibraryManager
 import com.alessiodp.libby.logging.Logger
+import ru.astrainteractive.libloader.api.LibLoader.Dependency
 import ru.astrainteractive.libloader.async.JConcurrentExecutor
 
 class LibbyLibraryLoader(
@@ -21,13 +22,29 @@ class LibbyLibraryLoader(
         }
     }
 
-    private fun mapLibrary(library: LibLoader.Library): Library {
+    private fun Library.Builder.excludeTransitiveDependencies(
+        dependencies: List<Dependency>
+    ) = this.apply {
+        dependencies.forEach { library ->
+            val (group, artifact) = library.dependency.split(":")
+            excludeTransitiveDependency(group, artifact)
+        }
+    }
+
+    private fun mapLibrary(
+        library: LibLoader.Library,
+        excludedTransitiveDependencies: List<Dependency>
+    ): Library {
         val (group, artifact, version) = library.dependency.split(":")
         return Library.builder()
             .groupId(group.replace(".", "{}"))
             .artifactId(artifact)
             .version(version)
             .resolveTransitiveDependencies(library.resolveTransitiveDependencies)
+            .apply {
+                if (!library.resolveTransitiveDependencies) return@apply
+                excludeTransitiveDependencies(excludedTransitiveDependencies)
+            }
             .apply {
                 val relocate = library.relocate ?: return@apply
                 relocate(
@@ -41,12 +58,15 @@ class LibbyLibraryLoader(
             .build()
     }
 
-    private fun loadLibraries(libraries: List<LibLoader.Library>) {
+    private fun loadLibraries(
+        libraries: List<LibLoader.Library>,
+        excludedTransitiveDependencies: List<Dependency>
+    ) {
         with(jConcurrentExecutor) {
             libraries.forEachParallel { library ->
                 logger.debug("Loading library $library")
                 try {
-                    libraryManager.loadLibrary(mapLibrary(library))
+                    libraryManager.loadLibrary(mapLibrary(library, excludedTransitiveDependencies))
                 } catch (e: Exception) {
                     logger.error("Failed to load library $library", e)
                 }
@@ -54,10 +74,14 @@ class LibbyLibraryLoader(
         }
     }
 
-    override fun loadAll(libraries: List<LibLoader.Library>, repositories: List<LibLoader.Repository>) {
+    override fun loadAll(
+        libraries: List<LibLoader.Library>,
+        excludedTransitiveDependencies: List<Dependency>,
+        repositories: List<LibLoader.Repository>
+    ) {
         logger.info("Loading ${libraries.size} libraries...")
         setupRepositories(repositories)
-        loadLibraries(libraries)
+        loadLibraries(libraries, excludedTransitiveDependencies)
         logger.info("Libraries loaded!")
     }
 }

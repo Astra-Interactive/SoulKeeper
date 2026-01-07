@@ -6,7 +6,6 @@ import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.libloader.api.LibLoader
-import ru.astrainteractive.libloader.api.LibLoader.Library
 import ru.astrainteractive.libloader.api.LibbyLibraryLoader
 import ru.astrainteractive.libloader.async.VirtualThreadsJConcurrentExecutor
 import ru.astrainteractive.soulkeeper.buildkonfig.BuildKonfig
@@ -23,15 +22,18 @@ class SoulKeeper :
             libraryManager = StandaloneLibraryManager(
                 JDKLogAdapter(java.util.logging.Logger.getLogger("SoulKeeper-LibraryManager")),
                 dataPath,
-                "lib"
+                ".libraries"
             )
         ).loadAll(
-            libraries = BuildKonfig.DEPENDEPCIES.map(LibLoader::Library),
-            repositories = listOf(
-                LibLoader.Repository.MavenCentral,
-                LibLoader.Repository.Url("https://repo.opencollab.dev/main/"),
-                LibLoader.Repository.Url("https://repo.codemc.io/repository/maven-releases/")
-            )
+            libraries = BuildKonfig
+                .DEPENDEPCIES
+                .map(LibLoader::Library),
+            excludedTransitiveDependencies = BuildKonfig
+                .EXCLUDED_TRANSITIVE_DEPENDENCIES
+                .map(LibLoader::Dependency),
+            repositories = BuildKonfig
+                .REPOSITORIES
+                .map(LibLoader.Repository::Url),
         )
         rootModule.lifecycle.onEnable()
     }
