@@ -30,6 +30,8 @@ dependencies {
     implementation(libs.minecraft.kyori.plain)
     implementation(libs.minecraft.kyori.legacy)
     implementation(libs.minecraft.kyori.gson)
+    // ByteBuddy for runtime class loading
+    implementation("net.bytebuddy:byte-buddy-agent:1.15.4")
     // Local
     implementation(projects.modules.core)
     implementation(projects.modules.commandNeoforge)
@@ -103,6 +105,7 @@ shadowJar.configure {
         // core
         include(dependency("com.alessiodp.libby:libby-core:.*"))
         include(dependency("com.alessiodp.libby:libby-standalone:.*"))
+        include(dependency("net.bytebuddy:byte-buddy-agent:.*"))
         include(dependency("org.bstats:bstats-bukkit:.*"))
         include(dependency("org.bstats:bstats-base:.*"))
     }
