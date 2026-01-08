@@ -15,16 +15,10 @@ import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
 import java.io.File
 
-class RootModule(private val plugin: Lifecycle) {
-
-    private val dataFolder by lazy {
-        FMLPaths.CONFIGDIR.get()
-            .resolve("SoulKeeper")
-            .toAbsolutePath()
-            .toFile()
-            .also(File::mkdirs)
-    }
-
+class RootModule(
+    private val plugin: Lifecycle,
+    private val dataFolder: File
+) {
     val coreModule: CoreModule by lazy {
         CoreModule(
             dataFolder = dataFolder,
