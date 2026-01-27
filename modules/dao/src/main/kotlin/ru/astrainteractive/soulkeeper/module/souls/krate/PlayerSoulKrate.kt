@@ -8,8 +8,6 @@ import ru.astrainteractive.klibs.kstorage.suspend.impl.DefaultSuspendMutableKrat
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
-import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
-import ru.astrainteractive.soulkeeper.module.souls.database.model.Soul
 import java.io.File
 import java.time.Instant
 import java.util.UUID
@@ -18,57 +16,44 @@ class PlayerSoulKrate(
     stringFormat: StringFormat,
     private val dataFolder: File,
     private val createdAt: Instant,
-    private val ownerUUID: UUID
-) : SuspendMutableKrate<Soul?>, Logger by JUtiltLogger("SoulKeeper-PlayerSoulKrate") {
-    private fun getFile(shouldCreate: Boolean = false): File {
+    private val ownerUUID: UUID,
+    private val readIndex: Int = 0
+) : SuspendMutableKrate<DefaultSoul?>, Logger by JUtiltLogger("SoulKeeper-PlayerSoulKrate") {
+    private fun createFile(): File {
         val parentDir = dataFolder.resolve("$ownerUUID")
-        if (shouldCreate) parentDir.mkdirs()
+        parentDir.mkdirs()
 
         var index = 0
         var file: File
         do {
             file = parentDir.resolve("${createdAt.epochSecond}_$index.yml")
             index++
-        } while (file.exists() && shouldCreate)
-        if (shouldCreate) file.createNewFile()
+        } while (file.exists())
+        file.createNewFile()
         return file
     }
 
-    private val krate = DefaultSuspendMutableKrate<Soul?>(
+    private val krate = DefaultSuspendMutableKrate(
         factory = { null },
         loader = {
-            val file = getFile(shouldCreate = false)
+            val file = dataFolder
+                .resolve("$ownerUUID")
+                .resolve("${createdAt.epochSecond}_$readIndex.yml")
             stringFormat.parse<DefaultSoul>(file)
                 .onFailure { error(it) { "Failed to load soul for $ownerUUID" } }
                 .getOrNull()
         },
-        saver = saver@{ soul ->
-            val file = getFile(shouldCreate = true)
-            if (soul == null) {
+        saver = saver@{ defaultSoul ->
+            val file = createFile()
+            if (defaultSoul == null) {
                 file.renameTo(file.resolveSibling("${file.nameWithoutExtension}.deleted"))
                 return@saver
             }
-            val defaultSoul = DefaultSoul(
-                ownerUUID = soul.ownerUUID,
-                ownerLastName = soul.ownerLastName,
-                createdAt = soul.createdAt,
-                isFree = soul.isFree,
-                location = soul.location,
-                exp = soul.exp,
-                items = when (val localSoul = soul) {
-                    is ItemDatabaseSoul -> localSoul.items
-                    is DefaultSoul -> localSoul.items
-                    else -> {
-                        error { "Unknown soul type" }
-                        emptyList()
-                    }
-                }
-            )
             stringFormat.writeIntoFile(defaultSoul, file)
         }
     )
 
-    override suspend fun save(value: Soul?) {
+    override suspend fun save(value: DefaultSoul?) {
         krate.save(value)
     }
 
@@ -76,7 +61,7 @@ class PlayerSoulKrate(
         krate.reset()
     }
 
-    override suspend fun getValue(): Soul? {
+    override suspend fun getValue(): DefaultSoul? {
         return krate.getValue()
     }
 }

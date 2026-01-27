@@ -89,12 +89,21 @@ internal class ForgeSoulEvents(
         )
         soulsDao.updateSoul(soul = updatedSoul)
         ioScope.launch {
+            val defaultSoul = DefaultSoul(
+                ownerUUID = updatedSoul.ownerUUID,
+                ownerLastName = updatedSoul.ownerLastName,
+                createdAt = updatedSoul.createdAt,
+                isFree = updatedSoul.isFree,
+                location = updatedSoul.location,
+                exp = updatedSoul.exp,
+                items = updatedSoul.items
+            )
             PlayerSoulKrate(
                 stringFormat = stringFormat,
                 dataFolder = dataFolder,
                 createdAt = soul.createdAt,
                 ownerUUID = soul.ownerUUID
-            ).save(updatedSoul)
+            ).save(defaultSoul)
         }
     }
 

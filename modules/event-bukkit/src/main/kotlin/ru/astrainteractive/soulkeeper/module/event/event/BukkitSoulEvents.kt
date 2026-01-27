@@ -103,7 +103,7 @@ internal class BukkitSoulEvents(
                 stringFormat = stringFormat,
                 dataFolder = dataFolder,
                 createdAt = soul.createdAt,
-                ownerUUID = soul.ownerUUID
+                ownerUUID = soul.ownerUUID,
             ).save(soul)
         }
         playEffects(soul, event.player)
