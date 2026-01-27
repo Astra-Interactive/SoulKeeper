@@ -23,13 +23,24 @@ internal class BukkitPickUpItemsUseCase(
     Logger by JUtiltLogger("SoulKeeper-PickUpItemsUseCase") {
 
     override suspend fun invoke(player: OnlineMinecraftPlayer, soul: ItemDatabaseSoul): Output {
-        if (soul.items.isEmpty()) return Output.NoItemsPresent
-        val bukkitPlayer = Bukkit.getPlayer(player.uuid) ?: return Output.SomeItemsRemain
+        if (soul.items.isEmpty()) {
+            info { "Soul ${soul.id} has no items to collect" }
+            return Output.NoItemsPresent
+        }
+        val bukkitPlayer = Bukkit.getPlayer(player.uuid)
+        if (bukkitPlayer == null) {
+            info { "Player ${player.uuid} is not online" }
+            return Output.SomeItemsRemain
+        }
 
         val items = soul.items
             .map(StringFormatObject::raw)
             .map(ItemStackSerializer::decodeFromString)
-            .mapNotNull { itemStackResult -> itemStackResult.getOrNull() }
+            .mapNotNull { itemStackResult ->
+                itemStackResult
+                    .onFailure { error(it) { "Failed to deserialize item stack" } }
+                    .getOrNull()
+            }
         val notAddedItems = withContext(dispatchers.Main) {
             bukkitPlayer.inventory
                 .addItem(*items.toTypedArray())

@@ -3,6 +3,7 @@ package ru.astrainteractive.soulkeeper.command.di
 import ru.astrainteractive.astralibs.command.api.registrar.PaperCommandRegistrarContext
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.soulkeeper.command.reload.SoulsReloadCommandRegistrar
+import ru.astrainteractive.soulkeeper.command.soulkrate.SoulKrateCommandRegistrar
 import ru.astrainteractive.soulkeeper.command.souls.SoulsCommandExecutor
 import ru.astrainteractive.soulkeeper.command.souls.SoulsListCommandRegistrar
 import ru.astrainteractive.soulkeeper.core.di.BukkitCoreModule
@@ -29,6 +30,12 @@ class CommandModule(
                     translationKrate = coreModule.translation,
                     kyoriKrate = coreModule.kyoriComponentSerializer
                 )
+            ).register()
+            SoulKrateCommandRegistrar(
+                registrarContext = paperCommandRegistrar,
+                stringFormat = coreModule.yamlFormat,
+                dataFolder = coreModule.dataFolder,
+                ioScope = coreModule.ioScope
             ).register()
             SoulsReloadCommandRegistrar(
                 plugin = bukkitCoreModule.plugin,

@@ -19,6 +19,6 @@ internal class GetNearestSoulUseCase(
         return soulsDao.getSoulsNear(player.asLocatable().getLocation(), 2)
             .getOrNull()
             .orEmpty()
-            .firstOrNull { it.isFree || it.ownerUUID == player.uuid }
+            .firstOrNull { soul -> soul.isFree || soul.ownerUUID == player.uuid }
     }
 }
