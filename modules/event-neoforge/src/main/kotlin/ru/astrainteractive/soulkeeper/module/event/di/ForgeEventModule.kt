@@ -17,7 +17,10 @@ class ForgeEventModule(
         soulsConfigKrate = coreModule.soulsConfigKrate,
         effectEmitter = effectEmitter,
         mainScope = coreModule.mainScope,
-        dispatchers = coreModule.dispatchers
+        dispatchers = coreModule.dispatchers,
+        dataFolder = coreModule.dataFolder,
+        stringFormat = coreModule.yamlFormat,
+        ioScope = coreModule.ioScope
     )
 
     val lifecycle = Lifecycle.Lambda(

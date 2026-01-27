@@ -1,16 +1,17 @@
 package ru.astrainteractive.soulkeeper.module.event.event
 
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.serialization.StringFormat
 import org.bukkit.World
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
-import ru.astrainteractive.astralibs.coroutines.withTimings
 import ru.astrainteractive.astralibs.event.EventListener
+import ru.astrainteractive.astralibs.server.location.Location
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
-import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.serialization.ItemStackSerializer
 import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
@@ -20,29 +21,48 @@ import ru.astrainteractive.soulkeeper.core.util.toDatabaseLocation
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
+import ru.astrainteractive.soulkeeper.module.souls.krate.PlayerSoulKrate
+import java.io.File
 import java.time.Instant
 import kotlin.time.Duration.Companion.seconds
 
 internal class BukkitSoulEvents(
     private val soulsDao: SoulsDao,
-    soulsConfigKrate: CachedKrate<SoulsConfig>
+    private val ioScope: CoroutineScope,
+    private val dataFolder: File,
+    private val stringFormat: StringFormat,
+    soulsConfigKrate: CachedKrate<SoulsConfig>,
 ) : EventListener {
-    private val scope = CoroutineFeature.IO.withTimings()
     private val soulsConfig by soulsConfigKrate
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
-    fun playerDeathEvent(event: PlayerDeathEvent) {
-        val soulItems = when {
+    private fun getAndClearItems(event: PlayerDeathEvent): List<StringFormatObject> {
+        return when {
             event.keepInventory -> emptyList()
-
             else -> {
-                val drops = event.drops.toList()
-                event.drops.clear()
-                drops
+                event.drops
+                    .map(ItemStackSerializer::encodeToString)
+                    .map(::StringFormatObject)
+                    .also { event.drops.clear() }
             }
         }
+    }
 
-        val droppedXp = when {
+    private fun getSoulLocation(event: PlayerDeathEvent): Location {
+        return when {
+            event.player.location.world.environment == World.Environment.THE_END -> {
+                val endLocation = event.player.location.clone()
+                if (endLocation.y < soulsConfig.endLocationLimitY) {
+                    endLocation.y = soulsConfig.endLocationLimitY
+                }
+                endLocation
+            }
+
+            else -> event.player.location
+        }.toDatabaseLocation()
+    }
+
+    private fun getAndClearDroppedXp(event: PlayerDeathEvent): Int {
+        return when {
             event.keepLevel -> 0
 
             else -> {
@@ -51,42 +71,42 @@ internal class BukkitSoulEvents(
                 exp
             }
         }
+    }
 
-        if (soulItems.isEmpty() && droppedXp <= 0) return
+    private fun playEffects(soul: DefaultSoul, player: Player) {
+        soul.location
+            .toBukkitLocation()
+            .spawnParticleForPlayer(player, soulsConfig.particles.soulCreated)
+        soul.location
+            .toBukkitLocation()
+            .playSoundForPlayer(player, soulsConfig.sounds.soulDropped)
+    }
 
-        val bukkitSoul = DefaultSoul(
-            exp = droppedXp,
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    fun playerDeathEvent(event: PlayerDeathEvent) {
+        val soulItems = getAndClearItems(event)
+        val soulExp = getAndClearDroppedXp(event)
+
+        if (soulItems.isEmpty() && soulExp <= 0) return
+
+        val soul = DefaultSoul(
+            exp = soulExp,
             ownerUUID = event.player.uniqueId,
             ownerLastName = event.player.name,
             createdAt = Instant.now(),
             isFree = soulsConfig.soulFreeAfter == 0.seconds,
-            location = when {
-                event.player.location.world.environment == World.Environment.THE_END -> {
-                    val endLocation = event.player.location.clone()
-                    if (endLocation.y < soulsConfig.endLocationLimitY) {
-                        endLocation.y = soulsConfig.endLocationLimitY
-                    }
-                    endLocation
-                }
-
-                else -> event.player.location
-            }.toDatabaseLocation(),
-            items = soulItems
-                .map(ItemStackSerializer::encodeToString)
-                .map(::StringFormatObject),
+            location = getSoulLocation(event),
+            items = soulItems,
         )
-        bukkitSoul.location.toBukkitLocation().spawnParticleForPlayer(
-            event.player,
-            soulsConfig.particles.soulCreated,
-        )
-        bukkitSoul.location.toBukkitLocation().playSoundForPlayer(event.player, soulsConfig.sounds.soulDropped)
-        scope.launch {
-            soulsDao.insertSoul(bukkitSoul)
+        ioScope.launch {
+            PlayerSoulKrate(
+                stringFormat = stringFormat,
+                dataFolder = dataFolder,
+                createdAt = soul.createdAt,
+                ownerUUID = soul.ownerUUID
+            ).save(soul)
         }
-    }
-
-    override fun onDisable() {
-        scope.cancel()
-        super.onDisable()
+        playEffects(soul, event.player)
+        ioScope.launch { soulsDao.insertSoul(soul) }
     }
 }

@@ -15,6 +15,9 @@ class BukkitEventModule(
     private val event = BukkitSoulEvents(
         soulsDao = soulsDaoModule.soulsDao,
         soulsConfigKrate = coreModule.soulsConfigKrate,
+        ioScope = coreModule.ioScope,
+        dataFolder = coreModule.dataFolder,
+        stringFormat = coreModule.yamlFormat
     )
     val lifecycle = Lifecycle.Lambda(
         onEnable = {
