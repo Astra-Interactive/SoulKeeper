@@ -115,7 +115,7 @@ shadowJar.configure {
         "org.jetbrains.annotations",
         "ru.astrainteractive.klibs",
         "ru.astrainteractive.astralibs"
-    ) // .forEach { pattern -> relocate(pattern, "${projectInfo.group}.$pattern") }
+    ).forEach { pattern -> relocate(pattern, "${projectInfo.group}.$pattern") }
     listOf(
         "org.jetbrains.exposed",
         "kotlinx",
