@@ -3,13 +3,13 @@ package ru.astrainteractive.soulkeeper.module.souls.database.model
 import kotlinx.serialization.Serializable
 import ru.astrainteractive.astralibs.server.location.Location
 import ru.astrainteractive.klibs.mikro.extensions.serialization.JInstantSerializer
-import ru.astrainteractive.klibs.mikro.extensions.serialization.UUIDSerializer
+import ru.astrainteractive.klibs.mikro.extensions.serialization.JUuidSerializer
 import java.time.Instant
 import java.util.UUID
 
 @Serializable
 data class DefaultSoul(
-    @Serializable(with = UUIDSerializer::class)
+    @Serializable(with = JUuidSerializer::class)
     override val ownerUUID: UUID,
     override val ownerLastName: String,
     @Serializable(with = JInstantSerializer::class)

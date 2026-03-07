@@ -9,7 +9,7 @@ import java.time.Instant
 
 class MakeCreatedAtNonNullMigration :
     DatabaseMigration,
-    Logger by JUtiltLogger("MakeCreatedAtNonNullMigration") {
+    Logger by JUtiltLogger("SoulKeeper-MakeCreatedAtNonNullMigration") {
 
     override val requiredDbVersion: Int = 1
 

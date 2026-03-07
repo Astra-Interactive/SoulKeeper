@@ -15,4 +15,8 @@ dependencies {
     implementation(libs.klibs.mikro.extensions)
     implementation(libs.klibs.mikro.core)
     implementation(libs.klibs.kstorage)
+
+    testImplementation(libs.tests.kotlin.test)
+    testImplementation(libs.kotlin.coroutines.test)
+    testImplementation(libs.driver.jdbc)
 }

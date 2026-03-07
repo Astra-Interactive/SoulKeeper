@@ -17,7 +17,7 @@ jda-webhook = "0.8.4"
 klibs-gradleplugin = "1.13.2"
 klibs-kdi = "1.4.8"
 klibs-kstorage = "4.5.0"
-klibs-mikro = "1.20.0"
+klibs-mikro = "1.21.0"
 kotlin-benchmark = "0.4.16"
 kotlin-coroutines = "1.10.2"
 kotlin-datetime = "0.7.1-0.6.x-compat"
@@ -75,7 +75,7 @@ jda = { module = "net.dv8tion:JDA", version.ref = "jda" }
 klibs-kdi = { module = "ru.astrainteractive.klibs:kdi-jvm", version.ref = "klibs-kdi" }
 klibs-kstorage = { module = "ru.astrainteractive.klibs:kstorage", version.ref = "klibs-kstorage" }
 klibs-mikro-core = { module = "ru.astrainteractive.klibs:mikro-core", version.ref = "klibs-mikro" }
-klibs-mikro-extensions = { module = "ru.astrainteractive.klibs:mikro-extensions", version.ref = "klibs-mikro" }
+klibs-mikro-extensions = { module = "ru.astrainteractive.klibs:mikro-extensions-jvm", version.ref = "klibs-mikro" }
 kotlin-benchmark-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "kotlin-benchmark" }
 kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-coreJvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "kotlin-coroutines" }
