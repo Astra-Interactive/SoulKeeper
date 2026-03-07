@@ -24,6 +24,7 @@ import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDaoImpl
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulItemsTable
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulTable
+import ru.astrainteractive.soulkeeper.module.souls.migration.DropBrokenCreatedAtMigration
 import ru.astrainteractive.soulkeeper.module.souls.migration.H2ToSqliteMigration
 import ru.astrainteractive.soulkeeper.module.souls.migration.KrateFolderMigration
 import java.io.File
@@ -57,6 +58,7 @@ interface SoulsDaoModule {
                 SchemaUtils.create(SoulTable)
                 SchemaUtils.create(SoulItemsTable)
             }
+            DropBrokenCreatedAtMigration(database).migrate()
             emit(database)
         }
             .retry { throwable ->

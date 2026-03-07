@@ -1,6 +1,5 @@
 package ru.astrainteractive.soulkeeper.module.souls.dao
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -29,7 +28,9 @@ import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulItemsTable
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulTable
+import java.time.Instant
 import java.util.*
+import kotlin.time.Clock
 
 @Suppress("TooManyFunctions")
 internal class SoulsDaoImpl(
@@ -59,7 +60,7 @@ internal class SoulsDaoImpl(
             id = it[SoulTable.id].value,
             ownerUUID = UUID.fromString(it[SoulTable.ownerUUID]),
             ownerLastName = it[SoulTable.ownerLastName],
-            createdAt = it[SoulTable.created_at] ?: it[SoulTable.broken_created_at],
+            createdAt = it[SoulTable.created_at] ?: Instant.now(),
             isFree = it[SoulTable.isFree],
             exp = it[SoulTable.exp],
             hasItems = true, // todo
@@ -75,7 +76,6 @@ internal class SoulsDaoImpl(
     override suspend fun getSouls(): Result<List<DatabaseSoul>> = safeRun("getSouls") {
         transaction(databaseFlow.first()) {
             SoulTable.selectAll()
-                .orderBy(SoulTable.broken_created_at to SortOrder.DESC)
                 .orderBy(SoulTable.created_at to SortOrder.DESC)
                 .map(::toDatabaseSoul)
         }
@@ -86,7 +86,6 @@ internal class SoulsDaoImpl(
             SoulTable
                 .selectAll()
                 .limit(1)
-                .orderBy(SoulTable.broken_created_at to SortOrder.DESC)
                 .orderBy(SoulTable.created_at to SortOrder.DESC)
                 .map(::toDatabaseSoul)
                 .first()
@@ -110,7 +109,6 @@ internal class SoulsDaoImpl(
             val soulId = SoulTable.insertAndGetId {
                 it[SoulTable.ownerUUID] = soul.ownerUUID.toString()
                 it[SoulTable.ownerLastName] = soul.ownerLastName
-                it[SoulTable.broken_created_at] = soul.createdAt
                 it[SoulTable.created_at] = soul.createdAt
                 it[SoulTable.isFree] = soul.isFree
                 it[SoulTable.locationWorld] = soul.location.worldName
