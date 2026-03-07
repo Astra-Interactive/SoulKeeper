@@ -25,6 +25,7 @@ import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDaoImpl
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulItemsTable
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulTable
 import ru.astrainteractive.soulkeeper.module.souls.migration.H2ToSqliteMigration
+import ru.astrainteractive.soulkeeper.module.souls.migration.KrateFolderMigration
 import java.io.File
 
 interface SoulsDaoModule {
@@ -40,7 +41,12 @@ interface SoulsDaoModule {
         dispatchers: KotlinDispatchers
     ) : SoulsDaoModule, Logger by JUtiltLogger("SoulsDaoModule") {
         override val databaseFlow: Flow<Database> = flow {
-            H2ToSqliteMigration(dataFolder).migrate()
+            H2ToSqliteMigration(dataFolder, dispatchers)
+                .migrate()
+            KrateFolderMigration(
+                dataFolder = dataFolder,
+                kratesFolder = dataFolder.resolve(".deaths")
+            ).migrate()
             if (!dataFolder.exists()) dataFolder.mkdirs()
             val database = dataFolder.resolve("souls_v3")
                 .absolutePath
@@ -62,6 +68,7 @@ interface SoulsDaoModule {
 
         override val soulsDao: SoulsDao = SoulsDaoImpl(
             databaseFlow = databaseFlow,
+            dispatchers = dispatchers
         )
 
         override val lifecycle: Lifecycle = Lifecycle.Lambda(

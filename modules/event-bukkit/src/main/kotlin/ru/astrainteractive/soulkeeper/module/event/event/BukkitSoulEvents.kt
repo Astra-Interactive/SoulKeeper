@@ -12,6 +12,8 @@ import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.astralibs.server.location.Location
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
+import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
+import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.serialization.ItemStackSerializer
 import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
@@ -32,7 +34,7 @@ internal class BukkitSoulEvents(
     private val dataFolder: File,
     private val stringFormat: StringFormat,
     soulsConfigKrate: CachedKrate<SoulsConfig>,
-) : EventListener {
+) : EventListener, Logger by JUtiltLogger("SoulKeeper-BukkitSoulEvents") {
     private val soulsConfig by soulsConfigKrate
 
     private fun getAndClearItems(event: PlayerDeathEvent): List<StringFormatObject> {
@@ -106,7 +108,8 @@ internal class BukkitSoulEvents(
                 ownerUUID = soul.ownerUUID,
             ).save(soul)
         }
-        playEffects(soul, event.player)
         ioScope.launch { soulsDao.insertSoul(soul) }
+        info { "#playerDeathEvent soul: $soul" }
+        playEffects(soul, event.player)
     }
 }

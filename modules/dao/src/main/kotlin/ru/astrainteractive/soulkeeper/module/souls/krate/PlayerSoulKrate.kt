@@ -14,13 +14,14 @@ import java.util.UUID
 
 class PlayerSoulKrate(
     stringFormat: StringFormat,
-    private val dataFolder: File,
+    dataFolder: File,
     private val createdAt: Instant,
     private val ownerUUID: UUID,
     private val readIndex: Int = 0
 ) : SuspendMutableKrate<DefaultSoul?>, Logger by JUtiltLogger("SoulKeeper-PlayerSoulKrate") {
+    private val kratesFolder = dataFolder.resolve(".deaths")
     private fun createFile(): File {
-        val parentDir = dataFolder.resolve("$ownerUUID")
+        val parentDir = kratesFolder.resolve("$ownerUUID")
         parentDir.mkdirs()
 
         var index = 0
@@ -36,7 +37,7 @@ class PlayerSoulKrate(
     private val krate = DefaultSuspendMutableKrate(
         factory = { null },
         loader = {
-            val file = dataFolder
+            val file = kratesFolder
                 .resolve("$ownerUUID")
                 .resolve("${createdAt.epochSecond}_$readIndex.yml")
             stringFormat.parse<DefaultSoul>(file)

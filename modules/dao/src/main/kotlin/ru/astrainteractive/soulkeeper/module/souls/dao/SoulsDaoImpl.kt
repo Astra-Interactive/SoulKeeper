@@ -21,6 +21,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import ru.astrainteractive.astralibs.server.location.Location
 import ru.astrainteractive.astralibs.server.location.dist
+import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
@@ -33,18 +34,19 @@ import java.util.*
 @Suppress("TooManyFunctions")
 internal class SoulsDaoImpl(
     private val databaseFlow: Flow<Database>,
+    private val dispatchers: KotlinDispatchers
 ) : SoulsDao, Logger by JUtiltLogger("SoulKeeper-SoulsDaoImpl") {
     private val mutex = Mutex()
     private suspend fun <T> safeRun(
         tag: String,
         block: suspend () -> T
     ): Result<T> = runCatching {
-        withContext(Dispatchers.IO) {
+        withContext(dispatchers.IO) {
             mutex.withLock {
                 block.invoke()
             }
         }
-    }.onFailure { error { "#$tag error: ${it.message}. ${it.cause}" } }
+    }.onFailure { t -> error { "#$tag error: ${t.message}. ${t.cause}" } }
 
     private val soulsChangedSharedFlow = MutableSharedFlow<Unit>()
 

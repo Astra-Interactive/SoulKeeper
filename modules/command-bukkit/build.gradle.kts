@@ -12,7 +12,7 @@ dependencies {
     implementation(libs.minecraft.astralibs.command)
     implementation(libs.minecraft.astralibs.command.bukkit)
 
-    implementation(libs.minecraft.paper.api)
+    compileOnly(libs.minecraft.paper.api)
 
     implementation(libs.klibs.mikro.core)
     implementation(projects.modules.core)

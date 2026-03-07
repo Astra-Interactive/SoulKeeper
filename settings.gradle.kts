@@ -1,6 +1,10 @@
 pluginManagement {
     repositories {
-        maven("https://maven.neoforged.net/releases")
+        maven("https://maven.neoforged.net/releases") {
+            content {
+                excludeGroupByRegex("ru\\.astrainteractive.*")
+            }
+        }
         maven("https://plugins.gradle.org/m2/")
         maven("https://jitpack.io")
         gradlePluginPortal()
@@ -17,6 +21,7 @@ buildscript {
 
 dependencyResolutionManagement {
     repositories {
+        mavenLocal()
         gradlePluginPortal()
         mavenCentral()
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")

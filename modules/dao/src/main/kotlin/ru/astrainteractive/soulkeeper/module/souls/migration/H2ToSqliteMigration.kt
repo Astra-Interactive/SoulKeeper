@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
+import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.klibs.mikro.exposed.model.DatabaseConfiguration
@@ -18,7 +19,8 @@ import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulTable
 import java.io.File
 
 class H2ToSqliteMigration(
-    val dataFolder: File
+    val dataFolder: File,
+    val dispatchers: KotlinDispatchers
 ) : Logger by JUtiltLogger("H2ToSqliteMigration") {
 
     suspend fun migrate() = coroutineScope {
@@ -37,8 +39,14 @@ class H2ToSqliteMigration(
             SchemaUtils.create(SoulItemsTable)
         }
 
-        val sqliteSoulsDao = SoulsDaoImpl(flowOf(sqliteDatabase))
-        val hwSoulsDao = SoulsDaoImpl(flowOf(h2Database))
+        val sqliteSoulsDao = SoulsDaoImpl(
+            databaseFlow = flowOf(sqliteDatabase),
+            dispatchers = dispatchers
+        )
+        val hwSoulsDao = SoulsDaoImpl(
+            databaseFlow = flowOf(h2Database),
+            dispatchers = dispatchers
+        )
         hwSoulsDao.getSouls()
             .onFailure {
                 error(it) { "Could not convert souls from H2 to SQLite" }
