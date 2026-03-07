@@ -27,6 +27,7 @@ import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulTable
 import ru.astrainteractive.soulkeeper.module.souls.migration.DropBrokenCreatedAtMigration
 import ru.astrainteractive.soulkeeper.module.souls.migration.H2ToSqliteMigration
 import ru.astrainteractive.soulkeeper.module.souls.migration.KrateFolderMigration
+import ru.astrainteractive.soulkeeper.module.souls.migration.MakeCreatedAtNonNullMigration
 import java.io.File
 
 interface SoulsDaoModule {
@@ -54,11 +55,12 @@ interface SoulsDaoModule {
                 .let(DatabaseConfiguration::SQLite)
                 .connect()
             TransactionManager.manager.defaultIsolationLevel = java.sql.Connection.TRANSACTION_SERIALIZABLE
+            DropBrokenCreatedAtMigration(database).migrate()
+            MakeCreatedAtNonNullMigration(database).migrate()
             transaction(database) {
                 SchemaUtils.create(SoulTable)
                 SchemaUtils.create(SoulItemsTable)
             }
-            DropBrokenCreatedAtMigration(database).migrate()
             emit(database)
         }
             .retry { throwable ->

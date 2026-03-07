@@ -60,7 +60,7 @@ internal class SoulsDaoImpl(
             id = it[SoulTable.id].value,
             ownerUUID = UUID.fromString(it[SoulTable.ownerUUID]),
             ownerLastName = it[SoulTable.ownerLastName],
-            createdAt = it[SoulTable.created_at] ?: Instant.now(),
+            createdAt = it[SoulTable.created_at],
             isFree = it[SoulTable.isFree],
             exp = it[SoulTable.exp],
             hasItems = true, // todo
