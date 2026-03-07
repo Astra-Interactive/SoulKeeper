@@ -1,5 +1,6 @@
-package ru.astrainteractive.soulkeeper.module.souls.migration
+package ru.astrainteractive.soulkeeper.module.souls.migration.file
 
+import ru.astrainteractive.soulkeeper.module.souls.migration.core.FileMigration
 import java.io.File
 import java.nio.file.Files
 import java.util.UUID
@@ -11,9 +12,10 @@ import java.util.UUID
 class KrateFolderMigration(
     private val dataFolder: File,
     private val kratesFolder: File
-) {
+) : FileMigration {
 
-    suspend fun migrate() {
+    override suspend fun migrate() {
+        if (kratesFolder.exists()) return
         if (!kratesFolder.exists()) kratesFolder.mkdirs()
         dataFolder.listFiles().orEmpty()
             .filter { file -> file.isDirectory }

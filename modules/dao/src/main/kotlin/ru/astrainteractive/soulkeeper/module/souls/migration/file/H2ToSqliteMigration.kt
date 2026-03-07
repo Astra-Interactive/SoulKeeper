@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.module.souls.migration
+package ru.astrainteractive.soulkeeper.module.souls.migration.file
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -16,14 +16,15 @@ import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDaoImpl
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulItemsTable
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulTable
+import ru.astrainteractive.soulkeeper.module.souls.migration.core.FileMigration
 import java.io.File
 
 class H2ToSqliteMigration(
     val dataFolder: File,
     val dispatchers: KotlinDispatchers
-) : Logger by JUtiltLogger("H2ToSqliteMigration") {
+) : FileMigration, Logger by JUtiltLogger("H2ToSqliteMigration") {
 
-    suspend fun migrate() = coroutineScope {
+    override suspend fun migrate() = coroutineScope {
         if (!dataFolder.resolve("souls_v2.mv.db").exists()) return@coroutineScope
         info { "#migrate started migration of database..." }
         val h2Database = dataFolder.resolve("souls_v2")

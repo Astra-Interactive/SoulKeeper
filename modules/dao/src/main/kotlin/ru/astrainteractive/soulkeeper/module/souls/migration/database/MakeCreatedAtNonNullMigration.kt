@@ -1,16 +1,20 @@
-package ru.astrainteractive.soulkeeper.module.souls.migration
+package ru.astrainteractive.soulkeeper.module.souls.migration.database
 
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.transaction
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
+import ru.astrainteractive.soulkeeper.module.souls.migration.core.DatabaseMigration
 import java.time.Instant
 
-class MakeCreatedAtNonNullMigration(
-    private val database: Database
-) : Logger by JUtiltLogger("MakeCreatedAtNonNullMigration") {
+class MakeCreatedAtNonNullMigration :
+    DatabaseMigration,
+    Logger by JUtiltLogger("MakeCreatedAtNonNullMigration") {
 
-    fun migrate() {
+    override val requiredDbVersion: Int = 1
+
+    @Suppress("LoopWithTooManyJumpStatements")
+    override suspend fun migrate(database: Database) {
         val isNullable = transaction(database) {
             var nullable = false
             exec("PRAGMA table_info(SOUL)") { rs ->

@@ -24,10 +24,12 @@ import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDaoImpl
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulItemsTable
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulTable
-import ru.astrainteractive.soulkeeper.module.souls.migration.DropBrokenCreatedAtMigration
-import ru.astrainteractive.soulkeeper.module.souls.migration.H2ToSqliteMigration
-import ru.astrainteractive.soulkeeper.module.souls.migration.KrateFolderMigration
-import ru.astrainteractive.soulkeeper.module.souls.migration.MakeCreatedAtNonNullMigration
+import ru.astrainteractive.soulkeeper.module.souls.migration.core.DatabaseMigrator
+import ru.astrainteractive.soulkeeper.module.souls.migration.core.FileMigration
+import ru.astrainteractive.soulkeeper.module.souls.migration.database.DropBrokenCreatedAtMigration
+import ru.astrainteractive.soulkeeper.module.souls.migration.database.MakeCreatedAtNonNullMigration
+import ru.astrainteractive.soulkeeper.module.souls.migration.file.H2ToSqliteMigration
+import ru.astrainteractive.soulkeeper.module.souls.migration.file.KrateFolderMigration
 import java.io.File
 
 interface SoulsDaoModule {
@@ -38,25 +40,37 @@ interface SoulsDaoModule {
     val soulsDao: SoulsDao
 
     class Default(
-        dataFolder: File,
-        ioScope: CoroutineScope,
-        dispatchers: KotlinDispatchers
+        private val dataFolder: File,
+        private val ioScope: CoroutineScope,
+        private val dispatchers: KotlinDispatchers
     ) : SoulsDaoModule, Logger by JUtiltLogger("SoulsDaoModule") {
+        private val fileMigrations: List<FileMigration>
+            get() = listOf(
+                H2ToSqliteMigration(dataFolder, dispatchers),
+                KrateFolderMigration(
+                    dataFolder = dataFolder,
+                    kratesFolder = dataFolder.resolve(".deaths")
+                )
+            )
+        private val databaseMigrator: DatabaseMigrator
+            get() = DatabaseMigrator(
+                migrations = listOf(
+                    DropBrokenCreatedAtMigration(),
+                    MakeCreatedAtNonNullMigration(),
+                ),
+                latestDbVersion = 2
+            )
+
         override val databaseFlow: Flow<Database> = flow {
-            H2ToSqliteMigration(dataFolder, dispatchers)
-                .migrate()
-            KrateFolderMigration(
-                dataFolder = dataFolder,
-                kratesFolder = dataFolder.resolve(".deaths")
-            ).migrate()
+            fileMigrations.forEach { migration -> migration.migrate() }
             if (!dataFolder.exists()) dataFolder.mkdirs()
             val database = dataFolder.resolve("souls_v3")
                 .absolutePath
                 .let(DatabaseConfiguration::SQLite)
                 .connect()
             TransactionManager.manager.defaultIsolationLevel = java.sql.Connection.TRANSACTION_SERIALIZABLE
-            DropBrokenCreatedAtMigration(database).migrate()
-            MakeCreatedAtNonNullMigration(database).migrate()
+            databaseMigrator.migrate(database)
+
             transaction(database) {
                 SchemaUtils.create(SoulTable)
                 SchemaUtils.create(SoulItemsTable)
