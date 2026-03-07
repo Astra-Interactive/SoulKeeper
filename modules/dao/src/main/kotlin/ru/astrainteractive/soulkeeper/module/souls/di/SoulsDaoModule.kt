@@ -1,15 +1,15 @@
 package ru.astrainteractive.soulkeeper.module.souls.di
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.launch
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.TransactionManager
@@ -19,7 +19,7 @@ import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.klibs.mikro.exposed.model.DatabaseConfiguration
-import ru.astrainteractive.klibs.mikro.exposed.util.connect
+import ru.astrainteractive.klibs.mikro.exposed.util.connectAsFlow
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDaoImpl
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulItemsTable
@@ -61,22 +61,24 @@ interface SoulsDaoModule {
                 latestDbVersion = 2
             )
 
-        override val databaseFlow: Flow<Database> = flow {
-            fileMigrations.forEach { migration -> migration.migrate() }
+        private val dbConfigurationFlow = flow {
             if (!dataFolder.exists()) dataFolder.mkdirs()
-            val database = dataFolder.resolve("souls_v3")
+            val configuration = dataFolder.resolve("souls_v3")
                 .absolutePath
                 .let(DatabaseConfiguration::SQLite)
-                .connect()
-            TransactionManager.manager.defaultIsolationLevel = java.sql.Connection.TRANSACTION_SERIALIZABLE
-            databaseMigrator.migrate(database)
-
-            transaction(database) {
-                SchemaUtils.create(SoulTable)
-                SchemaUtils.create(SoulItemsTable)
-            }
-            emit(database)
+            emit(configuration)
         }
+        override val databaseFlow: Flow<Database> = dbConfigurationFlow
+            .onStart { fileMigrations.forEach { migration -> migration.migrate() } }
+            .flatMapLatest { databaseConfiguration -> databaseConfiguration.connectAsFlow() }
+            .onEach { database -> databaseMigrator.migrate(database) }
+            .onEach { database ->
+                TransactionManager.manager.defaultIsolationLevel = java.sql.Connection.TRANSACTION_SERIALIZABLE
+                transaction(database) {
+                    SchemaUtils.create(SoulTable)
+                    SchemaUtils.create(SoulItemsTable)
+                }
+            }
             .retry { throwable ->
                 error(throwable) { "Could not connect to database" }
                 delay(5000L)
@@ -90,11 +92,7 @@ interface SoulsDaoModule {
         )
 
         override val lifecycle: Lifecycle = Lifecycle.Lambda(
-            onDisable = {
-                GlobalScope.launch(dispatchers.IO) {
-                    databaseFlow.firstOrNull()?.let(TransactionManager::closeAndUnregister)
-                }
-            }
+            onDisable = {}
         )
     }
 }

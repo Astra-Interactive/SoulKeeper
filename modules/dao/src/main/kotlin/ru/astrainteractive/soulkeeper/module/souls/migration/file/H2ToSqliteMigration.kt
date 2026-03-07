@@ -22,7 +22,7 @@ import java.io.File
 class H2ToSqliteMigration(
     val dataFolder: File,
     val dispatchers: KotlinDispatchers
-) : FileMigration, Logger by JUtiltLogger("H2ToSqliteMigration") {
+) : FileMigration, Logger by JUtiltLogger("SoulKeeper-H2ToSqliteMigration") {
 
     override suspend fun migrate() = coroutineScope {
         if (!dataFolder.resolve("souls_v2.mv.db").exists()) return@coroutineScope

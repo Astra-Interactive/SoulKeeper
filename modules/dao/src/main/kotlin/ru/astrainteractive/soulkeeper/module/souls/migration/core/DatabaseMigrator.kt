@@ -8,7 +8,7 @@ import ru.astrainteractive.klibs.mikro.core.logging.Logger
 class DatabaseMigrator(
     private val migrations: List<DatabaseMigration>,
     private val latestDbVersion: Int
-) : Logger by JUtiltLogger("DatabaseMigrator") {
+) : Logger by JUtiltLogger("SoulKeeper-DatabaseMigrator") {
 
     suspend fun migrate(database: Database) {
         val currentDbVersion = getCurrentVersion(database)

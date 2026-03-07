@@ -8,7 +8,7 @@ import ru.astrainteractive.soulkeeper.module.souls.migration.core.DatabaseMigrat
 
 class DropBrokenCreatedAtMigration :
     DatabaseMigration,
-    Logger by JUtiltLogger("DropBrokenCreatedAtMigration") {
+    Logger by JUtiltLogger("SoulKeeper-DropBrokenCreatedAtMigration") {
 
     override val requiredDbVersion: Int = 1
     override suspend fun migrate(database: Database) {
