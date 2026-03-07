@@ -111,13 +111,11 @@ shadowJar.configure {
         "okio",
         "org.apache",
         "org.intellij",
-        "org.slf4j",
         "org.jetbrains.annotations",
         "ru.astrainteractive.klibs",
         "ru.astrainteractive.astralibs"
     ).forEach { pattern -> relocate(pattern, "${projectInfo.group}.$pattern") }
     listOf(
-        "org.jetbrains.exposed",
         "kotlinx",
     ).forEach { pattern ->
         relocate(pattern, "${projectInfo.group}.$pattern") {
