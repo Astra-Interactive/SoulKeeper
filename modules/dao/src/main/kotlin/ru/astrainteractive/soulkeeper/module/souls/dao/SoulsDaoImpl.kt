@@ -1,6 +1,5 @@
 package ru.astrainteractive.soulkeeper.module.souls.dao
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -21,6 +20,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import ru.astrainteractive.astralibs.server.location.Location
 import ru.astrainteractive.astralibs.server.location.dist
+import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
@@ -33,18 +33,19 @@ import java.util.*
 @Suppress("TooManyFunctions")
 internal class SoulsDaoImpl(
     private val databaseFlow: Flow<Database>,
+    private val dispatchers: KotlinDispatchers
 ) : SoulsDao, Logger by JUtiltLogger("SoulKeeper-SoulsDaoImpl") {
     private val mutex = Mutex()
     private suspend fun <T> safeRun(
         tag: String,
         block: suspend () -> T
     ): Result<T> = runCatching {
-        withContext(Dispatchers.IO) {
+        withContext(dispatchers.IO) {
             mutex.withLock {
                 block.invoke()
             }
         }
-    }.onFailure { error { "#$tag error: ${it.message}. ${it.cause}" } }
+    }.onFailure { t -> error { "#$tag error: ${t.message}. ${t.cause}" } }
 
     private val soulsChangedSharedFlow = MutableSharedFlow<Unit>()
 
@@ -57,7 +58,7 @@ internal class SoulsDaoImpl(
             id = it[SoulTable.id].value,
             ownerUUID = UUID.fromString(it[SoulTable.ownerUUID]),
             ownerLastName = it[SoulTable.ownerLastName],
-            createdAt = it[SoulTable.created_at] ?: it[SoulTable.broken_created_at],
+            createdAt = it[SoulTable.created_at],
             isFree = it[SoulTable.isFree],
             exp = it[SoulTable.exp],
             hasItems = true, // todo
@@ -73,7 +74,6 @@ internal class SoulsDaoImpl(
     override suspend fun getSouls(): Result<List<DatabaseSoul>> = safeRun("getSouls") {
         transaction(databaseFlow.first()) {
             SoulTable.selectAll()
-                .orderBy(SoulTable.broken_created_at to SortOrder.DESC)
                 .orderBy(SoulTable.created_at to SortOrder.DESC)
                 .map(::toDatabaseSoul)
         }
@@ -84,7 +84,6 @@ internal class SoulsDaoImpl(
             SoulTable
                 .selectAll()
                 .limit(1)
-                .orderBy(SoulTable.broken_created_at to SortOrder.DESC)
                 .orderBy(SoulTable.created_at to SortOrder.DESC)
                 .map(::toDatabaseSoul)
                 .first()
@@ -108,7 +107,6 @@ internal class SoulsDaoImpl(
             val soulId = SoulTable.insertAndGetId {
                 it[SoulTable.ownerUUID] = soul.ownerUUID.toString()
                 it[SoulTable.ownerLastName] = soul.ownerLastName
-                it[SoulTable.broken_created_at] = soul.createdAt
                 it[SoulTable.created_at] = soul.createdAt
                 it[SoulTable.isFree] = soul.isFree
                 it[SoulTable.locationWorld] = soul.location.worldName

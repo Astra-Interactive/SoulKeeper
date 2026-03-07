@@ -19,7 +19,6 @@ import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.PluginPermission
 import ru.astrainteractive.soulkeeper.core.serialization.ItemStackSerializer
-import ru.astrainteractive.soulkeeper.core.serialization.ItemStackSerializer.decodeFromString
 import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
 import ru.astrainteractive.soulkeeper.module.souls.krate.PlayerSoulKrate
 import java.io.File

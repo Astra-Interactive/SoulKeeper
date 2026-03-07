@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.module.souls.migration
+package ru.astrainteractive.soulkeeper.module.souls.migration.file
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
+import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.klibs.mikro.exposed.model.DatabaseConfiguration
@@ -15,13 +16,15 @@ import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDaoImpl
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulItemsTable
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulTable
+import ru.astrainteractive.soulkeeper.module.souls.migration.core.FileMigration
 import java.io.File
 
 class H2ToSqliteMigration(
-    val dataFolder: File
-) : Logger by JUtiltLogger("H2ToSqliteMigration") {
+    val dataFolder: File,
+    val dispatchers: KotlinDispatchers
+) : FileMigration, Logger by JUtiltLogger("H2ToSqliteMigration") {
 
-    suspend fun migrate() = coroutineScope {
+    override suspend fun migrate() = coroutineScope {
         if (!dataFolder.resolve("souls_v2.mv.db").exists()) return@coroutineScope
         info { "#migrate started migration of database..." }
         val h2Database = dataFolder.resolve("souls_v2")
@@ -37,8 +40,14 @@ class H2ToSqliteMigration(
             SchemaUtils.create(SoulItemsTable)
         }
 
-        val sqliteSoulsDao = SoulsDaoImpl(flowOf(sqliteDatabase))
-        val hwSoulsDao = SoulsDaoImpl(flowOf(h2Database))
+        val sqliteSoulsDao = SoulsDaoImpl(
+            databaseFlow = flowOf(sqliteDatabase),
+            dispatchers = dispatchers
+        )
+        val hwSoulsDao = SoulsDaoImpl(
+            databaseFlow = flowOf(h2Database),
+            dispatchers = dispatchers
+        )
         hwSoulsDao.getSouls()
             .onFailure {
                 error(it) { "Could not convert souls from H2 to SQLite" }
