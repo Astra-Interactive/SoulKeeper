@@ -5,12 +5,14 @@ import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
+import dev.zacsweers.metro.Inject
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 
 /**
  * Get most near soul and available by current player
  */
-internal class GetNearestSoulUseCase(
+@Inject
+class GetNearestSoulUseCase(
     private val soulsDao: SoulsDao,
     private val minecraftNativeBridge: MinecraftNativeBridge,
 ) : Logger by JUtiltLogger("SoulKeeper-GetNearestSoulUseCase"),

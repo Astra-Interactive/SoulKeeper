@@ -9,9 +9,11 @@ import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
+import dev.zacsweers.metro.Inject
 import java.time.Instant
 
-internal class DeleteSoulWorker(
+@Inject
+class DeleteSoulWorker(
     private val soulsDao: SoulsDao,
     configKrate: CachedKrate<SoulsConfig>
 ) : ServiceExecutor, Logger by JUtiltLogger("SoulKeeper-DeleteSoulWorker") {

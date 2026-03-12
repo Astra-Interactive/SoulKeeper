@@ -24,7 +24,7 @@ kotlin-datetime = "0.7.1-0.6.x-compat"
 kotlin-json = "1.10.0"
 kotlin-serialization = "1.10.0"
 kotlin-serialization-kaml = "0.104.0"
-kotlin-version = "2.2.0"
+kotlin-version = "2.2.20"
 ktor = "3.4.0"
 minecraft-astralibs = "3.31.3"
 minecraft-bstats = "3.2.1"
@@ -57,6 +57,7 @@ tests-mockito = "5.22.0"
 tests-org-testing = "7.12.0"
 tests-turbine = "1.2.1"
 jmh-core = "1.37"
+metro = "0.11.2"
 
 [libraries]
 cache4k = { module = "io.github.reactivecircus.cache4k:cache4k-jvm", version.ref = "cache4k" }
@@ -167,3 +168,4 @@ kotlin-gradle = { id = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref 
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin-version" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-version" }
+metro = { id = "dev.zacsweers.metro", version.ref = "metro" }

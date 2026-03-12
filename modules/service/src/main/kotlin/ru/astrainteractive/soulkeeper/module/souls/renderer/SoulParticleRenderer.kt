@@ -8,8 +8,10 @@ import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.platform.EffectEmitter
+import dev.zacsweers.metro.Inject
 import ru.astrainteractive.soulkeeper.module.souls.renderer.api.SoulEffectRenderer
 
+@Inject
 class SoulParticleRenderer(
     private val dispatchers: KotlinDispatchers,
     soulsConfigKrate: CachedKrate<SoulsConfig>,

@@ -8,9 +8,11 @@ import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorStandUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.StubShowArmorStandUseCase
+import dev.zacsweers.metro.Inject
 import ru.astrainteractive.soulkeeper.module.souls.renderer.api.SoulEffectRenderer
 
-internal class ArmorStandRenderer(
+@Inject
+class ArmorStandRenderer(
     soulsConfigKrate: CachedKrate<SoulsConfig>,
     private val showArmorStandUseCase: ShowArmorStandUseCase,
     private val platformServer: PlatformServer

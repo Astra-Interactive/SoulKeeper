@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.gradle.neoforgegradle)
     alias(libs.plugins.klibs.minecraft.resource.processor)
     alias(libs.plugins.gradle.shadow)
+    alias(libs.plugins.metro)
 }
 
 repositories {

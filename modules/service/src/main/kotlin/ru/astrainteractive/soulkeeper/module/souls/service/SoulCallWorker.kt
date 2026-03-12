@@ -36,14 +36,16 @@ import ru.astrainteractive.soulkeeper.module.souls.platform.event.EventProvider
 import ru.astrainteractive.soulkeeper.module.souls.renderer.ArmorStandRenderer
 import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulParticleRenderer
 import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulSoundRenderer
+import dev.zacsweers.metro.Inject
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
 /**
  * This worker is required to display soul particles near players
  */
+@Inject
 @Suppress("LongParameterList")
-internal class SoulCallWorker(
+class SoulCallWorker(
     private val soulsDao: SoulsDao,
     private val config: SoulsConfig,
     private val soulParticleRenderer: SoulParticleRenderer,

@@ -1,121 +1,126 @@
 package ru.astrainteractive.soulkeeper.module.souls.di
 
+import dev.zacsweers.metro.DependencyGraph
+import dev.zacsweers.metro.Includes
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.flowOf
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
+import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
+import ru.astrainteractive.klibs.kstorage.api.CachedKrate
+import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
+import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.service.ThrottleTickFlowService
-import ru.astrainteractive.soulkeeper.module.souls.domain.GetNearestSoulUseCase
+import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
+import ru.astrainteractive.soulkeeper.module.souls.di.qualifier.ServiceLifecycle
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpExpUseCase
+import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpSoulUseCase
-import ru.astrainteractive.soulkeeper.module.souls.renderer.ArmorStandRenderer
-import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulParticleRenderer
-import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulSoundRenderer
+import ru.astrainteractive.soulkeeper.module.souls.platform.EffectEmitter
+import ru.astrainteractive.soulkeeper.module.souls.platform.Experienced
 import ru.astrainteractive.soulkeeper.module.souls.service.DeleteSoulWorker
 import ru.astrainteractive.soulkeeper.module.souls.service.FreeSoulWorker
 import ru.astrainteractive.soulkeeper.module.souls.service.PickUpWorker
 import ru.astrainteractive.soulkeeper.module.souls.service.SoulCallWorker
 import kotlin.time.Duration.Companion.seconds
 
-class ServiceModule(
-    coreModule: CoreModule,
-    soulsDaoModule: SoulsDaoModule,
-    platformServiceModule: PlatformServiceModule
+object ServiceScope
 
-) {
+@DependencyGraph(ServiceScope::class)
+interface ServiceModule {
 
-    private val armorStandRenderer = ArmorStandRenderer(
-        soulsConfigKrate = coreModule.soulsConfigKrate,
-        showArmorStandUseCase = platformServiceModule.showArmorStandUseCase,
-        platformServer = platformServiceModule.platformServer
-    )
-    private val soulParticleRenderer = SoulParticleRenderer(
-        soulsConfigKrate = coreModule.soulsConfigKrate,
-        dispatchers = coreModule.dispatchers,
-        effectEmitter = platformServiceModule.effectEmitter
-    )
-    private val soulSoundRenderer = SoulSoundRenderer(
-        dispatchers = coreModule.dispatchers,
-        soulsConfigKrate = coreModule.soulsConfigKrate,
-        effectEmitter = platformServiceModule.effectEmitter
+    @get:ServiceLifecycle
+    val lifecycle: Lifecycle
+
+    @DependencyGraph.Factory
+    fun interface Factory {
+        fun create(
+            @Includes coreModule: CoreModule,
+            @Includes soulsDaoModule: SoulsDaoModule,
+            @Includes platformServiceModule: PlatformServiceModule
+        ): ServiceModule
+    }
+
+    @Provides
+    fun provideSoulsConfig(
+        soulsConfigKrate: CachedKrate<SoulsConfig>
+    ): SoulsConfig = soulsConfigKrate.cachedValue
+
+    @Provides
+    fun providePickUpExpUseCase(
+        soulsConfigKrate: CachedKrate<SoulsConfig>,
+        soulsDao: SoulsDao,
+        effectEmitter: EffectEmitter,
+        dispatchers: KotlinDispatchers,
+        experiencedFactory: Experienced.Factory<OnlineMinecraftPlayer>
+    ): PickUpExpUseCase = PickUpExpUseCase(
+        collectXpSoundProvider = { soulsConfigKrate.cachedValue.sounds.collectXp },
+        soulsDao = soulsDao,
+        effectEmitter = effectEmitter,
+        dispatchers = dispatchers,
+        experiencedFactory = experiencedFactory
     )
 
-    private val deleteSoulService = ThrottleTickFlowService(
-        coroutineContext = SupervisorJob() + coreModule.dispatchers.IO,
-        delay = flowOf(60.seconds),
-        executor = DeleteSoulWorker(
-            soulsDao = soulsDaoModule.soulsDao,
-            configKrate = coreModule.soulsConfigKrate,
+    @Provides
+    fun providePickUpSoulUseCase(
+        dispatchers: KotlinDispatchers,
+        pickUpExpUseCase: PickUpExpUseCase,
+        pickUpItemsUseCase: PickUpItemsUseCase,
+        soulsDao: SoulsDao,
+        soulsConfigKrate: CachedKrate<SoulsConfig>,
+        effectEmitter: EffectEmitter
+    ): PickUpSoulUseCase = PickUpSoulUseCase(
+        dispatchers = dispatchers,
+        pickUpExpUseCase = pickUpExpUseCase,
+        pickUpItemsUseCase = pickUpItemsUseCase,
+        soulsDao = soulsDao,
+        soulDisappearSoundProvider = { soulsConfigKrate.cachedValue.sounds.soulDisappear },
+        soulGoneParticleProvider = { soulsConfigKrate.cachedValue.particles.soulGone },
+        soulContentLeftSoundProvider = { soulsConfigKrate.cachedValue.sounds.soulContentLeft },
+        soulContentLeftParticleProvider = { soulsConfigKrate.cachedValue.particles.soulContentLeft },
+        effectEmitter = effectEmitter
+    )
+
+    @SingleIn(ServiceScope::class)
+    @ServiceLifecycle
+    @Provides
+    fun provideLifecycle(
+        soulCallWorker: SoulCallWorker,
+        deleteSoulWorker: DeleteSoulWorker,
+        freeSoulWorker: FreeSoulWorker,
+        pickUpWorker: PickUpWorker,
+        dispatchers: KotlinDispatchers
+    ): Lifecycle {
+        val deleteSoulService = ThrottleTickFlowService(
+            coroutineContext = SupervisorJob() + dispatchers.IO,
+            delay = flowOf(60.seconds),
+            executor = deleteSoulWorker
         )
-    )
-
-    private val freeSoulService = ThrottleTickFlowService(
-        coroutineContext = SupervisorJob() + coreModule.dispatchers.IO,
-        delay = flowOf(60.seconds),
-        executor = FreeSoulWorker(
-            soulsDao = soulsDaoModule.soulsDao,
-            configKrate = coreModule.soulsConfigKrate,
+        val freeSoulService = ThrottleTickFlowService(
+            coroutineContext = SupervisorJob() + dispatchers.IO,
+            delay = flowOf(60.seconds),
+            executor = freeSoulWorker
         )
-    )
-
-    private val soulCallWorker = SoulCallWorker(
-        soulsDao = soulsDaoModule.soulsDao,
-        config = coreModule.soulsConfigKrate.cachedValue,
-        soulParticleRenderer = soulParticleRenderer,
-        soulSoundRenderer = soulSoundRenderer,
-        soulArmorStandRenderer = armorStandRenderer,
-        eventProvider = platformServiceModule.eventProvider,
-        minecraftNativeBridge = platformServiceModule.minecraftNativeBridge
-    )
-
-    private val pickUpExpUseCase: PickUpExpUseCase = PickUpExpUseCase(
-        collectXpSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectXp },
-        soulsDao = soulsDaoModule.soulsDao,
-        effectEmitter = platformServiceModule.effectEmitter,
-        experiencedFactory = platformServiceModule.onlineMinecraftPlayerExperiencedFactory,
-        dispatchers = coreModule.dispatchers
-    )
-    private val pickUpSoulService = ThrottleTickFlowService(
-        coroutineContext = SupervisorJob() + coreModule.dispatchers.IO,
-        delay = flowOf(3.seconds),
-        executor = PickUpWorker(
-            pickUpSoulUseCase = PickUpSoulUseCase(
-                dispatchers = coreModule.dispatchers,
-                pickUpExpUseCase = pickUpExpUseCase,
-                pickUpItemsUseCase = platformServiceModule.pickUpItemsUseCase,
-                soulsDao = soulsDaoModule.soulsDao,
-                soulGoneParticleProvider = { coreModule.soulsConfigKrate.cachedValue.particles.soulGone },
-                soulDisappearSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.soulDisappear },
-                soulContentLeftParticleProvider = {
-                    coreModule.soulsConfigKrate.cachedValue.particles.soulContentLeft
-                },
-                soulContentLeftSoundProvider = {
-                    coreModule.soulsConfigKrate.cachedValue.sounds.soulContentLeft
-                },
-                effectEmitter = platformServiceModule.effectEmitter
-            ),
-            getNearestSoulUseCase = GetNearestSoulUseCase(
-                soulsDao = soulsDaoModule.soulsDao,
-                minecraftNativeBridge = platformServiceModule.minecraftNativeBridge
-            ),
-            soulsDao = soulsDaoModule.soulsDao,
-            platformServer = platformServiceModule.platformServer,
-            isDeadPlayerProvider = platformServiceModule.isDeadPlayerProvider,
+        val pickUpSoulService = ThrottleTickFlowService(
+            coroutineContext = SupervisorJob() + dispatchers.IO,
+            delay = flowOf(3.seconds),
+            executor = pickUpWorker
         )
-    )
-
-    val lifecycle: Lifecycle = Lifecycle.Lambda(
-        onEnable = {
-            soulCallWorker.onEnable()
-            pickUpSoulService.onCreate()
-            deleteSoulService.onCreate()
-            freeSoulService.onCreate()
-        },
-        onDisable = {
-            soulCallWorker.onDisable()
-            pickUpSoulService.onDestroy()
-            deleteSoulService.onDestroy()
-            freeSoulService.onDestroy()
-        }
-    )
+        return Lifecycle.Lambda(
+            onEnable = {
+                soulCallWorker.onEnable()
+                pickUpSoulService.onCreate()
+                deleteSoulService.onCreate()
+                freeSoulService.onCreate()
+            },
+            onDisable = {
+                soulCallWorker.onDisable()
+                pickUpSoulService.onDestroy()
+                deleteSoulService.onDestroy()
+                freeSoulService.onDestroy()
+            }
+        )
+    }
 }

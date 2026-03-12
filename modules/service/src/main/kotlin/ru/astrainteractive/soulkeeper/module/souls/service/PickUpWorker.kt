@@ -11,12 +11,14 @@ import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.domain.GetNearestSoulUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpSoulUseCase
+import dev.zacsweers.metro.Inject
 import ru.astrainteractive.soulkeeper.module.souls.platform.IsDeadPlayerProvider
 
 /**
  * This worker is required to pick up items
  */
-internal class PickUpWorker(
+@Inject
+class PickUpWorker(
     private val pickUpSoulUseCase: PickUpSoulUseCase,
     private val getNearestSoulUseCase: GetNearestSoulUseCase,
     private val soulsDao: SoulsDao,

@@ -1,6 +1,6 @@
 package ru.astrainteractive.soulkeeper
 
-import kotlinx.coroutines.cancel
+import dev.zacsweers.metro.createGraphFactory
 import net.neoforged.fml.common.Mod
 import ru.astrainteractive.astralibs.lifecycle.ForgeLifecycleServer
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
@@ -15,7 +15,7 @@ class ForgeEntryPoint :
     ForgeLifecycleServer(),
     Logger by JUtiltLogger("SoulKeeper-ForgeEntryPoint"),
     Lifecycle {
-    private val rootModule = RootModule(this)
+    private val rootModule = createGraphFactory<RootModule.Factory>().create(this)
 
     override fun onEnable() {
         rootModule.lifecycle.onEnable()
@@ -23,7 +23,6 @@ class ForgeEntryPoint :
 
     override fun onDisable() {
         rootModule.lifecycle.onDisable()
-        rootModule.coreModule.unconfinedScope.cancel()
     }
 
     override fun onReload() {

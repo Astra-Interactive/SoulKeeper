@@ -1,5 +1,9 @@
 package ru.astrainteractive.soulkeeper.module.souls.di
 
+import dev.zacsweers.metro.Binds
+import dev.zacsweers.metro.DependencyGraph
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -17,13 +21,13 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
-import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.klibs.mikro.exposed.model.DatabaseConfiguration
 import ru.astrainteractive.klibs.mikro.exposed.util.connectAsFlow
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDaoImpl
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulItemsTable
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulTable
+import ru.astrainteractive.soulkeeper.module.souls.di.qualifier.DaoLifecycle
 import ru.astrainteractive.soulkeeper.module.souls.migration.core.DatabaseMigrator
 import ru.astrainteractive.soulkeeper.module.souls.migration.core.FileMigration
 import ru.astrainteractive.soulkeeper.module.souls.migration.database.DropBrokenCreatedAtMigration
@@ -32,67 +36,83 @@ import ru.astrainteractive.soulkeeper.module.souls.migration.file.H2ToSqliteMigr
 import ru.astrainteractive.soulkeeper.module.souls.migration.file.KrateFolderMigration
 import java.io.File
 
+object SoulsDaoScope
+
+@DependencyGraph(SoulsDaoScope::class)
 interface SoulsDaoModule {
-    val lifecycle: Lifecycle
 
     val databaseFlow: Flow<Database>
 
     val soulsDao: SoulsDao
 
-    class Default(
-        private val dataFolder: File,
-        private val ioScope: CoroutineScope,
-        private val dispatchers: KotlinDispatchers
-    ) : SoulsDaoModule, Logger by JUtiltLogger("SoulsDaoModule") {
-        private val fileMigrations: List<FileMigration>
-            get() = listOf(
-                H2ToSqliteMigration(dataFolder, dispatchers),
-                KrateFolderMigration(
-                    dataFolder = dataFolder,
-                    kratesFolder = dataFolder.resolve(".deaths")
-                )
-            )
-        private val databaseMigrator: DatabaseMigrator
-            get() = DatabaseMigrator(
-                migrations = listOf(
-                    DropBrokenCreatedAtMigration(),
-                    MakeCreatedAtNonNullMigration(),
-                ),
-                latestDbVersion = 2
-            )
+    @get:DaoLifecycle
+    val lifecycle: Lifecycle
 
-        private val dbConfigurationFlow = flow {
+    @DependencyGraph.Factory
+    fun interface Factory {
+        fun create(
+            @Provides dataFolder: File,
+            @Provides ioScope: CoroutineScope,
+            @Provides dispatchers: KotlinDispatchers
+        ): SoulsDaoModule
+    }
+
+    @SingleIn(SoulsDaoScope::class)
+    @Provides
+    fun provideDatabaseFlow(
+        dataFolder: File,
+        ioScope: CoroutineScope,
+        dispatchers: KotlinDispatchers
+    ): Flow<Database> {
+        val logger = JUtiltLogger("SoulsDaoModule")
+        val fileMigrations: List<FileMigration> = listOf(
+            H2ToSqliteMigration(dataFolder, dispatchers),
+            KrateFolderMigration(
+                dataFolder = dataFolder,
+                kratesFolder = dataFolder.resolve(".deaths")
+            )
+        )
+        val databaseMigrator = DatabaseMigrator(
+            migrations = listOf(
+                DropBrokenCreatedAtMigration(),
+                MakeCreatedAtNonNullMigration(),
+            ),
+            latestDbVersion = 2
+        )
+        val dbConfigurationFlow = flow {
             if (!dataFolder.exists()) dataFolder.mkdirs()
             val configuration = dataFolder.resolve("souls_v3")
                 .absolutePath
                 .let(DatabaseConfiguration::SQLite)
             emit(configuration)
         }
-        override val databaseFlow: Flow<Database> = dbConfigurationFlow
+        return dbConfigurationFlow
             .onStart { fileMigrations.forEach { migration -> migration.migrate() } }
             .flatMapLatest { databaseConfiguration -> databaseConfiguration.connectAsFlow() }
             .onEach { database -> databaseMigrator.migrate(database) }
             .onEach { database ->
-                TransactionManager.manager.defaultIsolationLevel = java.sql.Connection.TRANSACTION_SERIALIZABLE
+                TransactionManager.manager.defaultIsolationLevel =
+                    java.sql.Connection.TRANSACTION_SERIALIZABLE
                 transaction(database) {
                     SchemaUtils.create(SoulTable)
                     SchemaUtils.create(SoulItemsTable)
                 }
             }
             .retry { throwable ->
-                error(throwable) { "Could not connect to database" }
+                logger.error(throwable) { "Could not connect to database" }
                 delay(5000L)
                 true
             }
             .shareIn(ioScope, SharingStarted.Eagerly, 1)
-
-        override val soulsDao: SoulsDao = SoulsDaoImpl(
-            databaseFlow = databaseFlow,
-            dispatchers = dispatchers
-        )
-
-        override val lifecycle: Lifecycle = Lifecycle.Lambda(
-            onDisable = {}
-        )
     }
+
+    @Binds
+    val SoulsDaoImpl.bind: SoulsDao
+
+    @SingleIn(SoulsDaoScope::class)
+    @DaoLifecycle
+    @Provides
+    fun provideLifecycle(): Lifecycle = Lifecycle.Lambda(
+        onDisable = {}
+    )
 }

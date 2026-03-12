@@ -6,6 +6,7 @@ plugins {
     kotlin("plugin.serialization")
     alias(libs.plugins.klibs.minecraft.resource.processor)
     alias(libs.plugins.gradle.shadow)
+    alias(libs.plugins.metro)
 }
 
 dependencies {

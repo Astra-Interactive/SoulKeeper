@@ -1,5 +1,9 @@
 package ru.astrainteractive.soulkeeper.module.souls.domain
 
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
+import dev.zacsweers.metro.binding
 import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
 import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
@@ -13,8 +17,12 @@ import ru.astrainteractive.soulkeeper.core.util.toBukkitLocation
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
+import ru.astrainteractive.soulkeeper.module.souls.di.BukkitPlatformServiceScope
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase.Output
 
+@Inject
+@SingleIn(BukkitPlatformServiceScope::class)
+@ContributesBinding(BukkitPlatformServiceScope::class, binding<PickUpItemsUseCase>())
 internal class BukkitPickUpItemsUseCase(
     private val collectItemSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
     private val soulsDao: SoulsDao,

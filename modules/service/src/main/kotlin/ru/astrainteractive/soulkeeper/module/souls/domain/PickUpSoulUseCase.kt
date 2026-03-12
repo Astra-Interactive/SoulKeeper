@@ -11,7 +11,7 @@ import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSo
 import ru.astrainteractive.soulkeeper.module.souls.platform.EffectEmitter
 
 @Suppress("LongParameterList")
-internal class PickUpSoulUseCase(
+class PickUpSoulUseCase(
     private val dispatchers: KotlinDispatchers,
     private val pickUpExpUseCase: PickUpExpUseCase,
     private val pickUpItemsUseCase: PickUpItemsUseCase,

@@ -28,10 +28,15 @@ import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulItemsTable
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulTable
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
+import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoScope
 import java.util.*
 
+@Inject
+@SingleIn(SoulsDaoScope::class)
 @Suppress("TooManyFunctions")
-internal class SoulsDaoImpl(
+class SoulsDaoImpl(
     private val databaseFlow: Flow<Database>,
     private val dispatchers: KotlinDispatchers
 ) : SoulsDao, Logger by JUtiltLogger("SoulKeeper-SoulsDaoImpl") {
