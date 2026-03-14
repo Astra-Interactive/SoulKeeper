@@ -8,7 +8,8 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.kyori.unwrap
-import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissible
+import ru.astrainteractive.astralibs.server.permission.asKPermissible
+import ru.astrainteractive.astralibs.server.util.asBukkitLocation
 import ru.astrainteractive.astralibs.util.clickable
 import ru.astrainteractive.astralibs.util.isEmpty
 import ru.astrainteractive.astralibs.util.orEmpty
@@ -19,7 +20,6 @@ import ru.astrainteractive.soulkeeper.core.datetime.TimeAgoFormatter
 import ru.astrainteractive.soulkeeper.core.datetime.TimeAgoTranslationFormatter
 import ru.astrainteractive.soulkeeper.core.plugin.PluginPermission
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
-import ru.astrainteractive.soulkeeper.core.util.toBukkitLocation
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.Soul
@@ -56,7 +56,7 @@ internal class SoulsCommandExecutor(
             }
             .filter { soul ->
                 soul.isFree
-                    .or(sender.toPermissible().hasPermission(PluginPermission.ViewAllSouls))
+                    .or(sender.asKPermissible().hasPermission(PluginPermission.ViewAllSouls))
                     .or((sender as? Player)?.uniqueId == soul.ownerUUID)
             }
     }
@@ -94,7 +94,7 @@ internal class SoulsCommandExecutor(
             y = soul.location.y.toInt(),
             z = soul.location.z.toInt(),
             distance = location
-                ?.distance(soul.location.toBukkitLocation())
+                ?.distance(soul.location.asBukkitLocation())
                 ?.toInt()
                 ?: 0
         ).component
@@ -102,7 +102,7 @@ internal class SoulsCommandExecutor(
 
     private fun CommandSender.canFreeSouls(soul: DatabaseSoul): Boolean {
         val sender = this
-        val hasPermission = sender.toPermissible().hasPermission(PluginPermission.FreeAllSouls)
+        val hasPermission = sender.asKPermissible().hasPermission(PluginPermission.FreeAllSouls)
         val isOwner = (sender as? Player)?.uniqueId == soul.ownerUUID
         if (soul.isFree) return false
         if (!hasPermission) return false
@@ -124,7 +124,7 @@ internal class SoulsCommandExecutor(
     private fun CommandSender.canTeleportToSoul(): Boolean {
         val sender = this
         if (sender !is Player) return false
-        if (!sender.toPermissible().hasPermission(PluginPermission.TeleportToSouls)) {
+        if (!sender.asKPermissible().hasPermission(PluginPermission.TeleportToSouls)) {
             return false
         }
         return true
@@ -219,7 +219,7 @@ internal class SoulsCommandExecutor(
                     val location = soulsDao.getSoul(input.soulId)
                         .getOrNull()
                         ?.location
-                        ?.toBukkitLocation()
+                        ?.asBukkitLocation()
                     if (location == null) {
                         input.sender.sendMessage(translation.souls.soulNotFound.component)
                         return@launch

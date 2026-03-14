@@ -1,9 +1,7 @@
 package ru.astrainteractive.soulkeeper.module.souls.di
 
-import ru.astrainteractive.astralibs.server.BukkitMinecraftNativeBridge
-import ru.astrainteractive.astralibs.server.BukkitPlatformServer
-import ru.astrainteractive.astralibs.server.MinecraftNativeBridge
-import ru.astrainteractive.astralibs.server.PlatformServer
+import ru.astrainteractive.astralibs.server.bridge.BukkitPlatformServer
+import ru.astrainteractive.astralibs.server.bridge.PlatformServer
 import ru.astrainteractive.soulkeeper.core.di.BukkitCoreModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.module.souls.domain.BukkitPickUpItemsUseCase
@@ -25,7 +23,6 @@ class BukkitPlatformServiceModule(
 ) : PlatformServiceModule {
     override val platformServer: PlatformServer = BukkitPlatformServer()
     override val effectEmitter: EffectEmitter = BukkitEffectEmitter
-    override val minecraftNativeBridge: MinecraftNativeBridge = BukkitMinecraftNativeBridge()
     override val eventProvider: EventProvider = BukkitEventProvider(
         plugin = bukkitCoreModule.plugin
     )

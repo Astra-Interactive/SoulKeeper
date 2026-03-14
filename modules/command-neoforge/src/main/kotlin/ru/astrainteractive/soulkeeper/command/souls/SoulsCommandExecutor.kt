@@ -6,12 +6,11 @@ import net.kyori.adventure.text.Component
 import net.minecraft.commands.CommandSourceStack
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.kyori.unwrap
-import ru.astrainteractive.astralibs.server.location.Location
+import ru.astrainteractive.astralibs.server.location.KLocation
 import ru.astrainteractive.astralibs.server.location.dist
 import ru.astrainteractive.astralibs.server.util.asLocatable
 import ru.astrainteractive.astralibs.server.util.asOnlineMinecraftPlayer
 import ru.astrainteractive.astralibs.server.util.asPermissible
-import ru.astrainteractive.astralibs.server.util.asTeleportable
 import ru.astrainteractive.astralibs.server.util.toNative
 import ru.astrainteractive.astralibs.util.clickable
 import ru.astrainteractive.astralibs.util.isEmpty
@@ -83,7 +82,7 @@ internal class SoulsCommandExecutor(
         soul: Soul,
         page: Int,
         i: Int,
-        location: Location?
+        location: KLocation?
     ): Component {
         val timeAgo = TimeAgoFormatter.format(soul.createdAt)
         val timeAgoFormatted = TimeAgoTranslationFormatter(translation)
@@ -232,9 +231,7 @@ internal class SoulsCommandExecutor(
                     input.sender.sendSystemMessage(translation.souls.soulNotFound.component.toNative())
                     return
                 }
-                player.asOnlineMinecraftPlayer()
-                    .asTeleportable()
-                    .teleport(location)
+                player.asOnlineMinecraftPlayer().teleport(location)
             }
         }
     }

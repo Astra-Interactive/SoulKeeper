@@ -1,31 +1,31 @@
 package ru.astrainteractive.soulkeeper.module.souls.platform
 
 import org.bukkit.Bukkit
-import ru.astrainteractive.astralibs.server.location.Location
-import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
+import ru.astrainteractive.astralibs.server.location.KLocation
+import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
+import ru.astrainteractive.astralibs.server.util.asBukkitLocation
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
 import ru.astrainteractive.soulkeeper.core.util.spawnParticleForPlayer
-import ru.astrainteractive.soulkeeper.core.util.toBukkitLocation
 
 internal object BukkitEffectEmitter : EffectEmitter {
     override fun playSoundForPlayer(
-        location: Location,
-        player: OnlineMinecraftPlayer,
+        location: KLocation,
+        player: OnlineKPlayer,
         sound: SoulsConfig.Sounds.SoundConfig
     ) {
         val bukkitPlayer = Bukkit.getPlayer(player.uuid) ?: return
-        location.toBukkitLocation()
+        location.asBukkitLocation()
             .playSoundForPlayer(bukkitPlayer, sound)
     }
 
     override fun spawnParticleForPlayer(
-        location: Location,
-        player: OnlineMinecraftPlayer,
+        location: KLocation,
+        player: OnlineKPlayer,
         config: SoulsConfig.Particles.Particle
     ) {
         val bukkitPlayer = Bukkit.getPlayer(player.uuid) ?: return
-        location.toBukkitLocation()
+        location.asBukkitLocation()
             .spawnParticleForPlayer(bukkitPlayer, config)
     }
 }

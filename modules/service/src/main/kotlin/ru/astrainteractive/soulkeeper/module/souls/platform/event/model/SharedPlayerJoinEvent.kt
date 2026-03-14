@@ -1,5 +1,5 @@
 package ru.astrainteractive.soulkeeper.module.souls.platform.event.model
 
-import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
+import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 
-data class SharedPlayerJoinEvent(val player: OnlineMinecraftPlayer)
+data class SharedPlayerJoinEvent(val player: OnlineKPlayer)

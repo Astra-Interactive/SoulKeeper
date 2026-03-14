@@ -8,7 +8,7 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
 import ru.astrainteractive.astralibs.event.flowEvent
-import ru.astrainteractive.astralibs.server.util.asAstraLocation
+import ru.astrainteractive.astralibs.server.util.asKLocation
 import ru.astrainteractive.astralibs.server.util.asOnlineMinecraftPlayer
 import ru.astrainteractive.soulkeeper.module.souls.platform.event.EventProvider
 import ru.astrainteractive.soulkeeper.module.souls.platform.event.model.SharedPlayerJoinEvent
@@ -24,7 +24,7 @@ internal class BukkitEventProvider(
             .map { event ->
                 SharedPlayerMoveEvent(
                     player = event.player.asOnlineMinecraftPlayer(),
-                    to = event.player.location.asAstraLocation()
+                    to = event.player.location.asKLocation()
                 )
             }
     }

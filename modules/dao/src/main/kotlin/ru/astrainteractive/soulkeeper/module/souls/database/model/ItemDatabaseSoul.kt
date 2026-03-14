@@ -1,6 +1,6 @@
 package ru.astrainteractive.soulkeeper.module.souls.database.model
 
-import ru.astrainteractive.astralibs.server.location.Location
+import ru.astrainteractive.astralibs.server.location.KLocation
 import java.time.Instant
 import java.util.UUID
 
@@ -10,7 +10,7 @@ data class ItemDatabaseSoul(
     override val ownerLastName: String,
     override val createdAt: Instant,
     override val isFree: Boolean,
-    override val location: Location,
+    override val location: KLocation,
     override val hasItems: Boolean,
     override val exp: Int,
     val items: List<StringFormatObject>

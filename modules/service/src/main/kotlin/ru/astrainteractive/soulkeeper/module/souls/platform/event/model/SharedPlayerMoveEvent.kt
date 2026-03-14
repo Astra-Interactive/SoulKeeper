@@ -1,9 +1,9 @@
 package ru.astrainteractive.soulkeeper.module.souls.platform.event.model
 
-import ru.astrainteractive.astralibs.server.location.Location
-import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
+import ru.astrainteractive.astralibs.server.location.KLocation
+import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 
 data class SharedPlayerMoveEvent(
-    val player: OnlineMinecraftPlayer,
-    val to: Location,
+    val player: OnlineKPlayer,
+    val to: KLocation,
 )

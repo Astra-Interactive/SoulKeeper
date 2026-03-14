@@ -1,7 +1,7 @@
 package ru.astrainteractive.soulkeeper.module.souls.domain
 
 import kotlinx.coroutines.withContext
-import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
+import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
@@ -27,7 +27,7 @@ internal class PickUpSoulUseCase(
         data object AllPickedUp : Output
     }
 
-    suspend fun invoke(player: OnlineMinecraftPlayer, soul: ItemDatabaseSoul): Output {
+    suspend fun invoke(player: OnlineKPlayer, soul: ItemDatabaseSoul): Output {
         pickUpExpUseCase.invoke(player, soul)
         val updatedSoul = soul.copy(exp = 0)
 
