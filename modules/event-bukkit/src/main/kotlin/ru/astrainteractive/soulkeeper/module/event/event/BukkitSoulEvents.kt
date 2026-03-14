@@ -9,7 +9,9 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
 import ru.astrainteractive.astralibs.event.EventListener
-import ru.astrainteractive.astralibs.server.location.Location
+import ru.astrainteractive.astralibs.server.location.KLocation
+import ru.astrainteractive.astralibs.server.util.asBukkitLocation
+import ru.astrainteractive.astralibs.server.util.asKLocation
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
@@ -18,8 +20,6 @@ import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.serialization.ItemStackSerializer
 import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
 import ru.astrainteractive.soulkeeper.core.util.spawnParticleForPlayer
-import ru.astrainteractive.soulkeeper.core.util.toBukkitLocation
-import ru.astrainteractive.soulkeeper.core.util.toDatabaseLocation
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
@@ -49,7 +49,7 @@ internal class BukkitSoulEvents(
         }
     }
 
-    private fun getSoulLocation(event: PlayerDeathEvent): Location {
+    private fun getSoulLocation(event: PlayerDeathEvent): KLocation {
         return when {
             event.player.location.world.environment == World.Environment.THE_END -> {
                 val endLocation = event.player.location.clone()
@@ -60,7 +60,7 @@ internal class BukkitSoulEvents(
             }
 
             else -> event.player.location
-        }.toDatabaseLocation()
+        }.asKLocation()
     }
 
     private fun getAndClearDroppedXp(event: PlayerDeathEvent): Int {
@@ -77,10 +77,10 @@ internal class BukkitSoulEvents(
 
     private fun playEffects(soul: DefaultSoul, player: Player) {
         soul.location
-            .toBukkitLocation()
+            .asBukkitLocation()
             .spawnParticleForPlayer(player, soulsConfig.particles.soulCreated)
         soul.location
-            .toBukkitLocation()
+            .asBukkitLocation()
             .playSoundForPlayer(player, soulsConfig.sounds.soulDropped)
     }
 

@@ -1,8 +1,7 @@
 package ru.astrainteractive.soulkeeper.module.souls.di
 
-import ru.astrainteractive.astralibs.server.MinecraftNativeBridge
-import ru.astrainteractive.astralibs.server.PlatformServer
-import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
+import ru.astrainteractive.astralibs.server.bridge.PlatformServer
+import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorStandUseCase
 import ru.astrainteractive.soulkeeper.module.souls.platform.EffectEmitter
@@ -14,10 +13,9 @@ interface PlatformServiceModule {
 
     val platformServer: PlatformServer
     val effectEmitter: EffectEmitter
-    val minecraftNativeBridge: MinecraftNativeBridge
     val eventProvider: EventProvider
     val isDeadPlayerProvider: IsDeadPlayerProvider
-    val onlineMinecraftPlayerExperiencedFactory: Experienced.Factory<OnlineMinecraftPlayer>
+    val onlineMinecraftPlayerExperiencedFactory: Experienced.Factory<OnlineKPlayer>
 
     val showArmorStandUseCase: ShowArmorStandUseCase
     val pickUpItemsUseCase: PickUpItemsUseCase

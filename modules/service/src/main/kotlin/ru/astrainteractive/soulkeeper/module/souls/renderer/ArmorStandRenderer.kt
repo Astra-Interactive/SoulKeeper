@@ -1,7 +1,7 @@
 package ru.astrainteractive.soulkeeper.module.souls.renderer
 
-import ru.astrainteractive.astralibs.server.PlatformServer
-import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
+import ru.astrainteractive.astralibs.server.bridge.PlatformServer
+import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
@@ -25,7 +25,7 @@ internal class ArmorStandRenderer(
         soulByArmorStandId.getOrPut(soul.id) { showArmorStandUseCase.generateEntityId() }
     }
 
-    override suspend fun renderOnce(player: OnlineMinecraftPlayer, souls: List<DatabaseSoul>) {
+    override suspend fun renderOnce(player: OnlineKPlayer, souls: List<DatabaseSoul>) {
         showArmorStandUseCase.destroy(player, soulByArmorStandId.values)
         souls
             .onEach(::rememberSoulArmorStandId)

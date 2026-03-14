@@ -2,7 +2,7 @@ package ru.astrainteractive.soulkeeper.module.souls.domain
 
 import kotlinx.coroutines.withContext
 import net.minecraft.world.item.ItemStack
-import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
+import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.astralibs.server.util.NeoForgeUtil
 import ru.astrainteractive.astralibs.server.util.getOnlinePlayer
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
@@ -29,7 +29,7 @@ internal class NeoForgePickUpItemsUseCase(
      * @param items List of items to add to inventory
      * @return not fitted items into inventory
      */
-    private fun OnlineMinecraftPlayer.addItems(items: List<ItemStack>): List<ItemStack> {
+    private fun OnlineKPlayer.addItems(items: List<ItemStack>): List<ItemStack> {
         return items
             .mapNotNull { stack ->
                 if (!isDeadPlayerProvider.isDead(this)) {
@@ -42,7 +42,7 @@ internal class NeoForgePickUpItemsUseCase(
             .filterNot(ItemStack::isEmpty)
     }
 
-    override suspend fun invoke(player: OnlineMinecraftPlayer, soul: ItemDatabaseSoul): Output {
+    override suspend fun invoke(player: OnlineKPlayer, soul: ItemDatabaseSoul): Output {
         if (soul.items.isEmpty()) return Output.NoItemsPresent
         val serverPlayer = NeoForgeUtil.getOnlinePlayer(player.uuid) ?: return Output.SomeItemsRemain
 

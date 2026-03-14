@@ -1,6 +1,6 @@
 package ru.astrainteractive.soulkeeper.module.souls.domain
 
-import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
+import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
 
 interface PickUpItemsUseCase {
@@ -10,5 +10,5 @@ interface PickUpItemsUseCase {
         data object SomeItemsRemain : Output
     }
 
-    suspend fun invoke(player: OnlineMinecraftPlayer, soul: ItemDatabaseSoul): Output
+    suspend fun invoke(player: OnlineKPlayer, soul: ItemDatabaseSoul): Output
 }

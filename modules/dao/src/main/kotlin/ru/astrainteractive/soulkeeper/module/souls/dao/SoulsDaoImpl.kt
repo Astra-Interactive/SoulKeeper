@@ -18,7 +18,7 @@ import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
-import ru.astrainteractive.astralibs.server.location.Location
+import ru.astrainteractive.astralibs.server.location.KLocation
 import ru.astrainteractive.astralibs.server.location.dist
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
@@ -62,7 +62,7 @@ internal class SoulsDaoImpl(
             isFree = it[SoulTable.isFree],
             exp = it[SoulTable.exp],
             hasItems = true, // todo
-            location = Location(
+            location = KLocation(
                 x = it[SoulTable.locationX],
                 y = it[SoulTable.locationY],
                 z = it[SoulTable.locationZ],
@@ -130,7 +130,7 @@ internal class SoulsDaoImpl(
     }.onSuccess { soulsChangedSharedFlow.emit(Unit) }
 
     override suspend fun getSoulsNear(
-        location: Location,
+        location: KLocation,
         radius: Int
     ): Result<List<DatabaseSoul>> = safeRun("getSoulsNear") {
         transaction(databaseFlow.first()) {

@@ -65,7 +65,6 @@ class ServiceModule(
         soulSoundRenderer = soulSoundRenderer,
         soulArmorStandRenderer = armorStandRenderer,
         eventProvider = platformServiceModule.eventProvider,
-        minecraftNativeBridge = platformServiceModule.minecraftNativeBridge
     )
 
     private val pickUpExpUseCase: PickUpExpUseCase = PickUpExpUseCase(
@@ -96,7 +95,6 @@ class ServiceModule(
             ),
             getNearestSoulUseCase = GetNearestSoulUseCase(
                 soulsDao = soulsDaoModule.soulsDao,
-                minecraftNativeBridge = platformServiceModule.minecraftNativeBridge
             ),
             soulsDao = soulsDaoModule.soulsDao,
             platformServer = platformServiceModule.platformServer,

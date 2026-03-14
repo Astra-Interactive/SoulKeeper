@@ -18,8 +18,8 @@ import net.neoforged.bus.api.EventPriority
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent
 import ru.astrainteractive.astralibs.event.flowEvent
-import ru.astrainteractive.astralibs.server.location.Location
-import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
+import ru.astrainteractive.astralibs.server.location.KLocation
+import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.astralibs.server.util.asLocatable
 import ru.astrainteractive.astralibs.server.util.asOnlineMinecraftPlayer
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
@@ -57,8 +57,8 @@ internal class ForgeSoulEvents(
     private val soulsConfig by soulsConfigKrate
     private val mutex = Mutex()
     private suspend fun spawnSoulEffects(
-        location: Location,
-        onlineMinecraftPlayer: OnlineMinecraftPlayer
+        location: KLocation,
+        onlineMinecraftPlayer: OnlineKPlayer
     ) {
         withContext(dispatchers.Main) {
             effectEmitter.spawnParticleForPlayer(
@@ -108,10 +108,10 @@ internal class ForgeSoulEvents(
     }
 
     private suspend fun createSoulUnsafe(
-        serverPlayer: OnlineMinecraftPlayer,
+        serverPlayer: OnlineKPlayer,
         droppedXp: Int?,
         soulItems: List<StringFormatObject>?,
-        location: Location,
+        location: KLocation,
         dimension: ResourceKey<Level>
     ) {
         val soul = DefaultSoul(

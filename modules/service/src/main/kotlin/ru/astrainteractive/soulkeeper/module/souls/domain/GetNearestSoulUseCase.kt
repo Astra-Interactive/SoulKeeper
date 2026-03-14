@@ -1,7 +1,6 @@
 package ru.astrainteractive.soulkeeper.module.souls.domain
 
-import ru.astrainteractive.astralibs.server.MinecraftNativeBridge
-import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
+import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
@@ -12,11 +11,9 @@ import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
  */
 internal class GetNearestSoulUseCase(
     private val soulsDao: SoulsDao,
-    private val minecraftNativeBridge: MinecraftNativeBridge,
-) : Logger by JUtiltLogger("SoulKeeper-GetNearestSoulUseCase"),
-    MinecraftNativeBridge by minecraftNativeBridge {
-    suspend fun invoke(player: OnlineMinecraftPlayer): DatabaseSoul? {
-        return soulsDao.getSoulsNear(player.asLocatable().getLocation(), 2)
+) : Logger by JUtiltLogger("SoulKeeper-GetNearestSoulUseCase") {
+    suspend fun invoke(player: OnlineKPlayer): DatabaseSoul? {
+        return soulsDao.getSoulsNear(player.getLocation(), 2)
             .getOrNull()
             .orEmpty()
             .firstOrNull { soul -> soul.isFree || soul.ownerUUID == player.uuid }

@@ -6,16 +6,16 @@ import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundSource
 import net.neoforged.neoforge.registries.NeoForgeRegistries
-import ru.astrainteractive.astralibs.server.location.Location
-import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
+import ru.astrainteractive.astralibs.server.location.KLocation
+import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.astralibs.server.util.NeoForgeUtil
 import ru.astrainteractive.astralibs.server.util.getOnlinePlayer
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 
 class NeoForgeEffectEmitter : EffectEmitter {
     override fun playSoundForPlayer(
-        location: Location,
-        player: OnlineMinecraftPlayer,
+        location: KLocation,
+        player: OnlineKPlayer,
         sound: SoulsConfig.Sounds.SoundConfig
     ) {
         val serverPlayer = NeoForgeUtil.getOnlinePlayer(player.uuid) ?: return
@@ -31,8 +31,8 @@ class NeoForgeEffectEmitter : EffectEmitter {
     }
 
     override fun spawnParticleForPlayer(
-        location: Location,
-        player: OnlineMinecraftPlayer,
+        location: KLocation,
+        player: OnlineKPlayer,
         config: SoulsConfig.Particles.Particle
     ) {
         val serverPlayer = NeoForgeUtil.getOnlinePlayer(player.uuid) ?: return

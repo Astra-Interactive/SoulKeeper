@@ -1,9 +1,7 @@
 package ru.astrainteractive.soulkeeper.module.souls.di
 
-import ru.astrainteractive.astralibs.server.MinecraftNativeBridge
-import ru.astrainteractive.astralibs.server.NeoForgeMinecraftNativeBridge
-import ru.astrainteractive.astralibs.server.NeoForgePlatformServer
-import ru.astrainteractive.astralibs.server.PlatformServer
+import ru.astrainteractive.astralibs.server.bridge.NeoForgePlatformServer
+import ru.astrainteractive.astralibs.server.bridge.PlatformServer
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.module.souls.domain.NeoForgePickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase
@@ -23,7 +21,6 @@ class NeoForgePlatformServiceModule(
 ) : PlatformServiceModule {
     override val platformServer: PlatformServer = NeoForgePlatformServer
     override val effectEmitter: EffectEmitter = NeoForgeEffectEmitter()
-    override val minecraftNativeBridge: MinecraftNativeBridge = NeoForgeMinecraftNativeBridge()
     override val eventProvider: EventProvider = NeoForgeEventProvider
     override val isDeadPlayerProvider: IsDeadPlayerProvider = NeoForgeIsDeadPlayerProvider
 

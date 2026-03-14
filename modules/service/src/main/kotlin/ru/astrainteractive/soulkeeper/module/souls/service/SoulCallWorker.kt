@@ -19,10 +19,9 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import ru.astrainteractive.astralibs.coroutines.withTimings
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
-import ru.astrainteractive.astralibs.server.MinecraftNativeBridge
-import ru.astrainteractive.astralibs.server.location.Location
+import ru.astrainteractive.astralibs.server.location.KLocation
 import ru.astrainteractive.astralibs.server.location.dist
-import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
+import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
 import ru.astrainteractive.klibs.mikro.core.coroutines.TickFlow
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
@@ -50,10 +49,8 @@ internal class SoulCallWorker(
     private val soulSoundRenderer: SoulSoundRenderer,
     private val soulArmorStandRenderer: ArmorStandRenderer,
     private val eventProvider: EventProvider,
-    minecraftNativeBridge: MinecraftNativeBridge
 ) : Logger by JUtiltLogger("SoulKeeper-SoulCallWorker"),
-    Lifecycle,
-    MinecraftNativeBridge by minecraftNativeBridge {
+    Lifecycle {
     private val scope = CoroutineFeature.IO.withTimings()
 
     private val playerRendererJobMap = mutableMapOf<UUID, Job>()
@@ -61,12 +58,12 @@ internal class SoulCallWorker(
     /**
      * Emit event only when player moved distance away from previous location
      */
-    private fun distancedPlayerMoveEvent(player: OnlineMinecraftPlayer) = flow {
-        var savedLocation = Location(
+    private fun distancedPlayerMoveEvent(player: OnlineKPlayer) = flow {
+        var savedLocation = KLocation(
             x = Double.MIN_VALUE,
             y = Double.MIN_VALUE,
             z = Double.MIN_VALUE,
-            worldName = player.asLocatable()
+            worldName = player
                 .getLocation()
                 .worldName
         )
@@ -88,14 +85,14 @@ internal class SoulCallWorker(
 
     private fun getPlayerVisibleSoulsFlow(
         scope: CoroutineScope,
-        player: OnlineMinecraftPlayer
+        player: OnlineKPlayer
     ): Flow<List<DatabaseSoul>> {
         return combineInstantly(
             flow = distancedPlayerMoveEvent(player).shareIn(scope, SharingStarted.Eagerly, 1),
             flow2 = soulsDao.getSoulsChangeFlow(),
             transform = { event, _ -> event }
         ).filterNotNull().map { event ->
-            val location = event.player.asLocatable().getLocation()
+            val location = event.player.getLocation()
             soulsDao.getSoulsNear(location, config.soulCallRadius)
                 .getOrNull()
                 .orEmpty()
@@ -103,7 +100,7 @@ internal class SoulCallWorker(
         }
     }
 
-    private fun startPlayerRendererJob(player: OnlineMinecraftPlayer) {
+    private fun startPlayerRendererJob(player: OnlineKPlayer) {
         playerRendererJobMap[player.uuid]?.cancel()
         playerRendererJobMap[player.uuid] = scope.launch {
             val soundThrottleExecutor = ThrottleExecutor(5.seconds)

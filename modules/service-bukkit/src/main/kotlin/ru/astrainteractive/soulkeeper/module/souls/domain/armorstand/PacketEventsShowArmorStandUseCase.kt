@@ -12,11 +12,11 @@ import io.github.retrooper.packetevents.util.SpigotReflectionUtil
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
-import ru.astrainteractive.astralibs.server.player.OnlineMinecraftPlayer
+import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
+import ru.astrainteractive.astralibs.server.util.asBukkitLocation
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
-import ru.astrainteractive.soulkeeper.core.util.toBukkitLocation
 import ru.astrainteractive.soulkeeper.module.souls.database.model.Soul
 import java.util.Optional
 import java.util.UUID
@@ -38,7 +38,7 @@ internal class PacketEventsShowArmorStandUseCase(
     }
 
     private fun show(id: Int, player: Player, soul: Soul) {
-        val bukkitLocation = soul.location.toBukkitLocation()
+        val bukkitLocation = soul.location.asBukkitLocation()
         val vector3d = bukkitLocation.toVector().toVector3d()
         val packet = WrapperPlayServerSpawnEntity(
             id,
@@ -88,7 +88,7 @@ internal class PacketEventsShowArmorStandUseCase(
     }
 
     override fun destroy(
-        player: OnlineMinecraftPlayer,
+        player: OnlineKPlayer,
         ids: Collection<Int>
     ) {
         val bukkitPlayer = Bukkit.getPlayer(player.uuid) ?: return
@@ -100,7 +100,7 @@ internal class PacketEventsShowArmorStandUseCase(
 
     override fun show(
         id: Int,
-        player: OnlineMinecraftPlayer,
+        player: OnlineKPlayer,
         soul: Soul
     ) {
         val bukkitPlayer = Bukkit.getPlayer(player.uuid) ?: return
