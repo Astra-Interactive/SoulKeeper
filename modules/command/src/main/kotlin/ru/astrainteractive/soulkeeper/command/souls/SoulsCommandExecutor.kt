@@ -2,19 +2,24 @@ package ru.astrainteractive.soulkeeper.command.souls
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.kyori.adventure.text.Component
-import org.bukkit.Location
-import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
+import ru.astrainteractive.astralibs.command.api.brigadier.sender.KCommandSender
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.kyori.unwrap
-import ru.astrainteractive.astralibs.server.permission.asKPermissible
-import ru.astrainteractive.astralibs.server.util.asBukkitLocation
+import ru.astrainteractive.astralibs.server.KAudience
+import ru.astrainteractive.astralibs.server.Locatable
+import ru.astrainteractive.astralibs.server.location.KLocation
+import ru.astrainteractive.astralibs.server.location.dist
+import ru.astrainteractive.astralibs.server.permission.KPermissible
+import ru.astrainteractive.astralibs.server.player.KPlayer
+import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.astralibs.util.clickable
 import ru.astrainteractive.astralibs.util.isEmpty
 import ru.astrainteractive.astralibs.util.orEmpty
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
+import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.util.tryCast
 import ru.astrainteractive.soulkeeper.core.datetime.TimeAgoFormatter
 import ru.astrainteractive.soulkeeper.core.datetime.TimeAgoTranslationFormatter
@@ -28,6 +33,7 @@ import kotlin.collections.filter
 internal class SoulsCommandExecutor(
     private val ioScope: CoroutineScope,
     private val soulsDao: SoulsDao,
+    private val dispatchers: KotlinDispatchers,
     translationKrate: CachedKrate<PluginTranslation>,
     kyoriKrate: CachedKrate<KyoriComponentSerializer>
 ) : KyoriComponentSerializer by kyoriKrate.unwrap() {
@@ -45,19 +51,19 @@ internal class SoulsCommandExecutor(
         return nextPageComponent.append(prevPageComponent, true)
     }
 
-    private suspend fun getFilteredSouls(sender: CommandSender): List<DatabaseSoul> {
+    private suspend fun getFilteredSouls(sender: KCommandSender): List<DatabaseSoul> {
         return soulsDao.getSouls()
             .getOrNull()
             .orEmpty()
-            .filter {
-                (sender as? Player)?.world?.name?.let { worldName ->
-                    it.location.worldName == worldName
-                } ?: true
+            .filter { soul ->
+                sender.tryCast<Locatable>()
+                    ?.getLocation()
+                    ?.worldName == soul.location.worldName
             }
             .filter { soul ->
                 soul.isFree
-                    .or(sender.asKPermissible().hasPermission(PluginPermission.ViewAllSouls))
-                    .or((sender as? Player)?.uniqueId == soul.ownerUUID)
+                    .or(sender.tryCast<KPermissible>()?.hasPermission(PluginPermission.ViewAllSouls) == true)
+                    .or(sender.tryCast<KPlayer>()?.uuid == soul.ownerUUID)
             }
     }
 
@@ -80,7 +86,7 @@ internal class SoulsCommandExecutor(
         soul: Soul,
         page: Int,
         i: Int,
-        location: Location?
+        location: KLocation?
     ): Component {
         val timeAgo = TimeAgoFormatter.format(soul.createdAt)
         val timeAgoFormatted = TimeAgoTranslationFormatter(translation)
@@ -94,23 +100,23 @@ internal class SoulsCommandExecutor(
             y = soul.location.y.toInt(),
             z = soul.location.z.toInt(),
             distance = location
-                ?.distance(soul.location.asBukkitLocation())
+                ?.dist(soul.location)
                 ?.toInt()
                 ?: 0
         ).component
     }
 
-    private fun CommandSender.canFreeSouls(soul: DatabaseSoul): Boolean {
+    private fun KCommandSender.canFreeSouls(soul: DatabaseSoul): Boolean {
         val sender = this
-        val hasPermission = sender.asKPermissible().hasPermission(PluginPermission.FreeAllSouls)
-        val isOwner = (sender as? Player)?.uniqueId == soul.ownerUUID
+        val hasPermission = sender.tryCast<KPermissible>()?.hasPermission(PluginPermission.FreeAllSouls) == true
+        val isOwner = sender.tryCast<KPlayer>()?.uuid == soul.ownerUUID
         if (soul.isFree) return false
         if (!hasPermission) return false
         if (!isOwner) return false
         return true
     }
 
-    private fun createFreeSoulComponent(sender: CommandSender, soul: DatabaseSoul): Component? {
+    private fun createFreeSoulComponent(sender: KCommandSender, soul: DatabaseSoul): Component? {
         return if (!sender.canFreeSouls(soul)) {
             null
         } else {
@@ -121,16 +127,16 @@ internal class SoulsCommandExecutor(
         }
     }
 
-    private fun CommandSender.canTeleportToSoul(): Boolean {
+    private fun KCommandSender.canTeleportToSoul(): Boolean {
         val sender = this
-        if (sender !is Player) return false
-        if (!sender.asKPermissible().hasPermission(PluginPermission.TeleportToSouls)) {
+        if (sender !is OnlineKPlayer) return false
+        if (!sender.hasPermission(PluginPermission.TeleportToSouls)) {
             return false
         }
         return true
     }
 
-    private fun createTeleportSoulComponent(sender: CommandSender, soul: DatabaseSoul): Component? {
+    private fun createTeleportSoulComponent(sender: KCommandSender, soul: DatabaseSoul): Component? {
         if (!sender.canTeleportToSoul()) return null
         return translation.souls.teleportToSoul
             .component
@@ -160,21 +166,20 @@ internal class SoulsCommandExecutor(
                     val pageSouls = getPageSouls(filteredSouls, input.page)
                     if (pageSouls.isEmpty()) {
                         val title = translation.souls.noSoulsOnPage(input.page.plus(1)).component
-                        input.sender.sendMessage(title)
+                        input.sender.tryCast<KAudience>()?.sendMessage(title)
                         return@launch
                     }
 
-                    translation.souls.listSoulsTitle.component
-                        .run(input.sender::sendMessage)
+                    input.sender.tryCast<KAudience>()?.sendMessage(translation.souls.listSoulsTitle.component)
 
                     pageSouls.forEachIndexed { i, soul ->
-                        createListingItemComponent(
+                        val component = createListingItemComponent(
                             soul = soul,
                             page = input.page,
                             i = i,
                             location = input.sender
-                                .tryCast<Player>()
-                                ?.location
+                                .tryCast<Locatable>()
+                                ?.getLocation()
                         ).append(
                             addSpace = true,
                             other = createFreeSoulComponent(
@@ -187,10 +192,10 @@ internal class SoulsCommandExecutor(
                                 sender = input.sender,
                                 soul = soul
                             )
-                        ).run(input.sender::sendMessage)
+                        )
+                        input.sender.tryCast<KAudience>()?.sendMessage(component)
                     }
-                    createPagingMessage(input, maxPages)
-                        .run(input.sender::sendMessage)
+                    input.sender.tryCast<KAudience>()?.sendMessage(createPagingMessage(input, maxPages))
                 }
             }
 
@@ -200,31 +205,32 @@ internal class SoulsCommandExecutor(
                         .getOrNull()
                         ?.copy(isFree = true)
                     if (newSoul == null) {
-                        input.sender.sendMessage(translation.souls.soulNotFound.component)
+                        input.sender.tryCast<KAudience>()?.sendMessage(translation.souls.soulNotFound.component)
                         return@launch
                     }
                     soulsDao.updateSoul(newSoul)
                         .onSuccess {
-                            input.sender.sendMessage(translation.souls.soulFreed.component)
+                            input.sender.tryCast<KAudience>()?.sendMessage(translation.souls.soulFreed.component)
                         }
                         .onFailure {
-                            input.sender.sendMessage(translation.souls.couldNotFreeSoul.component)
+                            input.sender.tryCast<KAudience>()?.sendMessage(translation.souls.couldNotFreeSoul.component)
                         }
                 }
             }
 
             is SoulsCommand.Intent.TeleportToSoul -> {
                 ioScope.launch {
-                    val player = input.sender as? Player ?: return@launch
+                    val player = input.sender.tryCast<OnlineKPlayer>() ?: return@launch
                     val location = soulsDao.getSoul(input.soulId)
                         .getOrNull()
                         ?.location
-                        ?.asBukkitLocation()
                     if (location == null) {
-                        input.sender.sendMessage(translation.souls.soulNotFound.component)
+                        player.sendMessage(translation.souls.soulNotFound.component)
                         return@launch
                     }
-                    player.teleportAsync(location)
+                    withContext(dispatchers.Main) {
+                        player.teleport(location)
+                    }
                 }
             }
         }

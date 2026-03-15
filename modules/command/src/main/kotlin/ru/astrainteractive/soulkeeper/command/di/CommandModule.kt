@@ -1,47 +1,54 @@
 package ru.astrainteractive.soulkeeper.command.di
 
-import ru.astrainteractive.astralibs.command.api.registrar.PaperCommandRegistrarContext
+import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
+import ru.astrainteractive.astralibs.command.api.registrar.CommandRegistrarContext
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.soulkeeper.command.reload.SoulsReloadCommandRegistrar
 import ru.astrainteractive.soulkeeper.command.soulkrate.SoulKrateCommandRegistrar
 import ru.astrainteractive.soulkeeper.command.souls.SoulsCommandExecutor
 import ru.astrainteractive.soulkeeper.command.souls.SoulsListCommandRegistrar
-import ru.astrainteractive.soulkeeper.core.di.BukkitCoreModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
+import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
 
 class CommandModule(
     private val coreModule: CoreModule,
-    private val bukkitCoreModule: BukkitCoreModule,
-    private val soulsDaoModule: SoulsDaoModule
+    private val commandRegistrarContext: CommandRegistrarContext,
+    private val soulsDaoModule: SoulsDaoModule,
+    private val serviceModule: ServiceModule,
+    private val multiplatformCommand: MultiplatformCommand<*>,
+    private val lifecyclePlugin: Lifecycle
 ) {
-    private val paperCommandRegistrar = PaperCommandRegistrarContext(
-        mainScope = coreModule.mainScope,
-        plugin = bukkitCoreModule.plugin
-    )
     val lifecycle = Lifecycle.Lambda(
         onEnable = {
             SoulsListCommandRegistrar(
                 kyoriKrate = coreModule.kyoriComponentSerializer,
-                registrarContext = paperCommandRegistrar,
+                registrarContext = commandRegistrarContext,
+                multiplatformCommand = multiplatformCommand,
                 soulsCommandExecutor = SoulsCommandExecutor(
                     ioScope = coreModule.ioScope,
                     soulsDao = soulsDaoModule.soulsDao,
                     translationKrate = coreModule.translation,
-                    kyoriKrate = coreModule.kyoriComponentSerializer
-                )
+                    kyoriKrate = coreModule.kyoriComponentSerializer,
+                    dispatchers = coreModule.dispatchers
+                ),
             ).register()
             SoulKrateCommandRegistrar(
-                registrarContext = paperCommandRegistrar,
+                registrarContext = commandRegistrarContext,
+                multiplatformCommand = multiplatformCommand,
                 stringFormat = coreModule.yamlFormat,
                 dataFolder = coreModule.dataFolder,
-                ioScope = coreModule.ioScope
+                ioScope = coreModule.ioScope,
+                addSoulItemsIntoInventoryUseCase = serviceModule.addSoulItemsIntoInventoryUseCase,
+                translationKrate = coreModule.translation,
+                kyoriKrate = coreModule.kyoriComponentSerializer
             ).register()
             SoulsReloadCommandRegistrar(
-                plugin = bukkitCoreModule.plugin,
+                lifecyclePlugin = lifecyclePlugin,
                 translationKrate = coreModule.translation,
                 kyoriKrate = coreModule.kyoriComponentSerializer,
-                registrarContext = paperCommandRegistrar
+                registrarContext = commandRegistrarContext,
+                multiplatformCommand = multiplatformCommand,
             ).register()
         },
         onDisable = {

@@ -24,6 +24,7 @@ class ServiceModule(
 
 ) {
 
+    val addSoulItemsIntoInventoryUseCase = platformServiceModule.addSoulItemsIntoInventoryUseCase
     private val armorStandRenderer = ArmorStandRenderer(
         soulsConfigKrate = coreModule.soulsConfigKrate,
         showArmorStandUseCase = platformServiceModule.showArmorStandUseCase,

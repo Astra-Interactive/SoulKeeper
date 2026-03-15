@@ -4,6 +4,7 @@ import ru.astrainteractive.astralibs.server.bridge.BukkitPlatformServer
 import ru.astrainteractive.astralibs.server.bridge.PlatformServer
 import ru.astrainteractive.soulkeeper.core.di.BukkitCoreModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
+import ru.astrainteractive.soulkeeper.module.souls.domain.BukkitAddSoulItemsIntoInventoryUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.BukkitPickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorStandUseCase
@@ -35,4 +36,5 @@ class BukkitPlatformServiceModule(
         soulsDao = soulsDaoModule.soulsDao,
         dispatchers = coreModule.dispatchers
     )
+    override val addSoulItemsIntoInventoryUseCase = BukkitAddSoulItemsIntoInventoryUseCase()
 }

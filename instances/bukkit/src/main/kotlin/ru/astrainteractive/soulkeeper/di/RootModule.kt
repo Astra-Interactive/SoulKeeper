@@ -1,6 +1,9 @@
 package ru.astrainteractive.soulkeeper.di
 
 import org.bukkit.event.HandlerList
+import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
+import ru.astrainteractive.astralibs.command.api.brigadier.command.PaperMultiplatformCommands
+import ru.astrainteractive.astralibs.command.api.registrar.PaperCommandRegistrarContext
 import ru.astrainteractive.astralibs.coroutines.DefaultBukkitDispatchers
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
@@ -44,8 +47,14 @@ class RootModule(plugin: LifecyclePlugin) {
 
     private val commandModule = CommandModule(
         coreModule = coreModule,
-        bukkitCoreModule = bukkitCoreModule,
-        soulsDaoModule = soulsDaoModule
+        commandRegistrarContext = PaperCommandRegistrarContext(
+            mainScope = coreModule.mainScope,
+            plugin = plugin
+        ),
+        soulsDaoModule = soulsDaoModule,
+        serviceModule = serviceModule,
+        multiplatformCommand = MultiplatformCommand(PaperMultiplatformCommands()),
+        lifecyclePlugin = plugin,
     )
 
     private val lifecycles: List<Lifecycle>

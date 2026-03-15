@@ -1,7 +1,6 @@
 package ru.astrainteractive.soulkeeper.module.souls.domain
 
 import kotlinx.coroutines.withContext
-import net.minecraft.world.item.ItemStack
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.astralibs.server.util.NeoForgeUtil
 import ru.astrainteractive.astralibs.server.util.getOnlinePlayer
@@ -16,6 +15,7 @@ import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase.Out
 import ru.astrainteractive.soulkeeper.module.souls.platform.EffectEmitter
 import ru.astrainteractive.soulkeeper.module.souls.platform.IsDeadPlayerProvider
 import ru.astrainteractive.soulkeeper.module.souls.platform.ItemStackSerializer
+import ru.astrainteractive.soulkeeper.module.souls.util.addItems
 
 internal class NeoForgePickUpItemsUseCase(
     private val collectItemSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
@@ -25,22 +25,6 @@ internal class NeoForgePickUpItemsUseCase(
     private val dispatchers: KotlinDispatchers
 ) : PickUpItemsUseCase,
     Logger by JUtiltLogger("SoulKeeper-PickUpItemsUseCase") {
-    /**
-     * @param items List of items to add to inventory
-     * @return not fitted items into inventory
-     */
-    private fun OnlineKPlayer.addItems(items: List<ItemStack>): List<ItemStack> {
-        return items
-            .mapNotNull { stack ->
-                if (!isDeadPlayerProvider.isDead(this)) {
-                    val inventory = NeoForgeUtil.getOnlinePlayer(uuid)?.inventory
-                    inventory?.add(stack)
-                    inventory?.setChanged()
-                }
-                stack.copy()
-            }
-            .filterNot(ItemStack::isEmpty)
-    }
 
     override suspend fun invoke(player: OnlineKPlayer, soul: ItemDatabaseSoul): Output {
         if (soul.items.isEmpty()) return Output.NoItemsPresent
@@ -55,7 +39,8 @@ internal class NeoForgePickUpItemsUseCase(
                 items = soul.items
                     .map(StringFormatObject::raw)
                     .map(ItemStackSerializer::decodeFromString)
-                    .mapNotNull { result -> result.getOrNull() }
+                    .mapNotNull { result -> result.getOrNull() },
+                isDead = isDeadPlayerProvider::isDead
             )
         }
         if (notAddedItems.isEmpty()) {
