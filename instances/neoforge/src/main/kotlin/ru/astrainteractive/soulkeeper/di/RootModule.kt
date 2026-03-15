@@ -4,6 +4,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainCoroutineDispatcher
 import net.neoforged.fml.loading.FMLPaths
+import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
+import ru.astrainteractive.astralibs.command.brigadier.command.NeoForgeMultiplatformCommands
+import ru.astrainteractive.astralibs.command.registrar.NeoForgeCommandRegistrarContext
 import ru.astrainteractive.astralibs.coroutines.NeoForgeMainDispatcher
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
@@ -67,11 +70,18 @@ class RootModule(private val plugin: Lifecycle) {
             effectEmitter = forgePlatformServiceModule.effectEmitter
         )
     }
-    private val commandModule = CommandModule(
-        coreModule = coreModule,
-        soulsDaoModule = soulsDaoModule,
-        plugin = plugin,
-    )
+    private val commandModule by lazy {
+        CommandModule(
+            coreModule = coreModule,
+            soulsDaoModule = soulsDaoModule,
+            commandRegistrarContext = NeoForgeCommandRegistrarContext(
+                mainScope = coreModule.mainScope
+            ),
+            serviceModule = serviceModule,
+            multiplatformCommand = MultiplatformCommand(NeoForgeMultiplatformCommands()),
+            lifecyclePlugin = plugin,
+        )
+    }
 
     private val lifecycles: List<Lifecycle>
         get() = listOfNotNull(

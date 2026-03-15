@@ -2,6 +2,7 @@ package ru.astrainteractive.soulkeeper.module.souls.di
 
 import ru.astrainteractive.astralibs.server.bridge.PlatformServer
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
+import ru.astrainteractive.soulkeeper.module.souls.domain.AddSoulItemsIntoInventoryUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorStandUseCase
 import ru.astrainteractive.soulkeeper.module.souls.platform.EffectEmitter
@@ -19,4 +20,5 @@ interface PlatformServiceModule {
 
     val showArmorStandUseCase: ShowArmorStandUseCase
     val pickUpItemsUseCase: PickUpItemsUseCase
+    val addSoulItemsIntoInventoryUseCase: AddSoulItemsIntoInventoryUseCase
 }

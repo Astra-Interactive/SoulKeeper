@@ -3,6 +3,7 @@ package ru.astrainteractive.soulkeeper.module.souls.di
 import ru.astrainteractive.astralibs.server.bridge.NeoForgePlatformServer
 import ru.astrainteractive.astralibs.server.bridge.PlatformServer
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
+import ru.astrainteractive.soulkeeper.module.souls.domain.NeoForgeAddSoulItemsIntoInventoryUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.NeoForgePickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorStandUseCase
@@ -33,4 +34,5 @@ class NeoForgePlatformServiceModule(
         isDeadPlayerProvider = isDeadPlayerProvider,
         dispatchers = coreModule.dispatchers
     )
+    override val addSoulItemsIntoInventoryUseCase = NeoForgeAddSoulItemsIntoInventoryUseCase(isDeadPlayerProvider)
 }
