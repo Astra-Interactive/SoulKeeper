@@ -51,9 +51,9 @@ class RootModule(plugin: LifecyclePlugin) {
             mainScope = coreModule.mainScope,
             plugin = plugin
         ),
+        multiplatformCommand = MultiplatformCommand(PaperMultiplatformCommands()),
         soulsDaoModule = soulsDaoModule,
         serviceModule = serviceModule,
-        multiplatformCommand = MultiplatformCommand(PaperMultiplatformCommands()),
         lifecyclePlugin = plugin,
     )
 

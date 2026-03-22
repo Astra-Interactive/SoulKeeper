@@ -13,10 +13,10 @@ import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
 
 class CommandModule(
     private val coreModule: CoreModule,
-    private val commandRegistrarContext: CommandRegistrarContext,
     private val soulsDaoModule: SoulsDaoModule,
     private val serviceModule: ServiceModule,
-    private val multiplatformCommand: MultiplatformCommand<*>,
+    private val commandRegistrarContext: CommandRegistrarContext,
+    private val multiplatformCommand: MultiplatformCommand,
     private val lifecyclePlugin: Lifecycle
 ) {
     val lifecycle = Lifecycle.Lambda(

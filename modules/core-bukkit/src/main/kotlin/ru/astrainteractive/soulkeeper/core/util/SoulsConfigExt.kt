@@ -25,6 +25,7 @@ fun Location.playSoundForPlayer(player: Player, sound: SoulsConfig.Sounds.SoundC
     player.playSound(sound.toKyoriSound(), x, y, z)
 }
 
+@Suppress("MagicNumber")
 private fun SoulsConfig.Particles.Particle.toBuilder(location: Location): ParticleBuilder {
     val particle = runCatching { Particle.valueOf(key) }
         .getOrNull()

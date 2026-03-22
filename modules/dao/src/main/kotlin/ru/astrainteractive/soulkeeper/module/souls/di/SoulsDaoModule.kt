@@ -31,6 +31,7 @@ import ru.astrainteractive.soulkeeper.module.souls.migration.database.MakeCreate
 import ru.astrainteractive.soulkeeper.module.souls.migration.file.H2ToSqliteMigration
 import ru.astrainteractive.soulkeeper.module.souls.migration.file.KrateFolderMigration
 import java.io.File
+import kotlin.time.Duration.Companion.seconds
 
 interface SoulsDaoModule {
     val lifecycle: Lifecycle
@@ -81,7 +82,7 @@ interface SoulsDaoModule {
             }
             .retry { throwable ->
                 error(throwable) { "Could not connect to database" }
-                delay(5000L)
+                delay(5.seconds)
                 true
             }
             .shareIn(ioScope, SharingStarted.Eagerly, 1)

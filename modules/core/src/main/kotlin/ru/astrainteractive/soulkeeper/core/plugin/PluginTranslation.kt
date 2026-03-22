@@ -98,6 +98,7 @@ class PluginTranslation(
         fun minutesAgoFormat(time: Duration) = minutesAgoFormat
             .replace("%time%", time.inWholeMinutes.toString())
 
+        @Suppress("MagicNumber")
         fun monthsAgoFormat(time: Duration) = monthsAgoFormat
             .replace("%time%", time.inWholeDays.div(30).toString())
 

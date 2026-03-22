@@ -15,6 +15,7 @@ class BukkitCoreModule(val plugin: LifecyclePlugin) {
         onEnable = {
             inventoryClickEventListener.onEnable(plugin)
             eventListener.onEnable(plugin)
+            @Suppress("MagicNumber")
             Metrics(plugin, 23714)
         },
         onReload = {

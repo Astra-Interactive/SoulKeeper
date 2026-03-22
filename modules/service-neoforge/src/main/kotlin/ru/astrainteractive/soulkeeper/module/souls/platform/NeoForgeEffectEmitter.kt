@@ -30,6 +30,7 @@ class NeoForgeEffectEmitter : EffectEmitter {
         )
     }
 
+    @Suppress("MagicNumber")
     override fun spawnParticleForPlayer(
         location: KLocation,
         player: OnlineKPlayer,

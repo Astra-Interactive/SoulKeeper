@@ -26,7 +26,7 @@ import java.util.*
 @Suppress("LongParameterList")
 internal class SoulKrateCommandRegistrar(
     private val registrarContext: CommandRegistrarContext,
-    private val multiplatformCommand: MultiplatformCommand<*>,
+    private val multiplatformCommand: MultiplatformCommand,
     private val stringFormat: StringFormat,
     private val dataFolder: File,
     private val ioScope: CoroutineScope,

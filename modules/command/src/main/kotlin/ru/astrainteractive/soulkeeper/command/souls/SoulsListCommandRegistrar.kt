@@ -12,7 +12,7 @@ import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 internal class SoulsListCommandRegistrar(
     kyoriKrate: CachedKrate<KyoriComponentSerializer>,
     private val registrarContext: CommandRegistrarContext,
-    private val multiplatformCommand: MultiplatformCommand<*>,
+    private val multiplatformCommand: MultiplatformCommand,
     private val soulsCommandExecutor: SoulsCommandExecutor
 ) : KyoriComponentSerializer by kyoriKrate.unwrap() {
     private fun createNode(): LiteralArgumentBuilder<*> {

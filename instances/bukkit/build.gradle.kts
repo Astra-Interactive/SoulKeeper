@@ -100,6 +100,11 @@ shadowJar.configure {
         exclude("META-INF/rewrite/**")
         exclude("META-INF/services/kotlin.reflect.**")
         exclude("META-INF/versions/**")
+        exclude(dependency("mysql:mysql-connector-java"))
+        exclude(dependency("com.mysql:mysql-connector-j"))
+        exclude(dependency("org.xerial:sqlite-jdbc"))
+        exclude(dependency("com.mojang:brigadier"))
+        exclude(dependency("net.kyori:.*"))
     }
     relocate("org.bstats", projectInfo.group)
     listOf(
@@ -113,7 +118,10 @@ shadowJar.configure {
         "org.intellij",
         "org.jetbrains.annotations",
         "ru.astrainteractive.klibs",
-        "ru.astrainteractive.astralibs"
+        "ru.astrainteractive.astralibs",
+        "io.github.reactivecircus",
+        "co.touchlab.stately",
+        "google.protobuf",
     ).forEach { pattern -> relocate(pattern, "${projectInfo.group}.$pattern") }
     listOf(
         "kotlinx",

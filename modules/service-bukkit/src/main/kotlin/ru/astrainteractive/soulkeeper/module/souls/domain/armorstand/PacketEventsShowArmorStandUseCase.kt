@@ -37,6 +37,7 @@ internal class PacketEventsShowArmorStandUseCase(
         PacketEvents.getAPI().playerManager.sendPacket(player, packet)
     }
 
+    @Suppress("MagicNumber")
     private fun show(id: Int, player: Player, soul: Soul) {
         val bukkitLocation = soul.location.asBukkitLocation()
         val vector3d = bukkitLocation.toVector().toVector3d()
