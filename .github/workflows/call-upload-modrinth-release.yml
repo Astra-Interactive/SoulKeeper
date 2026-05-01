@@ -17,7 +17,7 @@ jobs:
             task: ":instances:neoforge:shadowJar"
     steps:
       - name: Checkout Git repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - uses: christian-draeger/read-properties@1.1.1
         id: properties
