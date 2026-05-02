@@ -1,7 +1,7 @@
 package ru.astrainteractive.soulkeeper.module.souls.database.table
 
-import org.jetbrains.exposed.dao.id.LongIdTable
-import org.jetbrains.exposed.sql.ReferenceOption
+import org.jetbrains.exposed.v1.core.ReferenceOption
+import org.jetbrains.exposed.v1.core.dao.id.LongIdTable
 import ru.astrainteractive.soulkeeper.module.souls.database.coulmn.StringFormatObjectColumnType
 
 internal object SoulItemsTable : LongIdTable(name = "SOUL_ITEMS") {

@@ -17,7 +17,7 @@ import ru.astrainteractive.astralibs.util.clickable
 import ru.astrainteractive.astralibs.util.isEmpty
 import ru.astrainteractive.astralibs.util.orEmpty
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
-import ru.astrainteractive.klibs.kstorage.util.getValue
+import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.util.tryCast
 import ru.astrainteractive.soulkeeper.core.datetime.TimeAgoFormatter

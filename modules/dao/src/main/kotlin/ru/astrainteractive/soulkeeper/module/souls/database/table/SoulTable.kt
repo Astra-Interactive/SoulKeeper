@@ -1,6 +1,6 @@
 package ru.astrainteractive.soulkeeper.module.souls.database.table
 
-import org.jetbrains.exposed.dao.id.LongIdTable
+import org.jetbrains.exposed.v1.core.dao.id.LongIdTable
 import ru.astrainteractive.soulkeeper.module.souls.database.coulmn.KJavaInstantColumnType
 
 internal object SoulTable : LongIdTable(name = "SOUL") {
