@@ -13,7 +13,7 @@ import ru.astrainteractive.astralibs.server.location.KLocation
 import ru.astrainteractive.astralibs.server.util.asBukkitLocation
 import ru.astrainteractive.astralibs.server.util.asKLocation
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
-import ru.astrainteractive.klibs.kstorage.util.getValue
+import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig

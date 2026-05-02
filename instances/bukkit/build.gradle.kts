@@ -1,5 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import ru.astrainteractive.gradleplugin.property.extension.ModelPropertyValueExt.requireProjectInfo
+import ru.astrainteractive.gradleplugin.property.util.requireProjectInfo
 
 plugins {
     kotlin("jvm")
@@ -38,32 +38,41 @@ dependencies {
 }
 
 minecraftProcessResource {
-    bukkit()
+    bukkit(
+        customProperties = mapOf(
+            "libraries" to listOf(
+                libs.driver.h2.get(),
+                libs.driver.jdbc.get(),
+                libs.driver.mysql.get(),
+                libs.driver.mariadb.get()
+            ).joinToString("\",\"", "[\"", "\"]")
+        )
+    )
 }
 
 val shadowJar = tasks.named<ShadowJar>("shadowJar")
 shadowJar.configure {
-
     val projectInfo = requireProjectInfo
     isReproducibleFileOrder = true
     mergeServiceFiles()
     dependsOn(configurations)
     archiveClassifier.set(null as String?)
-
     minimize {
         exclude(dependency(libs.exposed.jdbc.get()))
         exclude(dependency(libs.exposed.dao.get()))
     }
     archiveVersion.set(projectInfo.versionString)
     archiveBaseName = "${requireProjectInfo.name}-${project.name}"
-    destinationDirectory = rootDir.resolve("build")
+    destinationDirectory = rootProject.layout
+        .buildDirectory
+        .asFile
+        .get()
         .resolve("bukkit")
         .resolve("plugins")
         .takeIf(File::exists)
-        ?: File(rootDir, "jars").also(File::mkdirs)
-
+        ?: rootDir.resolve("jars").also(File::mkdirs)
     dependencies {
-        // Dependencies
+        // Path Dependencies
         exclude("mozilla/**")
         exclude("javax/**")
         exclude("it/unimi/dsi/**")
@@ -100,10 +109,11 @@ shadowJar.configure {
         exclude("META-INF/rewrite/**")
         exclude("META-INF/services/kotlin.reflect.**")
         exclude("META-INF/versions/**")
-        exclude(dependency("mysql:mysql-connector-java"))
-        exclude(dependency("com.mysql:mysql-connector-j"))
-        exclude(dependency("org.xerial:sqlite-jdbc"))
-        exclude(dependency("com.mojang:brigadier"))
+        // Notation Dependencies
+        exclude(dependency("mysql:mysql-connector-java:.*"))
+        exclude(dependency("com.mysql:mysql-connector-j:.*"))
+        exclude(dependency("org.xerial:sqlite-jdbc:.*"))
+        exclude(dependency("com.mojang:brigadier:.*"))
         exclude(dependency("net.kyori:.*"))
     }
     relocate("org.bstats", projectInfo.group)

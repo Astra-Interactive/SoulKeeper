@@ -1,7 +1,7 @@
 package ru.astrainteractive.soulkeeper.module.souls.database.coulmn
 
-import org.jetbrains.exposed.sql.ColumnType
-import org.jetbrains.exposed.sql.vendors.currentDialect
+import org.jetbrains.exposed.v1.core.ColumnType
+import org.jetbrains.exposed.v1.core.vendors.currentDialect
 import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
 
 internal class StringFormatObjectColumnType : ColumnType<StringFormatObject>() {

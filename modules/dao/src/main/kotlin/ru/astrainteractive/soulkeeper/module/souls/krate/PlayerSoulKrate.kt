@@ -58,8 +58,20 @@ class PlayerSoulKrate(
         krate.save(value)
     }
 
+    override suspend fun save(block: suspend (DefaultSoul?) -> DefaultSoul?) {
+        krate.save(block)
+    }
+
+    override suspend fun saveAndGet(block: suspend (DefaultSoul?) -> DefaultSoul?): DefaultSoul? {
+        return krate.saveAndGet(block)
+    }
+
     override suspend fun reset() {
         krate.reset()
+    }
+
+    override suspend fun resetAndGet(): DefaultSoul? {
+        return krate.resetAndGet()
     }
 
     override suspend fun getValue(): DefaultSoul? {
