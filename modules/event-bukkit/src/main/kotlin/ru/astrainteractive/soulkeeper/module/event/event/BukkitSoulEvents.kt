@@ -50,19 +50,26 @@ internal class BukkitSoulEvents(
     }
 
     private fun getSoulLocation(event: PlayerDeathEvent): KLocation {
+        // Offset Y by +1.0 so the soul spawns at the player's torso, not their feet
+        val torsoOffsetY = 1.0
         return when {
             event.player.location.world.environment == World.Environment.THE_END -> {
                 val endLocation = event.player.location.clone()
                 if (endLocation.y < soulsConfig.endLocationLimitY) {
                     endLocation.y = soulsConfig.endLocationLimitY
                 }
+                endLocation.y += torsoOffsetY
                 endLocation
             }
 
-            else -> event.player.location
+            else -> {
+                val location = event.player.location.clone()
+                location.y += torsoOffsetY
+                location
+            }
         }.asKLocation()
     }
-
+    
     private fun getAndClearDroppedXp(event: PlayerDeathEvent): Int {
         return when {
             event.keepLevel -> 0
