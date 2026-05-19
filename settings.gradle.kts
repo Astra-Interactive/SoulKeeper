@@ -1,6 +1,8 @@
 pluginManagement {
     repositories {
         maven("https://maven.neoforged.net/releases")
+        maven("https://maven.minecraftforge.net")
+        maven("https://files.minecraftforge.net/maven")
         maven("https://plugins.gradle.org/m2/")
         maven("https://jitpack.io")
         gradlePluginPortal()
@@ -20,6 +22,8 @@ dependencyResolutionManagement {
         gradlePluginPortal()
         mavenCentral()
         mavenLocal()
+        maven("https://maven.minecraftforge.net/")
+        maven("https://files.minecraftforge.net/maven")
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
         maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven("https://papermc.io/repo/repository/maven-public/")
@@ -45,6 +49,7 @@ rootProject.name = "SoulKeeper"
 // Spigot
 include(":instances:bukkit")
 include(":instances:neoforge")
+include(":instances:forge")
 // Modules
 include(":modules:core")
 include(":modules:core-bukkit")
@@ -52,6 +57,9 @@ include(":modules:dao")
 include(":modules:service")
 include(":modules:service-bukkit")
 include(":modules:service-neoforge")
+include(":modules:service-forge")
 include(":modules:event-bukkit")
 include(":modules:event-neoforge")
+include(":modules:event-forge")
+include(":modules:core-forge")
 include(":modules:command")

@@ -1,0 +1,95 @@
+package ru.astrainteractive.soulkeeper.di
+
+import net.minecraftforge.fml.loading.FMLPaths
+import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
+import ru.astrainteractive.astralibs.command.brigadier.command.ForgeMultiplatformCommands
+import ru.astrainteractive.astralibs.command.registrar.ForgeCommandRegistrarContext
+import ru.astrainteractive.astralibs.coroutines.ForgeDispatchers
+import ru.astrainteractive.astralibs.lifecycle.Lifecycle
+import ru.astrainteractive.soulkeeper.command.di.CommandModule
+import ru.astrainteractive.soulkeeper.core.di.CoreModule
+import ru.astrainteractive.soulkeeper.module.event.di.ForgeEventModule
+import ru.astrainteractive.soulkeeper.module.souls.di.ForgePlatformServiceModule
+import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
+import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
+import java.io.File
+
+class RootModule(private val plugin: Lifecycle) {
+
+    private val dataFolder by lazy {
+        FMLPaths.CONFIGDIR.get()
+            .resolve("SoulKeeper")
+            .toAbsolutePath()
+            .toFile()
+            .also(File::mkdirs)
+    }
+
+    val coreModule: CoreModule by lazy {
+        CoreModule(
+            dataFolder = dataFolder,
+            dispatchers = ForgeDispatchers()
+        )
+    }
+
+    private val soulsDaoModule by lazy {
+        SoulsDaoModule.Default(
+            dataFolder = coreModule.dataFolder,
+            ioScope = coreModule.ioScope,
+            dispatchers = coreModule.dispatchers
+        )
+    }
+    private val forgePlatformServiceModule by lazy {
+        ForgePlatformServiceModule(
+            coreModule = coreModule,
+            soulsDaoModule = soulsDaoModule
+        )
+    }
+
+    private val serviceModule by lazy {
+        ServiceModule(
+            coreModule = coreModule,
+            soulsDaoModule = soulsDaoModule,
+            platformServiceModule = forgePlatformServiceModule
+        )
+    }
+    private val forgeEventModule by lazy {
+        ForgeEventModule(
+            coreModule = coreModule,
+            soulsDaoModule = soulsDaoModule,
+            effectEmitter = forgePlatformServiceModule.effectEmitter
+        )
+    }
+    private val commandModule by lazy {
+        CommandModule(
+            coreModule = coreModule,
+            soulsDaoModule = soulsDaoModule,
+            commandRegistrarContext = ForgeCommandRegistrarContext(
+                mainScope = coreModule.mainScope
+            ),
+            serviceModule = serviceModule,
+            multiplatformCommand = MultiplatformCommand(ForgeMultiplatformCommands()),
+            lifecyclePlugin = plugin,
+        )
+    }
+
+    private val lifecycles: List<Lifecycle>
+        get() = listOfNotNull(
+            coreModule.lifecycle,
+            soulsDaoModule.lifecycle,
+            forgeEventModule.lifecycle,
+            serviceModule.lifecycle,
+            commandModule.lifecycle
+        )
+
+    val lifecycle = Lifecycle.Lambda(
+        onEnable = {
+            lifecycles.forEach(Lifecycle::onEnable)
+        },
+        onDisable = {
+            lifecycles.forEach(Lifecycle::onDisable)
+        },
+        onReload = {
+            lifecycles.forEach(Lifecycle::onReload)
+        }
+    )
+}
