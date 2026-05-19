@@ -88,22 +88,24 @@ internal class ForgeSoulEvents(
             hasItems = updatedItems.isNotEmpty()
         )
         soulsDao.updateSoul(soul = updatedSoul)
-        ioScope.launch {
-            val defaultSoul = DefaultSoul(
-                ownerUUID = updatedSoul.ownerUUID,
-                ownerLastName = updatedSoul.ownerLastName,
-                createdAt = updatedSoul.createdAt,
-                isFree = updatedSoul.isFree,
-                location = updatedSoul.location,
-                exp = updatedSoul.exp,
-                items = updatedSoul.items
-            )
-            PlayerSoulKrate(
-                stringFormat = stringFormat,
-                dataFolder = dataFolder,
-                createdAt = soul.createdAt,
-                ownerUUID = soul.ownerUUID
-            ).save(defaultSoul)
+        if (soulItems != null) {
+            ioScope.launch {
+                val defaultSoul = DefaultSoul(
+                    ownerUUID = updatedSoul.ownerUUID,
+                    ownerLastName = updatedSoul.ownerLastName,
+                    createdAt = updatedSoul.createdAt,
+                    isFree = updatedSoul.isFree,
+                    location = updatedSoul.location,
+                    exp = updatedSoul.exp,
+                    items = updatedSoul.items
+                )
+                PlayerSoulKrate(
+                    stringFormat = stringFormat,
+                    dataFolder = dataFolder,
+                    createdAt = soul.createdAt,
+                    ownerUUID = soul.ownerUUID
+                ).save(defaultSoul)
+            }
         }
     }
 
@@ -130,13 +132,15 @@ internal class ForgeSoulEvents(
             items = soulItems.orEmpty(),
         )
         soulsDao.insertSoul(soul)
-        ioScope.launch {
-            PlayerSoulKrate(
-                stringFormat = stringFormat,
-                dataFolder = dataFolder,
-                createdAt = soul.createdAt,
-                ownerUUID = soul.ownerUUID
-            ).save(soul)
+        if (!soulItems.isNullOrEmpty()) {
+            ioScope.launch {
+                PlayerSoulKrate(
+                    stringFormat = stringFormat,
+                    dataFolder = dataFolder,
+                    createdAt = soul.createdAt,
+                    ownerUUID = soul.ownerUUID
+                ).save(soul)
+            }
         }
     }
 
