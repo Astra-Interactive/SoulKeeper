@@ -1,14 +1,15 @@
 package ru.astrainteractive.soulkeeper.module.souls.platform
 
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
-import ru.astrainteractive.astralibs.server.util.NeoForgeUtil
+import ru.astrainteractive.astralibs.server.util.MinecraftUtil
 import ru.astrainteractive.astralibs.server.util.getOnlinePlayer
+import ru.astrainteractive.soulkeeper.core.platform.Experienced
 
 class NeoForgeExperienced(
     private val player: OnlineKPlayer
 ) : Experienced {
     override fun giveExperience(experience: Int) {
-        NeoForgeUtil.getOnlinePlayer(player.uuid)?.giveExperiencePoints(experience)
+        MinecraftUtil.getOnlinePlayer(player.uuid)?.giveExperiencePoints(experience)
     }
 
     object OnlineMinecraftPlayerFactory : Experienced.Factory<OnlineKPlayer> {

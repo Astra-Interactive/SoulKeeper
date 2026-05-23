@@ -15,4 +15,5 @@ dependencies {
     implementation(projects.modules.core)
     implementation(projects.modules.coreBukkit)
     implementation(projects.modules.dao)
+    implementation(projects.modules.service)
 }

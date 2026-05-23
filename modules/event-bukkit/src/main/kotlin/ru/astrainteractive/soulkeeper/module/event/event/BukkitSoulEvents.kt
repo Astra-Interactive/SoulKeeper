@@ -4,22 +4,21 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.StringFormat
 import org.bukkit.World
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
 import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.astralibs.server.location.KLocation
-import ru.astrainteractive.astralibs.server.util.asBukkitLocation
+import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.astralibs.server.util.asKLocation
+import ru.astrainteractive.astralibs.server.util.asOnlineMinecraftPlayer
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
+import ru.astrainteractive.soulkeeper.core.platform.EffectEmitter
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.serialization.ItemStackSerializer
-import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
-import ru.astrainteractive.soulkeeper.core.util.spawnParticleForPlayer
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
@@ -34,6 +33,7 @@ internal class BukkitSoulEvents(
     private val dataFolder: File,
     private val stringFormat: StringFormat,
     soulsConfigKrate: CachedKrate<SoulsConfig>,
+    private val effectEmitter: EffectEmitter,
 ) : EventListener, Logger by JUtiltLogger("SoulKeeper-BukkitSoulEvents") {
     private val soulsConfig by soulsConfigKrate
 
@@ -75,13 +75,17 @@ internal class BukkitSoulEvents(
         }
     }
 
-    private fun playEffects(soul: DefaultSoul, player: Player) {
-        soul.location
-            .asBukkitLocation()
-            .spawnParticleForPlayer(player, soulsConfig.particles.soulCreated)
-        soul.location
-            .asBukkitLocation()
-            .playSoundForPlayer(player, soulsConfig.sounds.soulDropped)
+    private fun playEffects(soul: DefaultSoul, player: OnlineKPlayer) {
+        effectEmitter.spawnParticleForPlayer(
+            location = soul.location,
+            player = player,
+            config = soulsConfig.particles.soulCreated
+        )
+        effectEmitter.playSoundForPlayer(
+            location = soul.location,
+            player = player,
+            sound = soulsConfig.sounds.soulDropped
+        )
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
@@ -110,6 +114,6 @@ internal class BukkitSoulEvents(
         }
         ioScope.launch { soulsDao.insertSoul(soul) }
         info { "#playerDeathEvent soul: $soul" }
-        playEffects(soul, event.player)
+        playEffects(soul, event.player.asOnlineMinecraftPlayer())
     }
 }

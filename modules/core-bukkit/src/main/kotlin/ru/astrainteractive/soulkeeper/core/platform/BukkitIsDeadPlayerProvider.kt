@@ -1,9 +1,9 @@
-package ru.astrainteractive.soulkeeper.module.souls.platform
+package ru.astrainteractive.soulkeeper.core.platform
 
 import org.bukkit.Bukkit
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 
-internal object BukkitIsDeadPlayerProvider : IsDeadPlayerProvider {
+object BukkitIsDeadPlayerProvider : IsDeadPlayerProvider {
     override fun isDead(player: OnlineKPlayer): Boolean {
         return Bukkit.getPlayer(player.uuid)?.isDead == true
     }

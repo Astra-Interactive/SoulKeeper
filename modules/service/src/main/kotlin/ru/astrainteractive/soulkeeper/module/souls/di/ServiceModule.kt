@@ -33,12 +33,12 @@ class ServiceModule(
     private val soulParticleRenderer = SoulParticleRenderer(
         soulsConfigKrate = coreModule.soulsConfigKrate,
         dispatchers = coreModule.dispatchers,
-        effectEmitter = platformServiceModule.effectEmitter
+        effectEmitter = coreModule.effectEmitter
     )
     private val soulSoundRenderer = SoulSoundRenderer(
         dispatchers = coreModule.dispatchers,
         soulsConfigKrate = coreModule.soulsConfigKrate,
-        effectEmitter = platformServiceModule.effectEmitter
+        effectEmitter = coreModule.effectEmitter
     )
 
     private val deleteSoulService = ThrottleTickFlowService(
@@ -71,7 +71,7 @@ class ServiceModule(
     private val pickUpExpUseCase: PickUpExpUseCase = PickUpExpUseCase(
         collectXpSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectXp },
         soulsDao = soulsDaoModule.soulsDao,
-        effectEmitter = platformServiceModule.effectEmitter,
+        effectEmitter = coreModule.effectEmitter,
         experiencedFactory = platformServiceModule.onlineMinecraftPlayerExperiencedFactory,
         dispatchers = coreModule.dispatchers
     )
@@ -92,7 +92,7 @@ class ServiceModule(
                 soulContentLeftSoundProvider = {
                     coreModule.soulsConfigKrate.cachedValue.sounds.soulContentLeft
                 },
-                effectEmitter = platformServiceModule.effectEmitter
+                effectEmitter = coreModule.effectEmitter
             ),
             getNearestSoulUseCase = GetNearestSoulUseCase(
                 soulsDao = soulsDaoModule.soulsDao,

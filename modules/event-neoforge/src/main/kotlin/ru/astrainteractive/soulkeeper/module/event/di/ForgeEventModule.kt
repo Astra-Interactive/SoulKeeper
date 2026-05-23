@@ -2,9 +2,9 @@ package ru.astrainteractive.soulkeeper.module.event.di
 
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
+import ru.astrainteractive.soulkeeper.core.platform.EffectEmitter
 import ru.astrainteractive.soulkeeper.module.event.event.ForgeSoulEvents
 import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
-import ru.astrainteractive.soulkeeper.module.souls.platform.EffectEmitter
 
 class ForgeEventModule(
     coreModule: CoreModule,

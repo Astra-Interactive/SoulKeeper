@@ -2,9 +2,9 @@ package ru.astrainteractive.soulkeeper.di
 
 import net.minecraftforge.fml.loading.FMLPaths
 import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
-import ru.astrainteractive.astralibs.command.brigadier.command.ForgeMultiplatformCommands
+import ru.astrainteractive.astralibs.command.brigadier.command.MinecraftMultiplatformCommands
 import ru.astrainteractive.astralibs.command.registrar.ForgeCommandRegistrarContext
-import ru.astrainteractive.astralibs.coroutines.ForgeDispatchers
+import ru.astrainteractive.astralibs.coroutines.MinecraftDispatchers
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.soulkeeper.command.di.CommandModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
@@ -12,6 +12,7 @@ import ru.astrainteractive.soulkeeper.module.event.di.ForgeEventModule
 import ru.astrainteractive.soulkeeper.module.souls.di.ForgePlatformServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
+import ru.astrainteractive.soulkeeper.module.souls.platform.ForgeEffectEmitter
 import java.io.File
 
 class RootModule(private val plugin: Lifecycle) {
@@ -27,7 +28,8 @@ class RootModule(private val plugin: Lifecycle) {
     val coreModule: CoreModule by lazy {
         CoreModule(
             dataFolder = dataFolder,
-            dispatchers = ForgeDispatchers()
+            dispatchers = MinecraftDispatchers(),
+            effectEmitter = ForgeEffectEmitter
         )
     }
 
@@ -67,7 +69,7 @@ class RootModule(private val plugin: Lifecycle) {
                 mainScope = coreModule.mainScope
             ),
             serviceModule = serviceModule,
-            multiplatformCommand = MultiplatformCommand(ForgeMultiplatformCommands()),
+            multiplatformCommand = MultiplatformCommand(MinecraftMultiplatformCommands()),
             lifecyclePlugin = plugin,
         )
     }

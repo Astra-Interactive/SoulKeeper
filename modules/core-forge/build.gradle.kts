@@ -30,7 +30,9 @@ dependencies {
     }
     compileOnly(libs.minecraft.brigadier)
     compileOnly(libs.minecraft.forgeversion)
+    compileOnly(libs.minecraft.datafixerupper)
     compileOnly(libs.minecraft.forge.bus)
+    compileOnly(libs.joml)
 }
 
 configurations.runtimeElements {

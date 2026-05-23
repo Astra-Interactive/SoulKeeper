@@ -17,7 +17,8 @@ class BukkitEventModule(
         soulsConfigKrate = coreModule.soulsConfigKrate,
         ioScope = coreModule.ioScope,
         dataFolder = coreModule.dataFolder,
-        stringFormat = coreModule.yamlFormat
+        stringFormat = coreModule.yamlFormat,
+        effectEmitter = coreModule.effectEmitter
     )
     val lifecycle = Lifecycle.Lambda(
         onEnable = {

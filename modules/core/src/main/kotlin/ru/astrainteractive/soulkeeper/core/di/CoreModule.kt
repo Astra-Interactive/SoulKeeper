@@ -16,13 +16,15 @@ import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
+import ru.astrainteractive.soulkeeper.core.platform.EffectEmitter
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import java.io.File
 
 class CoreModule(
     val dispatchers: KotlinDispatchers,
-    val dataFolder: File
+    val dataFolder: File,
+    val effectEmitter: EffectEmitter
 ) : Logger by JUtiltLogger("CoreModule").withoutParentHandlers() {
 
     val ioScope = CoroutineFeature.IO.withTimings()

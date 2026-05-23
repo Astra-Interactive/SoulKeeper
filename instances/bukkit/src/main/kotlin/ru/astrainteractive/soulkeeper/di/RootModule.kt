@@ -10,6 +10,7 @@ import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
 import ru.astrainteractive.soulkeeper.command.di.CommandModule
 import ru.astrainteractive.soulkeeper.core.di.BukkitCoreModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
+import ru.astrainteractive.soulkeeper.core.platform.BukkitEffectEmitter
 import ru.astrainteractive.soulkeeper.module.event.di.BukkitEventModule
 import ru.astrainteractive.soulkeeper.module.souls.di.BukkitPlatformServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
@@ -18,7 +19,8 @@ import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
 class RootModule(plugin: LifecyclePlugin) {
     private val coreModule: CoreModule = CoreModule(
         dispatchers = DefaultBukkitDispatchers(plugin),
-        dataFolder = plugin.dataFolder
+        dataFolder = plugin.dataFolder,
+        effectEmitter = BukkitEffectEmitter
     )
     private val bukkitCoreModule = BukkitCoreModule(plugin)
 

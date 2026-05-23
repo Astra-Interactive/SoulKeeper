@@ -1,19 +1,18 @@
-package ru.astrainteractive.soulkeeper.module.souls.platform
+package ru.astrainteractive.soulkeeper.core.platform
 
+import org.bukkit.Bukkit
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
-import ru.astrainteractive.astralibs.server.util.ForgeUtil
-import ru.astrainteractive.astralibs.server.util.getOnlinePlayer
 
-class ForgeExperienced(
+class BukkitExperienced(
     private val player: OnlineKPlayer
 ) : Experienced {
     override fun giveExperience(experience: Int) {
-        ForgeUtil.getOnlinePlayer(player.uuid)?.giveExperiencePoints(experience)
+        Bukkit.getPlayer(player.uuid)?.giveExp(experience)
     }
 
     object OnlineMinecraftPlayerFactory : Experienced.Factory<OnlineKPlayer> {
         override fun create(owner: OnlineKPlayer): Experienced {
-            return ForgeExperienced(owner)
+            return BukkitExperienced(owner)
         }
     }
 }

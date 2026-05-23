@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.module.souls.platform
+package ru.astrainteractive.soulkeeper.core.platform
 
 import ru.astrainteractive.astralibs.server.location.KLocation
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer

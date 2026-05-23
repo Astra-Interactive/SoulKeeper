@@ -8,10 +8,10 @@ import ru.astrainteractive.astralibs.server.bridge.PlatformServer
 import ru.astrainteractive.astralibs.service.ServiceExecutor
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
+import ru.astrainteractive.soulkeeper.core.platform.IsDeadPlayerProvider
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.domain.GetNearestSoulUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpSoulUseCase
-import ru.astrainteractive.soulkeeper.module.souls.platform.IsDeadPlayerProvider
 
 /**
  * This worker is required to pick up items

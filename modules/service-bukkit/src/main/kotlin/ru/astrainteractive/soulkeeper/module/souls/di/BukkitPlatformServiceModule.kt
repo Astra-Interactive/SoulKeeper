@@ -4,17 +4,15 @@ import ru.astrainteractive.astralibs.server.bridge.BukkitPlatformServer
 import ru.astrainteractive.astralibs.server.bridge.PlatformServer
 import ru.astrainteractive.soulkeeper.core.di.BukkitCoreModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
+import ru.astrainteractive.soulkeeper.core.platform.BukkitExperienced
+import ru.astrainteractive.soulkeeper.core.platform.BukkitIsDeadPlayerProvider
+import ru.astrainteractive.soulkeeper.core.platform.IsDeadPlayerProvider
 import ru.astrainteractive.soulkeeper.module.souls.domain.BukkitAddSoulItemsIntoInventoryUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.BukkitPickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorStandUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.di.factory.ShowArmorStandUseCaseFactory
-import ru.astrainteractive.soulkeeper.module.souls.platform.BukkitEffectEmitter
 import ru.astrainteractive.soulkeeper.module.souls.platform.BukkitEventProvider
-import ru.astrainteractive.soulkeeper.module.souls.platform.BukkitExperienced
-import ru.astrainteractive.soulkeeper.module.souls.platform.BukkitIsDeadPlayerProvider
-import ru.astrainteractive.soulkeeper.module.souls.platform.EffectEmitter
-import ru.astrainteractive.soulkeeper.module.souls.platform.IsDeadPlayerProvider
 import ru.astrainteractive.soulkeeper.module.souls.platform.event.EventProvider
 
 class BukkitPlatformServiceModule(
@@ -23,7 +21,6 @@ class BukkitPlatformServiceModule(
     soulsDaoModule: SoulsDaoModule,
 ) : PlatformServiceModule {
     override val platformServer: PlatformServer = BukkitPlatformServer()
-    override val effectEmitter: EffectEmitter = BukkitEffectEmitter
     override val eventProvider: EventProvider = BukkitEventProvider(
         plugin = bukkitCoreModule.plugin
     )
@@ -34,7 +31,8 @@ class BukkitPlatformServiceModule(
     override val pickUpItemsUseCase: PickUpItemsUseCase = BukkitPickUpItemsUseCase(
         collectItemSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectItem },
         soulsDao = soulsDaoModule.soulsDao,
-        dispatchers = coreModule.dispatchers
+        dispatchers = coreModule.dispatchers,
+        effectEmitter = coreModule.effectEmitter
     )
     override val addSoulItemsIntoInventoryUseCase = BukkitAddSoulItemsIntoInventoryUseCase()
 }

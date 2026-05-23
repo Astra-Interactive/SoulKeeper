@@ -12,6 +12,7 @@ dependencies {
     implementation(libs.klibs.mikro.core)
     // Local
     implementation(projects.modules.core)
+    implementation(projects.modules.coreForge)
     implementation(projects.modules.dao)
     implementation(projects.modules.service)
     implementation(projects.modules.serviceForge)

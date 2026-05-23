@@ -10,7 +10,7 @@ import net.minecraft.core.RegistryAccess
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.TagParser
 import net.minecraft.world.item.ItemStack
-import ru.astrainteractive.astralibs.server.util.NeoForgeUtil
+import ru.astrainteractive.astralibs.server.util.MinecraftUtil
 
 object ItemStackSerializer : KSerializer<ItemStack> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(
@@ -27,7 +27,7 @@ object ItemStackSerializer : KSerializer<ItemStack> {
     }
 
     private fun requireHolderLookup(): RegistryAccess.Frozen {
-        return NeoForgeUtil.serverOrNull
+        return MinecraftUtil.serverOrNull
             ?.registryAccess()
             ?: error("Server is not running")
     }

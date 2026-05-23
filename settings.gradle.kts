@@ -46,20 +46,19 @@ dependencyResolutionManagement {
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "SoulKeeper"
 
-// Spigot
 include(":instances:bukkit")
-include(":instances:neoforge")
 include(":instances:forge")
-// Modules
+include(":instances:neoforge")
+include(":modules:command")
 include(":modules:core")
 include(":modules:core-bukkit")
+include(":modules:core-forge")
+include(":modules:core-neoforge")
 include(":modules:dao")
+include(":modules:event-bukkit")
+include(":modules:event-forge")
+include(":modules:event-neoforge")
 include(":modules:service")
 include(":modules:service-bukkit")
-include(":modules:service-neoforge")
 include(":modules:service-forge")
-include(":modules:event-bukkit")
-include(":modules:event-neoforge")
-include(":modules:event-forge")
-include(":modules:core-forge")
-include(":modules:command")
+include(":modules:service-neoforge")

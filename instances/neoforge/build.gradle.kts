@@ -33,6 +33,7 @@ dependencies {
     shadow(libs.minecraft.kyori.gson)
     // Local
     shadow(projects.modules.core)
+    shadow(projects.modules.coreNeoforge)
     shadow(projects.modules.command)
     shadow(projects.modules.dao)
     shadow(projects.modules.service)

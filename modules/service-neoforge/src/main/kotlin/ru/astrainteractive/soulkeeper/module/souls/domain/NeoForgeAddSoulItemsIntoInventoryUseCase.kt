@@ -1,13 +1,12 @@
 package ru.astrainteractive.soulkeeper.module.souls.domain
 
-import ru.astrainteractive.astralibs.server.player.NeoForgeOnlineKPlayer
+import ru.astrainteractive.astralibs.server.player.MinecraftOnlineKPlayer
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
+import ru.astrainteractive.soulkeeper.core.platform.IsDeadPlayerProvider
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
-import ru.astrainteractive.soulkeeper.module.souls.platform.IsDeadPlayerProvider
-import ru.astrainteractive.soulkeeper.module.souls.platform.ItemStackSerializer
 import ru.astrainteractive.soulkeeper.module.souls.util.addItems
 
 class NeoForgeAddSoulItemsIntoInventoryUseCase(
@@ -20,7 +19,7 @@ class NeoForgeAddSoulItemsIntoInventoryUseCase(
         player: OnlineKPlayer,
         soul: DefaultSoul
     ) {
-        require(player is NeoForgeOnlineKPlayer) {
+        require(player is MinecraftOnlineKPlayer) {
             "Player must be BukkitOnlineKPlayer"
         }
         val items = soul?.items

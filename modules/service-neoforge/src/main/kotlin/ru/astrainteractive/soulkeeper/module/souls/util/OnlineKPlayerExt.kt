@@ -2,7 +2,7 @@ package ru.astrainteractive.soulkeeper.module.souls.util
 
 import net.minecraft.world.item.ItemStack
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
-import ru.astrainteractive.astralibs.server.util.NeoForgeUtil
+import ru.astrainteractive.astralibs.server.util.MinecraftUtil
 import ru.astrainteractive.astralibs.server.util.getOnlinePlayer
 
 /**
@@ -16,7 +16,7 @@ internal fun OnlineKPlayer.addItems(
     return items
         .mapNotNull { stack ->
             if (!isDead.invoke(this)) {
-                val inventory = NeoForgeUtil.getOnlinePlayer(uuid)?.inventory
+                val inventory = MinecraftUtil.getOnlinePlayer(uuid)?.inventory
                 inventory?.add(stack)
                 inventory?.setChanged()
             }

@@ -3,13 +3,12 @@ package ru.astrainteractive.soulkeeper.module.souls.domain
 import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
-import ru.astrainteractive.astralibs.server.util.asBukkitLocation
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
+import ru.astrainteractive.soulkeeper.core.platform.EffectEmitter
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.serialization.ItemStackSerializer
-import ru.astrainteractive.soulkeeper.core.util.playSoundForPlayer
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
@@ -18,7 +17,8 @@ import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase.Out
 internal class BukkitPickUpItemsUseCase(
     private val collectItemSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
     private val soulsDao: SoulsDao,
-    private val dispatchers: KotlinDispatchers
+    private val dispatchers: KotlinDispatchers,
+    private val effectEmitter: EffectEmitter
 ) : PickUpItemsUseCase,
     Logger by JUtiltLogger("SoulKeeper-PickUpItemsUseCase") {
 
@@ -49,12 +49,11 @@ internal class BukkitPickUpItemsUseCase(
         }
         if (notAddedItems != soul.items) {
             withContext(dispatchers.Main) {
-                soul.location
-                    .asBukkitLocation()
-                    .playSoundForPlayer(
-                        player = bukkitPlayer,
-                        sound = collectItemSoundProvider.invoke()
-                    )
+                effectEmitter.playSoundForPlayer(
+                    location = soul.location,
+                    player = player,
+                    sound = collectItemSoundProvider.invoke()
+                )
             }
         }
 

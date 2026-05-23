@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.module.souls.platform
+package ru.astrainteractive.soulkeeper.core.platform
 
 interface Experienced {
     fun giveExperience(experience: Int)

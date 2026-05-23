@@ -1,12 +1,12 @@
 package ru.astrainteractive.soulkeeper.module.souls.domain
 
-import ru.astrainteractive.astralibs.server.player.ForgeOnlineKPlayer
+import ru.astrainteractive.astralibs.server.player.MinecraftOnlineKPlayer
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
+import ru.astrainteractive.soulkeeper.core.platform.IsDeadPlayerProvider
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
-import ru.astrainteractive.soulkeeper.module.souls.platform.IsDeadPlayerProvider
 import ru.astrainteractive.soulkeeper.module.souls.platform.ItemStackSerializer
 import ru.astrainteractive.soulkeeper.module.souls.util.addItems
 
@@ -20,7 +20,7 @@ class ForgeAddSoulItemsIntoInventoryUseCase(
         player: OnlineKPlayer,
         soul: DefaultSoul
     ) {
-        require(player is ForgeOnlineKPlayer) {
+        require(player is MinecraftOnlineKPlayer) {
             "Player must be ForgeOnlineKPlayer"
         }
         val items = soul?.items
