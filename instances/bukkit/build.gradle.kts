@@ -9,32 +9,30 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.kotlin.coroutines.core)
-    // Spigot dependencies
-    compileOnly(libs.minecraft.paper.api)
-    implementation(libs.minecraft.bstats)
-    // AstraLibs
-    implementation(libs.minecraft.astralibs.core)
-    implementation(libs.klibs.mikro.core)
-    implementation(libs.minecraft.astralibs.menu.bukkit)
-    implementation(libs.minecraft.astralibs.core.bukkit)
-    implementation(libs.minecraft.astralibs.command)
-    implementation(libs.minecraft.astralibs.command.bukkit)
-    compileOnly(libs.minecraft.vaultapi)
     compileOnly(libs.driver.h2)
     compileOnly(libs.driver.jdbc)
     compileOnly(libs.driver.mysql)
-    // Spigot
-    compileOnly(libs.minecraft.luckperms)
     compileOnly(libs.minecraft.discordsrv)
     compileOnly(libs.minecraft.essentialsx)
-    implementation(projects.modules.core.api)
-    implementation(projects.modules.core.bukkit)
-    implementation(projects.modules.event.bukkit)
-    implementation(projects.modules.dao)
-    implementation(projects.modules.service.api)
-    implementation(projects.modules.service.bukkit)
-    implementation(projects.modules.command)
+    compileOnly(libs.minecraft.luckperms)
+    compileOnly(libs.minecraft.paper.api)
+    compileOnly(libs.minecraft.vaultapi)
+
+    shadow(libs.klibs.mikro.core)
+    shadow(libs.kotlin.coroutines.core)
+    shadow(libs.minecraft.astralibs.command)
+    shadow(libs.minecraft.astralibs.command.bukkit)
+    shadow(libs.minecraft.astralibs.core)
+    shadow(libs.minecraft.astralibs.core.bukkit)
+    shadow(libs.minecraft.astralibs.menu.bukkit)
+    shadow(libs.minecraft.bstats)
+    shadow(projects.modules.command)
+    shadow(projects.modules.core.api)
+    shadow(projects.modules.core.bukkit)
+    shadow(projects.modules.dao)
+    shadow(projects.modules.event.bukkit)
+    shadow(projects.modules.service.api)
+    shadow(projects.modules.service.bukkit)
 }
 
 minecraftProcessResource {
@@ -205,11 +203,11 @@ val shadowJar by tasks.getting(ShadowJar::class) {
 
         add("org.intellij")
         add("org.jetbrains.annotations")
-        add("org.jetbrains.exposed") // Don't relocate on: [*]
+//        add("org.jetbrains.exposed") // Don't relocate on: [*]
         add("org.jetbrains.kotlinx")
         add("org.json")
         add("org.json")
-        add("org.sqlite")
+//        add("org.sqlite") // Don't relocate on: [*]
         add("org.telegram")
         add("org.telegram.telegrambots")
         add("org.w3c.css")
