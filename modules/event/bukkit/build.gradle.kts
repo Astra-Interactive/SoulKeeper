@@ -1,25 +1,19 @@
 plugins {
     kotlin("jvm")
-    kotlin("plugin.serialization")
 }
 
 dependencies {
-    compileOnly(libs.kotlin.coroutines.core)
+    implementation(libs.kotlin.coroutines.core)
     implementation(libs.kotlin.serialization.json)
-
+    // Bukkit
+    compileOnly(libs.minecraft.paper.api)
+    // AstraLibs
     implementation(libs.minecraft.astralibs.core)
-    implementation(libs.minecraft.astralibs.command)
-
-    implementation(libs.minecraft.kyori.api)
-
+    implementation(libs.minecraft.astralibs.core.bukkit)
     implementation(libs.klibs.mikro.core)
+    // klibs
     implementation(projects.modules.core.api)
+    implementation(projects.modules.core.bukkit)
     implementation(projects.modules.dao)
     implementation(projects.modules.service.api)
-}
-
-dependencies {
-    compileOnly(libs.joml)
-    compileOnly(libs.minecraft.datafixerupper)
-    compileOnly(libs.minecraft.brigadier)
 }

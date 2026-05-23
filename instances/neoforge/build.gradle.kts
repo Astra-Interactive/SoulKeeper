@@ -32,13 +32,13 @@ dependencies {
     shadow(libs.minecraft.kyori.legacy)
     shadow(libs.minecraft.kyori.gson)
     // Local
-    shadow(projects.modules.core)
-    shadow(projects.modules.coreNeoforge)
+    shadow(projects.modules.core.api)
+    shadow(projects.modules.core.neoforge)
     shadow(projects.modules.command)
     shadow(projects.modules.dao)
-    shadow(projects.modules.service)
-    shadow(projects.modules.serviceNeoforge)
-    shadow(projects.modules.eventNeoforge)
+    shadow(projects.modules.service.api)
+    shadow(projects.modules.service.neoforge)
+    shadow(projects.modules.event.neoforge)
 }
 
 tasks.named<ProcessResources>("processResources") {

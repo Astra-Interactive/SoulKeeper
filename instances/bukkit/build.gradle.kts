@@ -28,12 +28,12 @@ dependencies {
     compileOnly(libs.minecraft.luckperms)
     compileOnly(libs.minecraft.discordsrv)
     compileOnly(libs.minecraft.essentialsx)
-    implementation(projects.modules.core)
-    implementation(projects.modules.coreBukkit)
-    implementation(projects.modules.eventBukkit)
+    implementation(projects.modules.core.api)
+    implementation(projects.modules.core.bukkit)
+    implementation(projects.modules.event.bukkit)
     implementation(projects.modules.dao)
-    implementation(projects.modules.service)
-    implementation(projects.modules.serviceBukkit)
+    implementation(projects.modules.service.api)
+    implementation(projects.modules.service.bukkit)
     implementation(projects.modules.command)
 }
 

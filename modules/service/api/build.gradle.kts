@@ -4,22 +4,21 @@ plugins {
 }
 
 dependencies {
-    compileOnly(libs.kotlin.coroutines.core)
+    // Kotlin
     implementation(libs.kotlin.serialization.json)
-
+    implementation(libs.exposed.core)
+    implementation(libs.exposed.dao)
+    implementation(libs.exposed.jdbc)
+    // AstraLibs
     implementation(libs.minecraft.astralibs.core)
     implementation(libs.minecraft.astralibs.command)
-
-    implementation(libs.minecraft.kyori.api)
-
+    // klibs
+    implementation(libs.klibs.kstorage)
     implementation(libs.klibs.mikro.core)
+    implementation(libs.klibs.mikro.extensions)
+    // Test
+    testImplementation(libs.tests.kotlin.test)
+    // Local
     implementation(projects.modules.core.api)
     implementation(projects.modules.dao)
-    implementation(projects.modules.service.api)
-}
-
-dependencies {
-    compileOnly(libs.joml)
-    compileOnly(libs.minecraft.datafixerupper)
-    compileOnly(libs.minecraft.brigadier)
 }

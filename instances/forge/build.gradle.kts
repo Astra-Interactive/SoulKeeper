@@ -35,13 +35,13 @@ dependencies {
     shadow(libs.minecraft.kyori.legacy)
     shadow(libs.minecraft.kyori.gson)
     // Local
-    shadow(projects.modules.core)
+    shadow(projects.modules.core.api)
     shadow(projects.modules.command)
     shadow(projects.modules.dao)
-    shadow(projects.modules.service)
-    shadow(projects.modules.coreForge)
-    shadow(projects.modules.serviceForge)
-    shadow(projects.modules.eventForge)
+    shadow(projects.modules.service.api)
+    shadow(projects.modules.core.forge)
+    shadow(projects.modules.service.forge)
+    shadow(projects.modules.event.forge)
 }
 tasks.named<ProcessResources>("processResources") {
     filteringCharset = "UTF-8"

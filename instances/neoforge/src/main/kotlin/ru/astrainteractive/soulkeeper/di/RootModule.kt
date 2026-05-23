@@ -13,6 +13,7 @@ import ru.astrainteractive.soulkeeper.module.souls.di.NeoForgePlatformServiceMod
 import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
 import java.io.File
+import ru.astrainteractive.soulkeeper.module.souls.platform.NeoForgeEffectEmitter
 
 class RootModule(private val plugin: Lifecycle) {
 
@@ -28,7 +29,7 @@ class RootModule(private val plugin: Lifecycle) {
         CoreModule(
             dataFolder = dataFolder,
             dispatchers = MinecraftDispatchers(),
-            effectEmitter = NeoForgeEffectEmitter()
+            effectEmitter = NeoForgeEffectEmitter
         )
     }
 
@@ -57,7 +58,7 @@ class RootModule(private val plugin: Lifecycle) {
         ForgeEventModule(
             coreModule = coreModule,
             soulsDaoModule = soulsDaoModule,
-            effectEmitter = forgePlatformServiceModule.effectEmitter
+            effectEmitter = coreModule.effectEmitter
         )
     }
     private val commandModule by lazy {
