@@ -58,7 +58,7 @@ class RootModule(private val plugin: Lifecycle) {
         ForgeEventModule(
             coreModule = coreModule,
             soulsDaoModule = soulsDaoModule,
-            effectEmitter = forgePlatformServiceModule.effectEmitter
+            effectEmitter = coreModule.effectEmitter
         )
     }
     private val commandModule by lazy {

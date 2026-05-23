@@ -3,14 +3,12 @@ package ru.astrainteractive.soulkeeper.module.souls.di
 import ru.astrainteractive.astralibs.server.bridge.MinecraftPlatformServer
 import ru.astrainteractive.astralibs.server.bridge.PlatformServer
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
-import ru.astrainteractive.soulkeeper.core.platform.EffectEmitter
 import ru.astrainteractive.soulkeeper.core.platform.IsDeadPlayerProvider
 import ru.astrainteractive.soulkeeper.module.souls.domain.NeoForgeAddSoulItemsIntoInventoryUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.NeoForgePickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorStandUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.StubShowArmorStandUseCase
-import ru.astrainteractive.soulkeeper.module.souls.platform.NeoForgeEffectEmitter
 import ru.astrainteractive.soulkeeper.module.souls.platform.NeoForgeEventProvider
 import ru.astrainteractive.soulkeeper.module.souls.platform.NeoForgeExperienced
 import ru.astrainteractive.soulkeeper.module.souls.platform.NeoForgeIsDeadPlayerProvider
@@ -21,7 +19,6 @@ class NeoForgePlatformServiceModule(
     soulsDaoModule: SoulsDaoModule,
 ) : PlatformServiceModule {
     override val platformServer: PlatformServer = MinecraftPlatformServer
-    override val effectEmitter: EffectEmitter = NeoForgeEffectEmitter()
     override val eventProvider: EventProvider = NeoForgeEventProvider
     override val isDeadPlayerProvider: IsDeadPlayerProvider = NeoForgeIsDeadPlayerProvider
 
@@ -30,7 +27,7 @@ class NeoForgePlatformServiceModule(
     override val pickUpItemsUseCase: PickUpItemsUseCase = NeoForgePickUpItemsUseCase(
         collectItemSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectItem },
         soulsDao = soulsDaoModule.soulsDao,
-        effectEmitter = effectEmitter,
+        effectEmitter = coreModule.effectEmitter,
         isDeadPlayerProvider = isDeadPlayerProvider,
         dispatchers = coreModule.dispatchers
     )
