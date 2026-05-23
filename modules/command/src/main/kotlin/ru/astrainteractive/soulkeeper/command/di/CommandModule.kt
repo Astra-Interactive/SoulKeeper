@@ -3,6 +3,9 @@ package ru.astrainteractive.soulkeeper.command.di
 import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
 import ru.astrainteractive.astralibs.command.api.registrar.CommandRegistrarContext
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
+import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
+import ru.astrainteractive.klibs.mikro.core.logging.Logger
+import ru.astrainteractive.soulkeeper.command.exception.CommandExceptionHandler
 import ru.astrainteractive.soulkeeper.command.reload.SoulsReloadCommandRegistrar
 import ru.astrainteractive.soulkeeper.command.soulkrate.SoulKrateCommandRegistrar
 import ru.astrainteractive.soulkeeper.command.souls.SoulsCommandExecutor
@@ -19,18 +22,25 @@ class CommandModule(
     private val multiplatformCommand: MultiplatformCommand,
     private val lifecyclePlugin: Lifecycle
 ) {
+
+    private val commandExceptionHandler = CommandExceptionHandler(
+        multiplatformCommand = multiplatformCommand,
+        translationKrate = coreModule.translation,
+        kyoriKrate = coreModule.kyoriComponentSerializer
+    )
     val lifecycle = Lifecycle.Lambda(
         onEnable = {
             SoulsListCommandRegistrar(
                 kyoriKrate = coreModule.kyoriComponentSerializer,
                 registrarContext = commandRegistrarContext,
                 multiplatformCommand = multiplatformCommand,
+                commandExceptionHandler = commandExceptionHandler,
                 soulsCommandExecutor = SoulsCommandExecutor(
                     ioScope = coreModule.ioScope,
                     soulsDao = soulsDaoModule.soulsDao,
                     translationKrate = coreModule.translation,
                     kyoriKrate = coreModule.kyoriComponentSerializer,
-                    dispatchers = coreModule.dispatchers
+                    dispatchers = coreModule.dispatchers,
                 ),
             ).register()
             SoulKrateCommandRegistrar(
@@ -41,7 +51,8 @@ class CommandModule(
                 ioScope = coreModule.ioScope,
                 addSoulItemsIntoInventoryUseCase = serviceModule.addSoulItemsIntoInventoryUseCase,
                 translationKrate = coreModule.translation,
-                kyoriKrate = coreModule.kyoriComponentSerializer
+                kyoriKrate = coreModule.kyoriComponentSerializer,
+                commandExceptionHandler = commandExceptionHandler,
             ).register()
             SoulsReloadCommandRegistrar(
                 lifecyclePlugin = lifecyclePlugin,
@@ -49,6 +60,7 @@ class CommandModule(
                 kyoriKrate = coreModule.kyoriComponentSerializer,
                 registrarContext = commandRegistrarContext,
                 multiplatformCommand = multiplatformCommand,
+                commandExceptionHandler = commandExceptionHandler,
             ).register()
         },
         onDisable = {

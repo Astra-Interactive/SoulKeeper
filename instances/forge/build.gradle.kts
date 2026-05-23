@@ -224,11 +224,11 @@ val shadowJar by tasks.getting(ShadowJar::class) {
 
         add("org.intellij")
         add("org.jetbrains.annotations")
-        add("org.jetbrains.exposed") // Don't relocate on: [*]
+//        add("org.jetbrains.exposed") // Don't relocate on: [*]
         add("org.jetbrains.kotlinx")
         add("org.json")
         add("org.json")
-        add("org.sqlite")
+//        add("org.sqlite")
         add("org.telegram")
         add("org.telegram.telegrambots")
         add("org.w3c.css")

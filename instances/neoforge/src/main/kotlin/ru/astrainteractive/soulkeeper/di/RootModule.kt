@@ -12,8 +12,8 @@ import ru.astrainteractive.soulkeeper.module.event.di.ForgeEventModule
 import ru.astrainteractive.soulkeeper.module.souls.di.NeoForgePlatformServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
-import java.io.File
 import ru.astrainteractive.soulkeeper.module.souls.platform.NeoForgeEffectEmitter
+import java.io.File
 
 class RootModule(private val plugin: Lifecycle) {
 
