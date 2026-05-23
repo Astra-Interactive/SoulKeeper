@@ -3,8 +3,6 @@ package ru.astrainteractive.soulkeeper.command.di
 import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
 import ru.astrainteractive.astralibs.command.api.registrar.CommandRegistrarContext
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
-import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
-import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.command.exception.CommandExceptionHandler
 import ru.astrainteractive.soulkeeper.command.reload.SoulsReloadCommandRegistrar
 import ru.astrainteractive.soulkeeper.command.soulkrate.SoulKrateCommandRegistrar
