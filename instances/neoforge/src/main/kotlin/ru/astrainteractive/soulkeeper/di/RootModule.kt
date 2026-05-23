@@ -1,21 +1,18 @@
 package ru.astrainteractive.soulkeeper.di
 
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainCoroutineDispatcher
 import net.neoforged.fml.loading.FMLPaths
 import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
-import ru.astrainteractive.astralibs.command.brigadier.command.NeoForgeMultiplatformCommands
+import ru.astrainteractive.astralibs.command.brigadier.command.MinecraftMultiplatformCommands
 import ru.astrainteractive.astralibs.command.registrar.NeoForgeCommandRegistrarContext
-import ru.astrainteractive.astralibs.coroutines.NeoForgeMainDispatcher
+import ru.astrainteractive.astralibs.coroutines.MinecraftDispatchers
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
-import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.soulkeeper.command.di.CommandModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.module.event.di.ForgeEventModule
 import ru.astrainteractive.soulkeeper.module.souls.di.NeoForgePlatformServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
+import ru.astrainteractive.soulkeeper.module.souls.platform.NeoForgeEffectEmitter
 import java.io.File
 
 class RootModule(private val plugin: Lifecycle) {
@@ -31,14 +28,8 @@ class RootModule(private val plugin: Lifecycle) {
     val coreModule: CoreModule by lazy {
         CoreModule(
             dataFolder = dataFolder,
-            dispatchers = object : KotlinDispatchers {
-                override val Main: MainCoroutineDispatcher by lazy {
-                    NeoForgeMainDispatcher()
-                }
-                override val IO: CoroutineDispatcher = Dispatchers.IO
-                override val Default: CoroutineDispatcher = Dispatchers.Default
-                override val Unconfined: CoroutineDispatcher = Dispatchers.Unconfined
-            }
+            dispatchers = MinecraftDispatchers(),
+            effectEmitter = NeoForgeEffectEmitter
         )
     }
 
@@ -67,7 +58,7 @@ class RootModule(private val plugin: Lifecycle) {
         ForgeEventModule(
             coreModule = coreModule,
             soulsDaoModule = soulsDaoModule,
-            effectEmitter = forgePlatformServiceModule.effectEmitter
+            effectEmitter = coreModule.effectEmitter
         )
     }
     private val commandModule by lazy {
@@ -78,7 +69,7 @@ class RootModule(private val plugin: Lifecycle) {
                 mainScope = coreModule.mainScope
             ),
             serviceModule = serviceModule,
-            multiplatformCommand = MultiplatformCommand(NeoForgeMultiplatformCommands()),
+            multiplatformCommand = MultiplatformCommand(MinecraftMultiplatformCommands()),
             lifecyclePlugin = plugin,
         )
     }

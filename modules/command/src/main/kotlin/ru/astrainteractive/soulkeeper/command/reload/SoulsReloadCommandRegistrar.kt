@@ -8,6 +8,7 @@ import ru.astrainteractive.astralibs.kyori.unwrap
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
+import ru.astrainteractive.soulkeeper.command.exception.CommandExceptionHandler
 import ru.astrainteractive.soulkeeper.core.plugin.PluginPermission
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
 
@@ -15,15 +16,16 @@ internal class SoulsReloadCommandRegistrar(
     private val lifecyclePlugin: Lifecycle,
     private val registrarContext: CommandRegistrarContext,
     private val multiplatformCommand: MultiplatformCommand,
+    private val commandExceptionHandler: CommandExceptionHandler,
     translationKrate: CachedKrate<PluginTranslation>,
-    kyoriKrate: CachedKrate<KyoriComponentSerializer>
+    kyoriKrate: CachedKrate<KyoriComponentSerializer>,
 ) : KyoriComponentSerializer by kyoriKrate.unwrap() {
     private val translation by translationKrate
 
     private fun createNode(): LiteralArgumentBuilder<*> {
         return with(multiplatformCommand) {
             command("skreload") {
-                runs { ctx ->
+                runs(onFailure = commandExceptionHandler::handle) { ctx ->
                     ctx.requirePermission(PluginPermission.Reload)
                     val audience = ctx.getSender()
                     audience.sendMessage(translation.general.reload.component)

@@ -15,13 +15,14 @@ import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
+import ru.astrainteractive.soulkeeper.command.exception.CommandExceptionHandler
 import ru.astrainteractive.soulkeeper.core.plugin.PluginPermission
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
 import ru.astrainteractive.soulkeeper.module.souls.domain.AddSoulItemsIntoInventoryUseCase
 import ru.astrainteractive.soulkeeper.module.souls.krate.PlayerSoulKrate
 import java.io.File
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 @Suppress("LongParameterList")
 internal class SoulKrateCommandRegistrar(
@@ -31,6 +32,7 @@ internal class SoulKrateCommandRegistrar(
     private val dataFolder: File,
     private val ioScope: CoroutineScope,
     private val addSoulItemsIntoInventoryUseCase: AddSoulItemsIntoInventoryUseCase,
+    private val commandExceptionHandler: CommandExceptionHandler,
     translationKrate: CachedKrate<PluginTranslation>,
     kyoriKrate: CachedKrate<KyoriComponentSerializer>
 ) : Logger by JUtiltLogger("SoulKrateCommandRegistrar"),
@@ -42,7 +44,7 @@ internal class SoulKrateCommandRegistrar(
                 argument("uuid", StringArgumentType.string()) { uuidArg ->
                     argument("instant", LongArgumentType.longArg()) { instantArg ->
                         argument("index", IntegerArgumentType.integer()) { indexArg ->
-                            runs { ctx ->
+                            runs(commandExceptionHandler::handle) { ctx ->
                                 ctx.requirePermission(PluginPermission.LoadSouls)
                                 val player = ctx.requirePlayer()
                                 val instant = ctx.requireArgument(instantArg).let(Instant::ofEpochSecond)

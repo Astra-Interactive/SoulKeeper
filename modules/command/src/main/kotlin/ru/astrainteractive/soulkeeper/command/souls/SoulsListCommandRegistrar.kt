@@ -8,19 +8,21 @@ import ru.astrainteractive.astralibs.command.api.registrar.CommandRegistrarConte
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.kyori.unwrap
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
+import ru.astrainteractive.soulkeeper.command.exception.CommandExceptionHandler
 
 internal class SoulsListCommandRegistrar(
     kyoriKrate: CachedKrate<KyoriComponentSerializer>,
     private val registrarContext: CommandRegistrarContext,
     private val multiplatformCommand: MultiplatformCommand,
-    private val soulsCommandExecutor: SoulsCommandExecutor
+    private val soulsCommandExecutor: SoulsCommandExecutor,
+    private val commandExceptionHandler: CommandExceptionHandler,
 ) : KyoriComponentSerializer by kyoriKrate.unwrap() {
     private fun createNode(): LiteralArgumentBuilder<*> {
         return with(multiplatformCommand) {
             command("souls") {
                 literal("page") {
                     argument("page", IntegerArgumentType.integer(0)) { pageArg ->
-                        runs { ctx ->
+                        runs(commandExceptionHandler::handle) { ctx ->
                             val page = ctx.requireArgument(pageArg)
                             SoulsCommand.Intent.List(
                                 sender = ctx.getSender(),
@@ -31,7 +33,7 @@ internal class SoulsListCommandRegistrar(
                 }
                 literal("free") {
                     argument("soul_id", LongArgumentType.longArg(0)) { idArg ->
-                        runs { ctx ->
+                        runs(commandExceptionHandler::handle) { ctx ->
                             SoulsCommand.Intent.Free(
                                 sender = ctx.getSender(),
                                 soulId = ctx.requireArgument(idArg)
@@ -41,7 +43,7 @@ internal class SoulsListCommandRegistrar(
                 }
                 literal("teleport") {
                     argument("soul_id", LongArgumentType.longArg(0)) { idArg ->
-                        runs { ctx ->
+                        runs(commandExceptionHandler::handle) { ctx ->
                             SoulsCommand.Intent.TeleportToSoul(
                                 sender = ctx.getSender(),
                                 soulId = ctx.requireArgument(idArg)
@@ -49,7 +51,7 @@ internal class SoulsListCommandRegistrar(
                         }
                     }
                 }
-                runs { ctx ->
+                runs(commandExceptionHandler::handle) { ctx ->
                     SoulsCommand.Intent.List(
                         sender = ctx.getSender(),
                         page = 0

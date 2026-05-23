@@ -13,9 +13,9 @@ dependencies {
     implementation(libs.minecraft.kyori.api)
 
     implementation(libs.klibs.mikro.core)
-    implementation(projects.modules.core)
+    implementation(projects.modules.core.api)
     implementation(projects.modules.dao)
-    implementation(projects.modules.service)
+    implementation(projects.modules.service.api)
 }
 
 dependencies {
