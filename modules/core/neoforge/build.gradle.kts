@@ -1,16 +1,16 @@
 plugins {
-    kotlin("jvm")
-    kotlin("plugin.serialization")
+    id("org.jetbrains.kotlin.jvm")
+    id("org.jetbrains.kotlin.plugin.serialization")
+    id("ru.astrainteractive.gradleplugin.detekt")
+    id("ru.astrainteractive.gradleplugin.java.version")
 }
 
 dependencies {
+    implementation(libs.klibs.mikro.core)
     implementation(libs.kotlin.coroutines.core)
     implementation(libs.kotlin.serialization.json)
-    // AstraLibs
     implementation(libs.minecraft.astralibs.core)
     implementation(libs.minecraft.astralibs.core.neoforge)
-    implementation(libs.klibs.mikro.core)
-    // klibs
     implementation(projects.modules.core.api)
 }
 
@@ -28,9 +28,9 @@ dependencies {
                 .resolve("neoforge-${libs.versions.minecraft.neoforgeversion.get()}.jar")
         )
     )
-    compileOnly(libs.minecraft.neoforgeversion)
     compileOnly(libs.joml)
-    compileOnly(libs.minecraft.datafixerupper)
     compileOnly(libs.minecraft.brigadier)
+    compileOnly(libs.minecraft.datafixerupper)
     compileOnly(libs.minecraft.neoforged.bus)
+    compileOnly(libs.minecraft.neoforgeversion)
 }

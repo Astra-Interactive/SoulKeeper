@@ -1,6 +1,8 @@
 plugins {
-    kotlin("jvm")
-    kotlin("plugin.serialization")
+    id("org.jetbrains.kotlin.jvm")
+    id("org.jetbrains.kotlin.plugin.serialization")
+    id("ru.astrainteractive.gradleplugin.detekt")
+    id("ru.astrainteractive.gradleplugin.java.version")
 }
 
 dependencies {
@@ -28,13 +30,9 @@ dependencies {
             )
         )
     }
+    compileOnly(libs.joml)
     compileOnly(libs.minecraft.brigadier)
-    compileOnly(libs.minecraft.forgeversion)
     compileOnly(libs.minecraft.datafixerupper)
     compileOnly(libs.minecraft.forge.bus)
-    compileOnly(libs.joml)
-}
-
-configurations.runtimeElements {
-    setExtendsFrom(emptySet())
+    compileOnly(libs.minecraft.forgeversion)
 }

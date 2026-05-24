@@ -1,21 +1,22 @@
 plugins {
-    kotlin("jvm")
-    kotlin("plugin.serialization")
+    id("org.jetbrains.kotlin.jvm")
+    id("org.jetbrains.kotlin.plugin.serialization")
+    id("ru.astrainteractive.gradleplugin.detekt")
+    id("ru.astrainteractive.gradleplugin.java.version")
 }
 
 dependencies {
-    implementation(libs.kotlin.serialization.json)
-    // Bukkit
-    compileOnly(libs.minecraft.paper.api)
-    compileOnly(libs.minecraft.bstats)
-    // AstraLibs
-    implementation(libs.minecraft.astralibs.core)
-    implementation(libs.minecraft.astralibs.menu.bukkit)
-    implementation(libs.minecraft.astralibs.core.bukkit)
-    implementation(libs.klibs.mikro.extensions)
-    // klibs
-    implementation(libs.klibs.mikro.core)
-    implementation(libs.klibs.mikro.core)
-    implementation(projects.modules.core.api)
     api(libs.klibs.kstorage)
+
+    compileOnly(libs.minecraft.bstats)
+    compileOnly(libs.minecraft.paper.api)
+
+    implementation(libs.klibs.mikro.core)
+    implementation(libs.klibs.mikro.core)
+    implementation(libs.klibs.mikro.extensions)
+    implementation(libs.kotlin.serialization.json)
+    implementation(libs.minecraft.astralibs.core)
+    implementation(libs.minecraft.astralibs.core.bukkit)
+    implementation(libs.minecraft.astralibs.menu.bukkit)
+    implementation(projects.modules.core.api)
 }

@@ -1,14 +1,15 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import ru.astrainteractive.gradleplugin.property.model.Developer
-import ru.astrainteractive.gradleplugin.property.util.requireJinfo
 import ru.astrainteractive.gradleplugin.property.util.requireProjectInfo
 
 plugins {
-    kotlin("jvm")
-    kotlin("plugin.serialization")
+    id("org.jetbrains.kotlin.jvm")
+    id("org.jetbrains.kotlin.plugin.serialization")
+    id("ru.astrainteractive.gradleplugin.detekt")
+    id("ru.astrainteractive.gradleplugin.java.version")
     alias(libs.plugins.gradle.forgegradle)
     alias(libs.plugins.gradle.forgerenamer)
     alias(libs.plugins.gradle.shadow)
+    alias(libs.plugins.klibs.minecraft.resource.processor)
 }
 
 repositories {
@@ -43,30 +44,14 @@ dependencies {
     shadow(projects.modules.service.forge)
     shadow(projects.modules.event.forge)
 }
-tasks.named<ProcessResources>("processResources") {
-    filteringCharset = "UTF-8"
-    duplicatesStrategy = DuplicatesStrategy.WARN
-    val sourceSets = project.extensions.getByName("sourceSets") as SourceSetContainer
-    val resDirs = sourceSets
-        .map(SourceSet::getResources)
-        .map(SourceDirectorySet::getSrcDirs)
-    from(resDirs) {
-        include("META-INF/mods.toml")
-        expand(
-            mapOf(
-                "minecraft_version" to libs.versions.minecraft.forgeversion.get().split("-")[0],
-                "forge_version" to libs.versions.minecraft.forgeversion.get().split("-")[1],
-                "mod_id" to requireProjectInfo.name.lowercase(),
-                "mod_name" to requireProjectInfo.name,
-                "mod_license" to "mod_license",
-                "mod_version" to requireProjectInfo.versionString,
-                "mod_authors" to requireProjectInfo.developersList
-                    .map(Developer::id)
-                    .joinToString(","),
-                "mod_description" to requireProjectInfo.description
-            )
+
+minecraftProcessResource {
+    forge(
+        customProperties = mapOf(
+            "minecraft_version" to libs.versions.minecraft.forgeversion.get().split("-")[0],
+            "forge_version" to libs.versions.minecraft.forgeversion.get().split("-")[1],
         )
-    }
+    )
 }
 
 val shadowJar by tasks.getting(ShadowJar::class) {
@@ -221,7 +206,6 @@ val shadowJar by tasks.getting(ShadowJar::class) {
             // Don't relocate on: [bukkit]
             add("org.h2")
         }
-
         add("org.intellij")
         add("org.jetbrains.annotations")
 //        add("org.jetbrains.exposed") // Don't relocate on: [*]
@@ -239,19 +223,13 @@ val shadowJar by tasks.getting(ShadowJar::class) {
     }.forEach { pattern -> relocate(pattern, "${requireProjectInfo.group}.shade.$pattern") }
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(requireJinfo.jtarget.majorVersion)
-
 minecraft {
-    mappings("official", "1.20.1")
+    mappings("official", libs.versions.minecraft.mojang.version.get())
     useDefaultAccessTransformer()
 }
 
 dependencies {
     compileOnly(minecraft.dependency(libs.minecraft.forgeversion.get()))
-}
-
-configurations.runtimeElements {
-    setExtendsFrom(emptySet())
 }
 
 renamer {

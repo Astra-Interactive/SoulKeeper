@@ -2,10 +2,12 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import ru.astrainteractive.gradleplugin.property.util.requireProjectInfo
 
 plugins {
-    kotlin("jvm")
-    kotlin("plugin.serialization")
-    alias(libs.plugins.klibs.minecraft.resource.processor)
+    id("org.jetbrains.kotlin.jvm")
+    id("org.jetbrains.kotlin.plugin.serialization")
+    id("ru.astrainteractive.gradleplugin.detekt")
+    id("ru.astrainteractive.gradleplugin.java.version")
     alias(libs.plugins.gradle.shadow)
+    alias(libs.plugins.klibs.minecraft.resource.processor)
 }
 
 dependencies {

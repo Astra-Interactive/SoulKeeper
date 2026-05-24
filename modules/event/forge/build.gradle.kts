@@ -1,16 +1,16 @@
 plugins {
-    kotlin("jvm")
-    kotlin("plugin.serialization")
+    id("org.jetbrains.kotlin.jvm")
+    id("org.jetbrains.kotlin.plugin.serialization")
+    id("ru.astrainteractive.gradleplugin.detekt")
+    id("ru.astrainteractive.gradleplugin.java.version")
 }
 
 dependencies {
+    implementation(libs.klibs.mikro.core)
     implementation(libs.kotlin.coroutines.core)
     implementation(libs.kotlin.serialization.json)
-    // AstraLibs
     implementation(libs.minecraft.astralibs.core)
     implementation(libs.minecraft.astralibs.core.forge)
-    implementation(libs.klibs.mikro.core)
-    // Local
     implementation(projects.modules.core.api)
     implementation(projects.modules.core.forge)
     implementation(projects.modules.dao)
@@ -35,10 +35,6 @@ dependencies {
         )
     }
     compileOnly(libs.minecraft.brigadier)
-    compileOnly(libs.minecraft.forgeversion)
     compileOnly(libs.minecraft.forge.bus)
-}
-
-configurations.runtimeElements {
-    setExtendsFrom(emptySet())
+    compileOnly(libs.minecraft.forgeversion)
 }
