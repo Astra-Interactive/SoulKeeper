@@ -21,7 +21,6 @@ dependencyResolutionManagement {
     repositories {
         gradlePluginPortal()
         mavenCentral()
-        mavenLocal()
         maven("https://maven.minecraftforge.net/")
         maven("https://files.minecraftforge.net/maven")
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
