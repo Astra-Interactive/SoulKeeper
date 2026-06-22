@@ -81,12 +81,10 @@ val shadowJar by tasks.getting(ShadowJar::class) {
         exclude("**LICENSE**")
         // Other dependencies
         exclude("club/minnced/opus/**")
-        exclude("co/touchlab/stately/**")
         exclude("com/google/**")
         exclude("com/ibm/icu/**")
         exclude("com/sun/**")
         exclude("google/protobuf/**")
-        exclude("io/github/**")
         exclude("io/javalin/**")
         exclude("jakarta/servlet/**")
         exclude("javax/annotation/**")
