@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.gradle.buildconfig) apply false
     alias(libs.plugins.gradle.neoforgegradle) apply false
-    alias(libs.plugins.klibs.gradle.detekt) apply false
+    alias(libs.plugins.klibs.gradle.detekt)
     alias(libs.plugins.klibs.gradle.java.version) apply false
     alias(libs.plugins.klibs.gradle.minecraft.platform) apply false
     alias(libs.plugins.klibs.gradle.publication) apply false
