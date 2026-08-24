@@ -1,5 +1,6 @@
 pluginManagement {
     repositories {
+        mavenLocal()
         maven("https://maven.neoforged.net/releases")
         maven("https://maven.minecraftforge.net")
         maven("https://files.minecraftforge.net/maven")
@@ -19,6 +20,7 @@ buildscript {
 
 dependencyResolutionManagement {
     repositories {
+        mavenLocal()
         gradlePluginPortal()
         mavenCentral()
         maven("https://maven.minecraftforge.net/")

@@ -1,8 +1,9 @@
 **/build
-**/runs
-.DS_Store
+**/runs/
+*.jar
+.claude
 .gradle
 .idea
 .kotlin
-local.properties
-*.jar
+AGENTS.md
+CLAUDE.md
