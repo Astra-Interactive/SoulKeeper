@@ -1,5 +1,6 @@
 package ru.astrainteractive.soulkeeper.module.souls.dao
 
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -11,11 +12,14 @@ import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.between
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.inList
 import org.jetbrains.exposed.v1.jdbc.Database
+import org.jetbrains.exposed.v1.jdbc.Query
 import org.jetbrains.exposed.v1.jdbc.andWhere
 import org.jetbrains.exposed.v1.jdbc.batchInsert
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
 import org.jetbrains.exposed.v1.jdbc.insertAndGetId
+import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.jdbc.update
@@ -27,9 +31,11 @@ import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
+import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulItemsTable
 import ru.astrainteractive.soulkeeper.module.souls.database.table.SoulTable
-import java.util.*
+import java.util.UUID
+import kotlin.coroutines.cancellation.CancellationException
 
 @Suppress("TooManyFunctions")
 internal class SoulsDaoImpl(
@@ -37,6 +43,12 @@ internal class SoulsDaoImpl(
     private val dispatchers: KotlinDispatchers
 ) : SoulsDao, Logger by JUtiltLogger("SoulKeeper-SoulsDaoImpl") {
     private val mutex = Mutex()
+
+    private val soulsChangedSharedFlow = MutableSharedFlow<Unit>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+
     private suspend fun <T> safeRun(
         tag: String,
         block: suspend () -> T
@@ -46,48 +58,79 @@ internal class SoulsDaoImpl(
                 block.invoke()
             }
         }
-    }.onFailure { t -> error { "#$tag error: ${t.message}. ${t.cause}" } }
+    }.onFailure { throwable ->
+        if (throwable is CancellationException) throw throwable
+        error(throwable) { "#$tag error: ${throwable.message}" }
+    }
 
-    private val soulsChangedSharedFlow = MutableSharedFlow<Unit>()
+    private fun findSoulIdsWithItems(soulIds: List<Long>): Set<Long> {
+        if (soulIds.isEmpty()) return emptySet()
+        return SoulItemsTable.select(SoulItemsTable.soulId)
+            .where { SoulItemsTable.soulId inList soulIds }
+            .withDistinct()
+            .map { row -> row[SoulItemsTable.soulId].value }
+            .toSet()
+    }
+
+    private fun findSoulItems(soulId: Long): List<StringFormatObject> {
+        return SoulItemsTable.selectAll()
+            .where { SoulItemsTable.soulId eq soulId }
+            .map { row -> row[SoulItemsTable.itemStack] }
+    }
+
+    private fun toDatabaseSoul(row: ResultRow, hasItems: Boolean): DatabaseSoul {
+        return DatabaseSoul(
+            id = row[SoulTable.id].value,
+            ownerUUID = UUID.fromString(row[SoulTable.ownerUUID]),
+            ownerLastName = row[SoulTable.ownerLastName],
+            createdAt = row[SoulTable.created_at],
+            isFree = row[SoulTable.isFree],
+            exp = row[SoulTable.exp],
+            hasItems = hasItems,
+            location = KLocation(
+                x = row[SoulTable.locationX],
+                y = row[SoulTable.locationY],
+                z = row[SoulTable.locationZ],
+                worldName = row[SoulTable.locationWorld]
+            )
+        )
+    }
+
+    private fun Query.toDatabaseSouls(): List<DatabaseSoul> {
+        val rows = toList()
+        val soulIdsWithItems = findSoulIdsWithItems(rows.map { row -> row[SoulTable.id].value })
+        return rows.map { row ->
+            toDatabaseSoul(
+                row = row,
+                hasItems = row[SoulTable.id].value in soulIdsWithItems
+            )
+        }
+    }
+
+    private fun findSoulUnsafe(id: Long): DatabaseSoul {
+        return SoulTable.selectAll()
+            .where { SoulTable.id eq id }
+            .limit(1)
+            .toDatabaseSouls()
+            .firstOrNull()
+            ?: throw SoulNotFoundException(id)
+    }
 
     override fun getSoulsChangeFlow(): Flow<Unit> {
         return soulsChangedSharedFlow.asSharedFlow()
-    }
-
-    private fun toDatabaseSoul(it: ResultRow): DatabaseSoul {
-        return DatabaseSoul(
-            id = it[SoulTable.id].value,
-            ownerUUID = UUID.fromString(it[SoulTable.ownerUUID]),
-            ownerLastName = it[SoulTable.ownerLastName],
-            createdAt = it[SoulTable.created_at],
-            isFree = it[SoulTable.isFree],
-            exp = it[SoulTable.exp],
-            hasItems = true, // todo
-            location = KLocation(
-                x = it[SoulTable.locationX],
-                y = it[SoulTable.locationY],
-                z = it[SoulTable.locationZ],
-                worldName = it[SoulTable.locationWorld]
-            )
-        )
     }
 
     override suspend fun getSouls(): Result<List<DatabaseSoul>> = safeRun("getSouls") {
         transaction(databaseFlow.first()) {
             SoulTable.selectAll()
                 .orderBy(SoulTable.created_at to SortOrder.DESC)
-                .map(::toDatabaseSoul)
+                .toDatabaseSouls()
         }
     }
 
     override suspend fun getSoul(id: Long): Result<DatabaseSoul> = safeRun("getSoul") {
         transaction(databaseFlow.first()) {
-            SoulTable
-                .selectAll()
-                .limit(1)
-                .orderBy(SoulTable.created_at to SortOrder.DESC)
-                .map(::toDatabaseSoul)
-                .first()
+            findSoulUnsafe(id)
         }
     }
 
@@ -97,7 +140,7 @@ internal class SoulsDaoImpl(
         transaction(databaseFlow.first()) {
             SoulTable.selectAll()
                 .where { SoulTable.ownerUUID.eq(uuid.toString()) }
-                .map(::toDatabaseSoul)
+                .toDatabaseSouls()
         }
     }
 
@@ -105,16 +148,16 @@ internal class SoulsDaoImpl(
         soul: DefaultSoul,
     ): Result<DatabaseSoul> = safeRun("insertSoul") {
         transaction(databaseFlow.first()) {
-            val soulId = SoulTable.insertAndGetId {
-                it[SoulTable.ownerUUID] = soul.ownerUUID.toString()
-                it[SoulTable.ownerLastName] = soul.ownerLastName
-                it[SoulTable.created_at] = soul.createdAt
-                it[SoulTable.isFree] = soul.isFree
-                it[SoulTable.locationWorld] = soul.location.worldName
-                it[SoulTable.exp] = soul.exp
-                it[SoulTable.locationX] = soul.location.x
-                it[SoulTable.locationY] = soul.location.y
-                it[SoulTable.locationZ] = soul.location.z
+            val soulId = SoulTable.insertAndGetId { statement ->
+                statement[SoulTable.ownerUUID] = soul.ownerUUID.toString()
+                statement[SoulTable.ownerLastName] = soul.ownerLastName
+                statement[SoulTable.created_at] = soul.createdAt
+                statement[SoulTable.isFree] = soul.isFree
+                statement[SoulTable.locationWorld] = soul.location.worldName
+                statement[SoulTable.exp] = soul.exp
+                statement[SoulTable.locationX] = soul.location.x
+                statement[SoulTable.locationY] = soul.location.y
+                statement[SoulTable.locationZ] = soul.location.z
             }
 
             SoulItemsTable.batchInsert(soul.items) { item ->
@@ -122,11 +165,7 @@ internal class SoulsDaoImpl(
                 this[SoulItemsTable.itemStack] = item
             }
 
-            SoulTable.selectAll()
-                .where { SoulTable.id eq soulId }
-                .limit(1)
-                .map(::toDatabaseSoul)
-                .first()
+            findSoulUnsafe(soulId.value)
         }
     }.onSuccess { soulsChangedSharedFlow.emit(Unit) }
 
@@ -140,8 +179,8 @@ internal class SoulsDaoImpl(
                 .andWhere { SoulTable.locationX.between(location.x - radius, location.x + radius) }
                 .andWhere { SoulTable.locationY.between(location.y - radius, location.y + radius) }
                 .andWhere { SoulTable.locationZ.between(location.z - radius, location.z + radius) }
-                .map(::toDatabaseSoul)
-                .filter { it.location.dist(location) < radius }
+                .toDatabaseSouls()
+                .filter { soul -> soul.location.dist(location) < radius }
         }
     }
 
@@ -156,9 +195,9 @@ internal class SoulsDaoImpl(
         transaction(databaseFlow.first()) {
             SoulTable.update(
                 where = { SoulTable.id.eq(soul.id) },
-                body = {
-                    it[SoulTable.isFree] = soul.isFree
-                    it[SoulTable.exp] = soul.exp
+                body = { statement ->
+                    statement[SoulTable.isFree] = soul.isFree
+                    statement[SoulTable.exp] = soul.exp
                 }
             )
         }
@@ -168,9 +207,9 @@ internal class SoulsDaoImpl(
         transaction(databaseFlow.first()) {
             SoulTable.update(
                 where = { SoulTable.id.eq(soul.id) },
-                body = {
-                    it[SoulTable.isFree] = soul.isFree
-                    it[SoulTable.exp] = soul.exp
+                body = { statement ->
+                    statement[SoulTable.isFree] = soul.isFree
+                    statement[SoulTable.exp] = soul.exp
                 }
             )
             SoulItemsTable.deleteWhere { SoulItemsTable.soulId.eq(soul.id) }
@@ -185,6 +224,7 @@ internal class SoulsDaoImpl(
         soul: DatabaseSoul
     ): Result<ItemDatabaseSoul> = safeRun("toItemDatabaseSoul") {
         transaction(databaseFlow.first()) {
+            val items = findSoulItems(soul.id)
             ItemDatabaseSoul(
                 id = soul.id,
                 ownerUUID = soul.ownerUUID,
@@ -192,12 +232,10 @@ internal class SoulsDaoImpl(
                 createdAt = soul.createdAt,
                 isFree = soul.isFree,
                 location = soul.location,
-                hasItems = soul.hasItems,
+                hasItems = items.isNotEmpty(),
                 exp = soul.exp,
-                items = SoulItemsTable.selectAll()
-                    .where { SoulItemsTable.soulId eq soul.id }
-                    .map { it[SoulItemsTable.itemStack] }
+                items = items
             )
         }
-    }.onSuccess { soulsChangedSharedFlow.emit(Unit) }
+    }
 }

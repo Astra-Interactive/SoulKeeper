@@ -3,6 +3,7 @@ package ru.astrainteractive.soulkeeper.command.exception
 import com.mojang.brigadier.context.CommandContext
 import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
 import ru.astrainteractive.astralibs.command.api.exception.NoPermissionException
+import ru.astrainteractive.astralibs.command.api.exception.NotPlayerExecutorException
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.kyori.unwrap
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
@@ -21,8 +22,17 @@ class CommandExceptionHandler(
     fun handle(ctx: CommandContext<Any>, t: Throwable) {
         with(multiplatformCommand) {
             when (t) {
-                is NoPermissionException -> ctx.getSender()?.sendMessage(translation.general.noPermission.component)
-                else -> ctx.getSender()?.sendMessage(translation.general.wrongUsage.component)
+                is NoPermissionException -> {
+                    ctx.getSender()?.sendMessage(translation.general.noPermission.component)
+                }
+
+                is NotPlayerExecutorException -> {
+                    ctx.getSender()?.sendMessage(translation.general.onlyPlayerCommand.component)
+                }
+
+                else -> {
+                    ctx.getSender()?.sendMessage(translation.general.wrongUsage.component)
+                }
             }
         }
     }

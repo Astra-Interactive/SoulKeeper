@@ -6,6 +6,7 @@ import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.soulkeeper.command.exception.CommandExceptionHandler
 import ru.astrainteractive.soulkeeper.command.reload.SoulsReloadCommandRegistrar
 import ru.astrainteractive.soulkeeper.command.soulkrate.SoulKrateCommandRegistrar
+import ru.astrainteractive.soulkeeper.command.souls.SoulsAccessPolicy
 import ru.astrainteractive.soulkeeper.command.souls.SoulsCommandExecutor
 import ru.astrainteractive.soulkeeper.command.souls.SoulsListCommandRegistrar
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
@@ -39,6 +40,7 @@ class CommandModule(
                     translationKrate = coreModule.translation,
                     kyoriKrate = coreModule.kyoriComponentSerializer,
                     dispatchers = coreModule.dispatchers,
+                    accessPolicy = SoulsAccessPolicy(),
                 ),
             ).register()
             SoulKrateCommandRegistrar(

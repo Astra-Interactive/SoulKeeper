@@ -128,7 +128,7 @@ Souls spawned in The End are clamped to `endLocationLimitY` so they never fall b
 
 ### 📑 Paginated soul browser
 
-`/souls` lists all visible souls with owner name, coordinates, age (formatted as "X days ago"), and item/XP indicators. Admins see clickable **[FREE]** and **[TP]** buttons inline. 5 souls per page; prev/next navigation included.
+`/souls` lists all visible souls with owner name, coordinates, age (formatted as "X days ago"), and item/XP indicators. Owners see a clickable **[FREE]** button next to their own souls; admins with `soulkeeper.free.all` see it on every soul, and `soulkeeper.teleport` adds a **[TP]** button. 5 souls per page; prev/next navigation included.
 
 ### 🗄️ Versioned database migrations
 
@@ -199,14 +199,17 @@ Every particle effect is independently configurable with `key`, `count`, and opt
 
 ## 🛠️ Commands
 
-| Command                             | Description                        | Permission            |
-|-------------------------------------|------------------------------------|-----------------------|
-| `/skreload`                         | Hot-reload config and translations | `soulkeeper.reload`   |
-| `/souls [page]`                     | List your souls (5 per page)       | *(none)*              |
-| `/souls [page]`                     | List **all** server souls          | `soulkeeper.all`      |
-| `/souls` → **\[FREE\]**             | Force-free any soul immediately    | `soulkeeper.free.all` |
-| `/souls` → **\[TP\]**               | Teleport to a soul's location      | `soulkeeper.teleport` |
-| `/soulkrate <uuid> <epoch> <index>` | Restore items from a krate file    | `soulkeeper.load`     |
+| Command                              | Description                               | Permission             |
+|--------------------------------------|-------------------------------------------|------------------------|
+| `/skreload`                          | Hot-reload config and translations        | `soulkeeper.reload`    |
+| `/souls [page <n>]`                  | List your souls (5 per page)              | *(none)*               |
+| `/souls [page <n>]`                  | List **all** server souls                 | `soulkeeper.all`       |
+| `/souls free <id>` / **\[FREE\]**    | Make your **own** soul public immediately | *(none — owner only)*  |
+| `/souls free <id>` / **\[FREE\]**    | Force-free **any** soul immediately       | `soulkeeper.free.all`  |
+| `/souls teleport <id>` / **\[TP\]**  | Teleport to a soul's location             | `soulkeeper.teleport`  |
+| `/soulkrate <uuid> <epoch> <index>`  | Restore items from a krate file           | `soulkeeper.load`      |
+
+> Permissions are enforced when the command **executes**, not only when the clickable buttons are rendered. Typing `/souls free <id>` or `/souls teleport <id>` by hand without the matching permission is rejected with a "no permission" message.
 
 ---
 

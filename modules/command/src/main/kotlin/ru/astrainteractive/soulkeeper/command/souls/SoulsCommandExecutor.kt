@@ -11,8 +11,6 @@ import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.kyori.unwrap
 import ru.astrainteractive.astralibs.server.location.KLocation
 import ru.astrainteractive.astralibs.server.location.dist
-import ru.astrainteractive.astralibs.server.permission.KPermissible
-import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.astralibs.util.clickable
 import ru.astrainteractive.astralibs.util.isEmpty
 import ru.astrainteractive.astralibs.util.orEmpty
@@ -27,12 +25,25 @@ import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.Soul
-import kotlin.collections.filter
+
+private fun Component.append(
+    other: Component?,
+    addSpace: Boolean = false
+): Component {
+    return if (other == null || other.isEmpty()) {
+        this
+    } else if (addSpace) {
+        this.appendSpace().append(other)
+    } else {
+        this.append(other)
+    }
+}
 
 internal class SoulsCommandExecutor(
     private val ioScope: CoroutineScope,
     private val soulsDao: SoulsDao,
     private val dispatchers: KotlinDispatchers,
+    private val accessPolicy: SoulsAccessPolicy,
     translationKrate: CachedKrate<PluginTranslation>,
     kyoriKrate: CachedKrate<KyoriComponentSerializer>
 ) : KyoriComponentSerializer by kyoriKrate.unwrap() {
@@ -112,137 +123,105 @@ internal class SoulsCommandExecutor(
         ).component
     }
 
-    private fun KCommandSender.canFreeSouls(soul: DatabaseSoul): Boolean {
-        val sender = this
-        val hasPermission = sender.tryCast<KPermissible>()?.hasPermission(PluginPermission.FreeAllSouls) == true
-        val isOwner = sender.tryCast<KPlayerKCommandSender>()?.instance?.uuid == soul.ownerUUID
-        if (soul.isFree) return false
-        if (!hasPermission) return false
-        if (!isOwner) return false
-        return true
-    }
-
     private fun createFreeSoulComponent(sender: KCommandSender, soul: DatabaseSoul): Component? {
-        return if (!sender.canFreeSouls(soul)) {
-            null
-        } else {
-            translation.souls.freeSoul
-                .component
-                .appendSpace()
-                .clickable { execute(SoulsCommand.Intent.Free(sender, soul.id)) }
-        }
-    }
-
-    private fun KCommandSender.canTeleportToSoul(): Boolean {
-        val sender = this
-        if (sender !is OnlineKPlayer) return false
-        if (!sender.hasPermission(PluginPermission.TeleportToSouls)) {
-            return false
-        }
-        return true
+        if (soul.isFree) return null
+        if (!accessPolicy.canFreeSoul(sender, soul)) return null
+        return translation.souls.freeSoul
+            .component
+            .appendSpace()
+            .clickable { execute(SoulsCommand.Intent.Free(sender, soul.id)) }
     }
 
     private fun createTeleportSoulComponent(sender: KCommandSender, soul: DatabaseSoul): Component? {
-        if (!sender.canTeleportToSoul()) return null
+        if (sender !is KPlayerKCommandSender) return null
+        if (!accessPolicy.canTeleportToSoul(sender)) return null
         return translation.souls.teleportToSoul
             .component
-            .clickable { execute(SoulsCommand.Intent.TeleportToSoul(sender, soul.id)) }
+            .clickable { execute(SoulsCommand.Intent.TeleportToSoul(sender.instance, soul.id)) }
     }
 
-    fun Component.append(
-        other: Component?,
-        addSpace: Boolean = false
-    ): Component {
-        return if (other == null || other.isEmpty()) {
-            this
-        } else if (addSpace) {
-            this.appendSpace().append(other)
-        } else {
-            this.append(other)
+    private fun executeList(input: SoulsCommand.Intent.List) {
+        ioScope.launch {
+            val filteredSouls = getFilteredSouls(input.sender)
+            val maxPages = filteredSouls.size.div(SoulsCommand.PAGE_SIZE)
+            val pageSouls = getPageSouls(filteredSouls, input.page)
+            if (pageSouls.isEmpty()) {
+                val title = translation.souls.noSoulsOnPage(input.page.plus(1)).component
+                input.sender.sendMessage(title)
+                return@launch
+            }
+
+            input.sender.sendMessage(translation.souls.listSoulsTitle.component)
+
+            pageSouls.forEachIndexed { i, soul ->
+                val component = createListingItemComponent(
+                    soul = soul,
+                    page = input.page,
+                    i = i,
+                    location = input.sender
+                        .tryCast<KPlayerKCommandSender>()
+                        ?.instance
+                        ?.getLocation()
+                ).append(
+                    addSpace = true,
+                    other = createFreeSoulComponent(
+                        sender = input.sender,
+                        soul = soul
+                    )
+                ).append(
+                    addSpace = true,
+                    other = createTeleportSoulComponent(
+                        sender = input.sender,
+                        soul = soul
+                    )
+                )
+                input.sender.sendMessage(component)
+            }
+            input.sender.sendMessage(createPagingMessage(input, maxPages))
         }
     }
 
-    @Suppress("LongMethod")
+    private fun executeFree(input: SoulsCommand.Intent.Free) {
+        ioScope.launch {
+            val soul = soulsDao.getSoul(input.soulId).getOrNull()
+            if (soul == null) {
+                input.sender.sendMessage(translation.souls.soulNotFound.component)
+                return@launch
+            }
+            if (!accessPolicy.canFreeSoul(input.sender, soul)) {
+                input.sender.sendMessage(translation.general.noPermission.component)
+                return@launch
+            }
+            soulsDao.updateSoul(soul.copy(isFree = true))
+                .onSuccess {
+                    input.sender.sendMessage(translation.souls.soulFreed.component)
+                }
+                .onFailure {
+                    input.sender.sendMessage(translation.souls.couldNotFreeSoul.component)
+                }
+        }
+    }
+
+    private fun executeTeleport(input: SoulsCommand.Intent.TeleportToSoul) {
+        ioScope.launch {
+            val location = soulsDao.getSoul(input.soulId)
+                .getOrNull()
+                ?.location
+            if (location == null) {
+                input.player.sendMessage(translation.souls.soulNotFound.component)
+                return@launch
+            }
+            withContext(dispatchers.Main) {
+                input.player.teleport(location)
+            }
+        }
+    }
+
     fun execute(input: SoulsCommand.Intent) {
         when (input) {
-            is SoulsCommand.Intent.List -> {
-                ioScope.launch {
-                    val filteredSouls = getFilteredSouls(input.sender)
-                        .also { println() }
-                    val maxPages = filteredSouls.size.div(SoulsCommand.PAGE_SIZE)
-                    val pageSouls = getPageSouls(filteredSouls, input.page)
-                    if (pageSouls.isEmpty()) {
-                        val title = translation.souls.noSoulsOnPage(input.page.plus(1)).component
-                        input.sender.sendMessage(title)
-                        return@launch
-                    }
-
-                    input.sender.sendMessage(translation.souls.listSoulsTitle.component)
-
-                    pageSouls.forEachIndexed { i, soul ->
-                        val component = createListingItemComponent(
-                            soul = soul,
-                            page = input.page,
-                            i = i,
-                            location = input.sender
-                                .tryCast<KPlayerKCommandSender>()
-                                ?.instance
-                                ?.getLocation()
-                        ).append(
-                            addSpace = true,
-                            other = createFreeSoulComponent(
-                                sender = input.sender,
-                                soul = soul
-                            )
-                        ).append(
-                            addSpace = true,
-                            other = createTeleportSoulComponent(
-                                sender = input.sender,
-                                soul = soul
-                            )
-                        )
-                        input.sender.sendMessage(component)
-                    }
-                    input.sender.sendMessage(createPagingMessage(input, maxPages))
-                }
-            }
-
-            is SoulsCommand.Intent.Free -> {
-                ioScope.launch {
-                    val newSoul = soulsDao.getSoul(input.soulId)
-                        .getOrNull()
-                        ?.copy(isFree = true)
-                    if (newSoul == null) {
-                        input.sender.sendMessage(translation.souls.soulNotFound.component)
-                        return@launch
-                    }
-                    soulsDao.updateSoul(newSoul)
-                        .onSuccess {
-                            input.sender.sendMessage(translation.souls.soulFreed.component)
-                        }
-                        .onFailure {
-                            input.sender.sendMessage(translation.souls.couldNotFreeSoul.component)
-                        }
-                }
-            }
-
-            is SoulsCommand.Intent.TeleportToSoul -> {
-                ioScope.launch {
-                    val player = input.sender.tryCast<KPlayerKCommandSender>()
-                        ?.instance
-                        ?: return@launch
-                    val location = soulsDao.getSoul(input.soulId)
-                        .getOrNull()
-                        ?.location
-                    if (location == null) {
-                        player.sendMessage(translation.souls.soulNotFound.component)
-                        return@launch
-                    }
-                    withContext(dispatchers.Main) {
-                        player.teleport(location)
-                    }
-                }
-            }
+            is SoulsCommand.Intent.List -> executeList(input)
+            is SoulsCommand.Intent.Free -> executeFree(input)
+            is SoulsCommand.Intent.TeleportToSoul -> executeTeleport(input)
         }
     }
 }

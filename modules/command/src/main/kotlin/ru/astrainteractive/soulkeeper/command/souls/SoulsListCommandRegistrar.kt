@@ -9,6 +9,7 @@ import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.kyori.unwrap
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.soulkeeper.command.exception.CommandExceptionHandler
+import ru.astrainteractive.soulkeeper.core.plugin.PluginPermission
 
 internal class SoulsListCommandRegistrar(
     kyoriKrate: CachedKrate<KyoriComponentSerializer>,
@@ -44,8 +45,9 @@ internal class SoulsListCommandRegistrar(
                 literal("teleport") {
                     argument("soul_id", LongArgumentType.longArg(0)) { idArg ->
                         runs(commandExceptionHandler::handle) { ctx ->
+                            ctx.requirePermission(PluginPermission.TeleportToSouls)
                             SoulsCommand.Intent.TeleportToSoul(
-                                sender = ctx.getSender(),
+                                player = ctx.requirePlayer(),
                                 soulId = ctx.requireArgument(idArg)
                             ).run(soulsCommandExecutor::execute)
                         }
