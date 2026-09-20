@@ -5,7 +5,7 @@ import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.astrainteractive.astralibs.server.bridge.PlatformServer
-import ru.astrainteractive.astralibs.service.ServiceExecutor
+import ru.astrainteractive.astralibs.service.ServiceTask
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.platform.IsDeadPlayerProvider
@@ -22,7 +22,7 @@ internal class PickUpWorker(
     private val soulsDao: SoulsDao,
     private val platformServer: PlatformServer,
     private val isDeadPlayerProvider: IsDeadPlayerProvider
-) : ServiceExecutor, Logger by JUtiltLogger("SoulKeeper-PickUpWorker") {
+) : ServiceTask, Logger by JUtiltLogger("SoulKeeper-PickUpWorker") {
     private val mutex = Mutex()
 
     private suspend fun processPickupSoulEvents() {
@@ -43,7 +43,7 @@ internal class PickUpWorker(
         mutex.withLock { processPickupSoulEvents() }
     }
 
-    override suspend fun doWork() {
+    override suspend fun execute() {
         supervisorScope { launch { doWorkInternal() } }
     }
 }

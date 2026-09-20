@@ -1,10 +1,9 @@
 package ru.astrainteractive.soulkeeper.module.souls.di
 
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.flowOf
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
+import ru.astrainteractive.astralibs.service.IntervalService
+import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
-import ru.astrainteractive.soulkeeper.core.service.ThrottleTickFlowService
 import ru.astrainteractive.soulkeeper.module.souls.domain.GetNearestSoulUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpExpUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpSoulUseCase
@@ -41,19 +40,21 @@ class ServiceModule(
         effectEmitter = coreModule.effectEmitter
     )
 
-    private val deleteSoulService = ThrottleTickFlowService(
-        coroutineContext = SupervisorJob() + coreModule.dispatchers.IO,
-        delay = flowOf(60.seconds),
-        executor = DeleteSoulWorker(
+    private val deleteSoulService = IntervalService(
+        interval = SOUL_CLEANUP_INTERVAL,
+        scope = coreModule.ioScope,
+        logger = JUtiltLogger("DeleteSoulService"),
+        task = DeleteSoulWorker(
             soulsDao = soulsDaoModule.soulsDao,
             configKrate = coreModule.soulsConfigKrate,
         )
     )
 
-    private val freeSoulService = ThrottleTickFlowService(
-        coroutineContext = SupervisorJob() + coreModule.dispatchers.IO,
-        delay = flowOf(60.seconds),
-        executor = FreeSoulWorker(
+    private val freeSoulService = IntervalService(
+        interval = SOUL_CLEANUP_INTERVAL,
+        scope = coreModule.ioScope,
+        logger = JUtiltLogger("FreeSoulService"),
+        task = FreeSoulWorker(
             soulsDao = soulsDaoModule.soulsDao,
             configKrate = coreModule.soulsConfigKrate,
         )
@@ -75,10 +76,11 @@ class ServiceModule(
         experiencedFactory = platformServiceModule.onlineMinecraftPlayerExperiencedFactory,
         dispatchers = coreModule.dispatchers
     )
-    private val pickUpSoulService = ThrottleTickFlowService(
-        coroutineContext = SupervisorJob() + coreModule.dispatchers.IO,
-        delay = flowOf(3.seconds),
-        executor = PickUpWorker(
+    private val pickUpSoulService = IntervalService(
+        interval = SOUL_PICK_UP_INTERVAL,
+        scope = coreModule.ioScope,
+        logger = JUtiltLogger("PickUpSoulService"),
+        task = PickUpWorker(
             pickUpSoulUseCase = PickUpSoulUseCase(
                 dispatchers = coreModule.dispatchers,
                 pickUpExpUseCase = pickUpExpUseCase,
@@ -106,15 +108,20 @@ class ServiceModule(
     val lifecycle: Lifecycle = Lifecycle.Lambda(
         onEnable = {
             soulCallWorker.onEnable()
-            pickUpSoulService.onCreate()
-            deleteSoulService.onCreate()
-            freeSoulService.onCreate()
+            pickUpSoulService.onEnable()
+            deleteSoulService.onEnable()
+            freeSoulService.onEnable()
         },
         onDisable = {
             soulCallWorker.onDisable()
-            pickUpSoulService.onDestroy()
-            deleteSoulService.onDestroy()
-            freeSoulService.onDestroy()
+            pickUpSoulService.onDisable()
+            deleteSoulService.onDisable()
+            freeSoulService.onDisable()
         }
     )
+
+    companion object {
+        private val SOUL_CLEANUP_INTERVAL = 60.seconds
+        private val SOUL_PICK_UP_INTERVAL = 3.seconds
+    }
 }

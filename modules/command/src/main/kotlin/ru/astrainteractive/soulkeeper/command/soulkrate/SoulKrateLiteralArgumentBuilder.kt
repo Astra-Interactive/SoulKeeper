@@ -8,7 +8,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.StringFormat
 import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
-import ru.astrainteractive.astralibs.command.api.registrar.CommandRegistrarContext
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.kyori.unwrap
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
@@ -25,8 +24,7 @@ import java.time.Instant
 import java.util.UUID
 
 @Suppress("LongParameterList")
-internal class SoulKrateCommandRegistrar(
-    private val registrarContext: CommandRegistrarContext,
+internal class SoulKrateLiteralArgumentBuilder(
     private val multiplatformCommand: MultiplatformCommand,
     private val stringFormat: StringFormat,
     private val dataFolder: File,
@@ -35,10 +33,10 @@ internal class SoulKrateCommandRegistrar(
     private val commandExceptionHandler: CommandExceptionHandler,
     translationKrate: CachedKrate<PluginTranslation>,
     kyoriKrate: CachedKrate<KyoriComponentSerializer>
-) : Logger by JUtiltLogger("SoulKrateCommandRegistrar"),
+) : Logger by JUtiltLogger("SoulKrateLiteralArgumentBuilder"),
     KyoriComponentSerializer by kyoriKrate.unwrap() {
     private val translation by translationKrate
-    private fun createNode(): LiteralArgumentBuilder<*> {
+    fun create(): LiteralArgumentBuilder<*> {
         return with(multiplatformCommand) {
             command("soulkrate") {
                 argument("uuid", StringArgumentType.string()) { uuidArg ->
@@ -73,9 +71,5 @@ internal class SoulKrateCommandRegistrar(
                 }
             }
         }
-    }
-
-    fun register() {
-        registrarContext.registerWhenReady(createNode())
     }
 }

@@ -4,21 +4,19 @@ import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.LongArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
-import ru.astrainteractive.astralibs.command.api.registrar.CommandRegistrarContext
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.kyori.unwrap
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.soulkeeper.command.exception.CommandExceptionHandler
 import ru.astrainteractive.soulkeeper.core.plugin.PluginPermission
 
-internal class SoulsListCommandRegistrar(
+internal class SoulsListLiteralArgumentBuilder(
     kyoriKrate: CachedKrate<KyoriComponentSerializer>,
-    private val registrarContext: CommandRegistrarContext,
     private val multiplatformCommand: MultiplatformCommand,
     private val soulsCommandExecutor: SoulsCommandExecutor,
     private val commandExceptionHandler: CommandExceptionHandler,
 ) : KyoriComponentSerializer by kyoriKrate.unwrap() {
-    private fun createNode(): LiteralArgumentBuilder<*> {
+    fun create(): LiteralArgumentBuilder<*> {
         return with(multiplatformCommand) {
             command("souls") {
                 literal("page") {
@@ -61,9 +59,5 @@ internal class SoulsListCommandRegistrar(
                 }
             }
         }
-    }
-
-    fun register() {
-        registrarContext.registerWhenReady(createNode())
     }
 }
