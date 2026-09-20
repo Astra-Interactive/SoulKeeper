@@ -11,7 +11,3 @@ softdepend: [ packetevents ]
 depend: [ ]
 loadbefore: [ Towny ]
 libraries: ${libraries}
-commands:
-  souls:
-  skreload:
-  soulkrate:
