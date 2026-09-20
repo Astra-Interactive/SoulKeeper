@@ -50,7 +50,7 @@ class RootModule(plugin: LifecyclePlugin) {
     private val commandModule = CommandModule(
         coreModule = coreModule,
         commandRegistrarContext = PaperCommandRegistrarContext(
-            mainScope = coreModule.mainScope,
+            mainScope = coreModule.unconfinedScope,
             plugin = plugin
         ),
         multiplatformCommand = MultiplatformCommand(PaperMultiplatformCommands()),

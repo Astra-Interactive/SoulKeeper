@@ -66,7 +66,7 @@ class RootModule(private val plugin: Lifecycle) {
             coreModule = coreModule,
             soulsDaoModule = soulsDaoModule,
             commandRegistrarContext = NeoForgeCommandRegistrarContext(
-                mainScope = coreModule.mainScope
+                mainScope = coreModule.unconfinedScope
             ),
             serviceModule = serviceModule,
             multiplatformCommand = MultiplatformCommand(MinecraftMultiplatformCommands()),

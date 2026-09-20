@@ -81,6 +81,7 @@ class CoreModule(
             translation.getValue()
         },
         onDisable = {
+            unconfinedScope.cancel()
             ioScope.cancel()
             mainScope.cancel()
         }
