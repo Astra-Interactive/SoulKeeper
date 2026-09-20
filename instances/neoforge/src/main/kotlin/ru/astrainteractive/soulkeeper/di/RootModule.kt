@@ -61,13 +61,12 @@ class RootModule(private val plugin: Lifecycle) {
             effectEmitter = coreModule.effectEmitter
         )
     }
+    private val commandRegistrarContext = NeoForgeCommandRegistrarContext(mainScope = coreModule.unconfinedScope)
     private val commandModule by lazy {
         CommandModule(
             coreModule = coreModule,
             soulsDaoModule = soulsDaoModule,
-            commandRegistrarContext = NeoForgeCommandRegistrarContext(
-                mainScope = coreModule.unconfinedScope
-            ),
+            commandRegistrarContext = commandRegistrarContext,
             serviceModule = serviceModule,
             multiplatformCommand = MultiplatformCommand(MinecraftMultiplatformCommands()),
             lifecyclePlugin = plugin,
