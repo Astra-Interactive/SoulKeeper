@@ -2,7 +2,7 @@ package ru.astrainteractive.soulkeeper.module.souls.service
 
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
-import ru.astrainteractive.astralibs.service.ServiceExecutor
+import ru.astrainteractive.astralibs.service.ServiceTask
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
@@ -14,7 +14,7 @@ import java.time.Instant
 internal class FreeSoulWorker(
     private val soulsDao: SoulsDao,
     configKrate: CachedKrate<SoulsConfig>
-) : ServiceExecutor, Logger by JUtiltLogger("SoulKeeper-FreeSoulWorker") {
+) : ServiceTask, Logger by JUtiltLogger("SoulKeeper-FreeSoulWorker") {
     private val config by configKrate
 
     private suspend fun doWorkInternal() {
@@ -36,7 +36,7 @@ internal class FreeSoulWorker(
             }
     }
 
-    override suspend fun doWork() {
+    override suspend fun execute() {
         supervisorScope { launch { doWorkInternal() } }
     }
 }
