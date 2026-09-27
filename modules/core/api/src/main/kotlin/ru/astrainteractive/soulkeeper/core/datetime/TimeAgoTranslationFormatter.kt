@@ -1,10 +1,10 @@
 package ru.astrainteractive.soulkeeper.core.datetime
 
-import ru.astrainteractive.astralibs.string.StringDesc
+import ru.astrainteractive.astralibs.localization.component.LocalizableComponent
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
 
 class TimeAgoTranslationFormatter(private val translation: PluginTranslation) {
-    fun format(timeAgo: TimeAgoFormatter.Format): StringDesc {
+    fun format(timeAgo: TimeAgoFormatter.Format): LocalizableComponent {
         return when (timeAgo) {
             is TimeAgoFormatter.Format.DayAgo -> translation.souls.daysAgoFormat(timeAgo.duration)
             is TimeAgoFormatter.Format.HourAgo -> translation.souls.hoursAgoFormat(timeAgo.duration)

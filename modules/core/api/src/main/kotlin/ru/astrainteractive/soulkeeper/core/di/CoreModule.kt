@@ -6,8 +6,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.json.Json
 import ru.astrainteractive.astralibs.coroutines.withTimings
-import ru.astrainteractive.astralibs.kyori.AutoComponentSerializer
-import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.util.YamlStringFormat
 import ru.astrainteractive.astralibs.util.parseOrWriteIntoDefault
@@ -62,11 +60,6 @@ class CoreModule(
                 default = ::SoulsConfig
             )
         }
-    ).asCachedKrate()
-
-    val kyoriComponentSerializer = DefaultMutableKrate<KyoriComponentSerializer>(
-        loader = { null },
-        factory = { AutoComponentSerializer }
     ).asCachedKrate()
 
     val jsonStringFormat: StringFormat = Json {

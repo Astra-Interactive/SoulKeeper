@@ -8,8 +8,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.StringFormat
 import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
-import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
-import ru.astrainteractive.astralibs.kyori.unwrap
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
@@ -31,10 +29,8 @@ internal class SoulKrateLiteralArgumentBuilder(
     private val ioScope: CoroutineScope,
     private val addSoulItemsIntoInventoryUseCase: AddSoulItemsIntoInventoryUseCase,
     private val commandExceptionHandler: CommandExceptionHandler,
-    translationKrate: CachedKrate<PluginTranslation>,
-    kyoriKrate: CachedKrate<KyoriComponentSerializer>
-) : Logger by JUtiltLogger("SoulKrateLiteralArgumentBuilder"),
-    KyoriComponentSerializer by kyoriKrate.unwrap() {
+    translationKrate: CachedKrate<PluginTranslation>
+) : Logger by JUtiltLogger("SoulKrateLiteralArgumentBuilder") {
     private val translation by translationKrate
     fun create(): LiteralArgumentBuilder<*> {
         return with(multiplatformCommand) {
@@ -57,7 +53,7 @@ internal class SoulKrateLiteralArgumentBuilder(
                                         readIndex = index
                                     ).getValue()
                                     if (soul == null) {
-                                        player.sendMessage(translation.souls.soulNotFound.component)
+                                        player.sendMessage(translation.souls.soulNotFound)
                                         return@launch
                                     }
                                     addSoulItemsIntoInventoryUseCase.invoke(

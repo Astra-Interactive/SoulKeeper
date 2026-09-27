@@ -4,9 +4,12 @@ package ru.astrainteractive.soulkeeper.core.plugin
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import ru.astrainteractive.astralibs.string.StringDesc
-import ru.astrainteractive.astralibs.string.plus
-import ru.astrainteractive.astralibs.string.replace
+import ru.astrainteractive.astralibs.localization.component.LocalizableComponent
+import ru.astrainteractive.astralibs.localization.component.PlaceholderReplacement
+import ru.astrainteractive.astralibs.localization.component.replace
+import ru.astrainteractive.astralibs.localization.component.replaceAll
+import ru.astrainteractive.astralibs.localization.locale.MinecraftLocales
+import ru.astrainteractive.astralibs.localization.text.LocalizedText
 import kotlin.time.Duration
 
 @Serializable
@@ -19,122 +22,168 @@ class PluginTranslation(
     @Serializable
     data class Souls(
         @SerialName("days_ago_format")
-        private val daysAgoFormat: StringDesc.Raw = StringDesc.Raw("%time% дней назад"),
+        private val daysAgoFormat: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "%time% дней назад")
+            translation(MinecraftLocales.EN_US, "%time% days ago")
+        },
         @SerialName("hours_ago_format")
-        private val hoursAgoFormat: StringDesc.Raw = StringDesc.Raw("%time% часов назад"),
+        private val hoursAgoFormat: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "%time% часов назад")
+            translation(MinecraftLocales.EN_US, "%time% hours ago")
+        },
         @SerialName("minutes_ago_format")
-        private val minutesAgoFormat: StringDesc.Raw = StringDesc.Raw("%time% минут назад"),
+        private val minutesAgoFormat: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "%time% минут назад")
+            translation(MinecraftLocales.EN_US, "%time% minutes ago")
+        },
         @SerialName("months_ago_format")
-        private val monthsAgoFormat: StringDesc.Raw = StringDesc.Raw("%time% месяцеев назад"),
+        private val monthsAgoFormat: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "%time% месяцеев назад")
+            translation(MinecraftLocales.EN_US, "%time% months ago")
+        },
         @SerialName("seconds_ago_format")
-        private val secondsAgoFormat: StringDesc.Raw = StringDesc.Raw("%time% секунд назад"),
+        private val secondsAgoFormat: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "%time% секунд назад")
+            translation(MinecraftLocales.EN_US, "%time% seconds ago")
+        },
         @SerialName("no_souls_on_page")
-        private val noSoulsOnPage: StringDesc.Raw = prefix
-            .plus("&#db2c18Нет душ на странице %page%")
-            .toRaw(),
+        private val noSoulsOnPage: LocalizedText = prefix.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&#db2c18Нет душ на странице %page%")
+                translation(MinecraftLocales.EN_US, "&#db2c18No souls on page %page%")
+            }
+        ),
         @SerialName("listing_format")
-        private val listingFormat: StringDesc.Raw = StringDesc.Raw("&#b8b8b8%index%. ")
-            .plus("&#d1a71d%owner% ")
-            .plus("&#b8b8b8(%time_ago%) ")
-            .plus("&#b8b8b8(%x%; %y%; %z%) ")
-            .plus("%dist%m")
-            .toRaw(),
+        private val listingFormat: LocalizedText = LocalizedText.shared(
+            "&#b8b8b8%index%. &#d1a71d%owner% &#b8b8b8(%time_ago%) &#b8b8b8(%x%; %y%; %z%) %dist%m"
+        ),
         @SerialName("list_souls_title")
-        val listSoulsTitle: StringDesc.Raw = prefix
-            .plus("&#42f596Список видимых вам душ:")
-            .toRaw(),
+        val listSoulsTitle: LocalizedText = prefix.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&#42f596Список видимых вам душ:")
+                translation(MinecraftLocales.EN_US, "&#42f596Souls you can see:")
+            }
+        ),
         @SerialName("free_soul")
-        val freeSoul: StringDesc.Raw = StringDesc.Raw("&#b50b05[FREE]"),
+        val freeSoul: LocalizedText = LocalizedText.shared("&#b50b05[FREE]"),
         @SerialName("teleport_to_soul")
-        val teleportToSoul: StringDesc.Raw = StringDesc.Raw("&#1db2b8[TP]"),
+        val teleportToSoul: LocalizedText = LocalizedText.shared("&#1db2b8[TP]"),
         @SerialName("soul_freed")
-        val soulFreed: StringDesc.Raw = prefix
-            .plus("&#42f596Душа теперь свободна!")
-            .toRaw(),
+        val soulFreed: LocalizedText = prefix.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&#42f596Душа теперь свободна!")
+                translation(MinecraftLocales.EN_US, "&#42f596The soul is free now!")
+            }
+        ),
         @SerialName("could_not_free_soul")
-        val couldNotFreeSoul: StringDesc.Raw = prefix
-            .plus("&#db2c18Не удалось освободить душу!")
-            .toRaw(),
+        val couldNotFreeSoul: LocalizedText = prefix.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&#db2c18Не удалось освободить душу!")
+                translation(MinecraftLocales.EN_US, "&#db2c18Could not free the soul!")
+            }
+        ),
         @SerialName("soul_not_found")
-        val soulNotFound: StringDesc.Raw = prefix
-            .plus("&#db2c18Душа не найдена!")
-            .toRaw(),
+        val soulNotFound: LocalizedText = prefix.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&#db2c18Душа не найдена!")
+                translation(MinecraftLocales.EN_US, "&#db2c18Soul not found!")
+            }
+        ),
         @SerialName("next_page")
-        val nextPage: StringDesc.Raw = StringDesc.Raw("&#42f596[>>ДАЛЬШЕ>>]"),
+        val nextPage: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "&#42f596[>>ДАЛЬШЕ>>]")
+            translation(MinecraftLocales.EN_US, "&#42f596[>>NEXT>>]")
+        },
         @SerialName("prev_page")
-        val prevPage: StringDesc.Raw = StringDesc.Raw("&#42f596[<<РАНЬШЕ<<]"),
+        val prevPage: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "&#42f596[<<РАНЬШЕ<<]")
+            translation(MinecraftLocales.EN_US, "&#42f596[<<BACK<<]")
+        },
         @SerialName("soul_of")
-        private val soulOf: StringDesc.Raw = StringDesc.Raw("&#317dd4Душа игрока &#31d43c%player%")
+        private val soulOf: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "&#317dd4Душа игрока &#31d43c%player%")
+            translation(MinecraftLocales.EN_US, "&#317dd4Soul of &#31d43c%player%")
+        }
     ) {
         fun listingFormat(
             index: Int,
             owner: String,
-            timeAgo: String,
+            timeAgo: LocalizableComponent,
             distance: Int,
             x: Int,
             y: Int,
             z: Int
-        ) = listingFormat
-            .replace("%index%", "$index")
-            .replace("%owner%", owner)
-            .replace("%dist%", "$distance")
-            .replace("%time_ago%", timeAgo)
-            .replace("%x%", "$x")
-            .replace("%y%", "$y")
-            .replace("%z%", "$z")
+        ): LocalizableComponent = listingFormat.replaceAll(
+            PlaceholderReplacement.plain("%index%", "$index"),
+            PlaceholderReplacement.plain("%owner%", owner),
+            PlaceholderReplacement.plain("%dist%", "$distance"),
+            PlaceholderReplacement(placeholder = "%time_ago%", value = timeAgo),
+            PlaceholderReplacement.plain("%x%", "$x"),
+            PlaceholderReplacement.plain("%y%", "$y"),
+            PlaceholderReplacement.plain("%z%", "$z")
+        )
 
-        fun noSoulsOnPage(page: Int) = noSoulsOnPage
-            .replace("%page%", page.toString())
+        fun noSoulsOnPage(page: Int): LocalizableComponent = noSoulsOnPage.replace("%page%", page.toString())
 
-        fun soulOf(player: String) = soulOf
-            .replace("%player%", player)
+        fun soulOf(player: String): LocalizableComponent = soulOf.replace("%player%", player)
 
-        fun daysAgoFormat(time: Duration) = daysAgoFormat
+        fun daysAgoFormat(time: Duration): LocalizableComponent = daysAgoFormat
             .replace("%time%", time.inWholeDays.toString())
 
-        fun hoursAgoFormat(time: Duration) = hoursAgoFormat
+        fun hoursAgoFormat(time: Duration): LocalizableComponent = hoursAgoFormat
             .replace("%time%", time.inWholeHours.toString())
 
-        fun minutesAgoFormat(time: Duration) = minutesAgoFormat
+        fun minutesAgoFormat(time: Duration): LocalizableComponent = minutesAgoFormat
             .replace("%time%", time.inWholeMinutes.toString())
 
         @Suppress("MagicNumber")
-        fun monthsAgoFormat(time: Duration) = monthsAgoFormat
+        fun monthsAgoFormat(time: Duration): LocalizableComponent = monthsAgoFormat
             .replace("%time%", time.inWholeDays.div(30).toString())
 
-        fun secondsAgoFormat(time: Duration) = secondsAgoFormat
+        fun secondsAgoFormat(time: Duration): LocalizableComponent = secondsAgoFormat
             .replace("%time%", time.inWholeSeconds.toString())
     }
 
     @Serializable
     class General(
         @SerialName("reload")
-        val reload: StringDesc.Raw = prefix
-            .plus("&#dbbb18Перезагрузка плагина")
-            .toRaw(),
+        val reload: LocalizedText = prefix.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&#dbbb18Перезагрузка плагина")
+                translation(MinecraftLocales.EN_US, "&#dbbb18Reloading the plugin")
+            }
+        ),
         @SerialName("reload_complete")
-        val reloadComplete: StringDesc.Raw = prefix
-            .plus("&#42f596Перезагрузка успешно завершена")
-            .toRaw(),
+        val reloadComplete: LocalizedText = prefix.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&#42f596Перезагрузка успешно завершена")
+                translation(MinecraftLocales.EN_US, "&#42f596Reload complete")
+            }
+        ),
         @SerialName("no_permission")
-        val noPermission: StringDesc.Raw = prefix
-            .plus("&#db2c18У вас нет прав!")
-            .toRaw(),
+        val noPermission: LocalizedText = prefix.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&#db2c18У вас нет прав!")
+                translation(MinecraftLocales.EN_US, "&#db2c18You don't have permission!")
+            }
+        ),
         @SerialName("wrong_usage")
-        val wrongUsage: StringDesc.Raw = prefix
-            .plus("&#db2c18Неверное использование!")
-            .toRaw(),
+        val wrongUsage: LocalizedText = prefix.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&#db2c18Неверное использование!")
+                translation(MinecraftLocales.EN_US, "&#db2c18Wrong usage!")
+            }
+        ),
         @SerialName("only_player_command")
-        val onlyPlayerCommand: StringDesc.Raw = prefix
-            .plus("&#db2c18Эта команда только для игроков!")
-            .toRaw(),
+        val onlyPlayerCommand: LocalizedText = prefix.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&#db2c18Эта команда только для игроков!")
+                translation(MinecraftLocales.EN_US, "&#db2c18This command is for players only!")
+            }
+        ),
     )
 
     companion object {
-        val prefix: StringDesc.Raw = StringDesc.Raw("&#18dbd1[SoulKeeper] ")
+        val prefix: LocalizedText = LocalizedText.shared("&#18dbd1[SoulKeeper] ")
     }
-}
-
-private fun StringDesc.toRaw(): StringDesc.Raw {
-    return StringDesc.Raw(this.raw)
 }
