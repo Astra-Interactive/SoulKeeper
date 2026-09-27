@@ -65,7 +65,7 @@ internal class PacketEventsShowArmorStandUseCase(
                 EntityData(
                     2,
                     EntityDataTypes.OPTIONAL_ADV_COMPONENT,
-                    Optional.of(translation.souls.soulOf(soul.ownerLastName).toComponent(player.locale()))
+                    Optional.of(translation.soul.name(soul.ownerLastName).toComponent(player.locale()))
                 ),
                 // Show custom name
                 EntityData(

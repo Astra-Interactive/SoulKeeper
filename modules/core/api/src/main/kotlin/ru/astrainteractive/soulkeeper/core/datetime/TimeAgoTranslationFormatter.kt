@@ -6,17 +6,17 @@ import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
 class TimeAgoTranslationFormatter(private val translation: PluginTranslation) {
     fun format(timeAgo: TimeAgoFormatter.Format): LocalizableComponent {
         return when (timeAgo) {
-            is TimeAgoFormatter.Format.DayAgo -> translation.souls.daysAgoFormat(timeAgo.duration)
-            is TimeAgoFormatter.Format.HourAgo -> translation.souls.hoursAgoFormat(timeAgo.duration)
-            is TimeAgoFormatter.Format.MinuteAgo -> translation.souls.minutesAgoFormat(
+            is TimeAgoFormatter.Format.DayAgo -> translation.timeAgo.days(timeAgo.duration)
+            is TimeAgoFormatter.Format.HourAgo -> translation.timeAgo.hours(timeAgo.duration)
+            is TimeAgoFormatter.Format.MinuteAgo -> translation.timeAgo.minutes(
                 timeAgo.duration
             )
 
-            is TimeAgoFormatter.Format.MonthAgo -> translation.souls.monthsAgoFormat(
+            is TimeAgoFormatter.Format.MonthAgo -> translation.timeAgo.months(
                 timeAgo.duration
             )
 
-            is TimeAgoFormatter.Format.SecondsAgo -> translation.souls.secondsAgoFormat(
+            is TimeAgoFormatter.Format.SecondsAgo -> translation.timeAgo.seconds(
                 timeAgo.duration
             )
         }

@@ -53,7 +53,7 @@ internal class SoulKrateLiteralArgumentBuilder(
                                         readIndex = index
                                     ).getValue()
                                     if (soul == null) {
-                                        player.sendMessage(translation.souls.soulNotFound)
+                                        player.sendMessage(translation.soul.notFound)
                                         return@launch
                                     }
                                     addSoulItemsIntoInventoryUseCase.invoke(

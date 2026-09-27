@@ -23,9 +23,9 @@ internal class SoulsReloadLiteralArgumentBuilder(
                 runs(onFailure = commandExceptionHandler::handle) { ctx ->
                     ctx.requirePermission(PluginPermission.Reload)
                     val audience = ctx.getSender()
-                    audience.sendMessage(translation.general.reload)
+                    audience.sendMessage(translation.reload.started)
                     lifecyclePlugin.onReload()
-                    audience.sendMessage(translation.general.reloadComplete)
+                    audience.sendMessage(translation.reload.completed)
                 }
             }
         }

@@ -49,11 +49,11 @@ internal class SoulsCommandExecutor(
 
     private fun createPagingMessage(input: SoulsCommand.Intent.List, maxPages: Int): Component {
         val locale = input.sender.locale
-        val nextPageComponent = translation.souls.nextPage.toComponent(locale)
+        val nextPageComponent = translation.soulList.nextPage.toComponent(locale)
             .clickable { execute(input.copy(page = input.page.plus(1))) }
             .takeIf { input.page < maxPages }
             .orEmpty()
-        val prevPageComponent = translation.souls.prevPage.toComponent(locale)
+        val prevPageComponent = translation.soulList.previousPage.toComponent(locale)
             .clickable { execute(input.copy(page = input.page.plus(-1))) }
             .appendSpace().takeIf { input.page > 0 }
             .orEmpty()
@@ -109,7 +109,7 @@ internal class SoulsCommandExecutor(
         val timeAgoFormatted = TimeAgoTranslationFormatter(translation)
             .format(timeAgo)
 
-        return translation.souls.listingFormat(
+        return translation.soulList.entry(
             index = page.times(SoulsCommand.PAGE_SIZE).plus(i.plus(1)),
             owner = soul.ownerLastName,
             timeAgo = timeAgoFormatted,
@@ -126,7 +126,7 @@ internal class SoulsCommandExecutor(
     private fun createFreeSoulComponent(sender: KCommandSender, soul: DatabaseSoul): Component? {
         if (soul.isFree) return null
         if (!accessPolicy.canFreeSoul(sender, soul)) return null
-        return translation.souls.freeSoul
+        return translation.soulList.freeButton
             .toComponent(sender.locale)
             .appendSpace()
             .clickable { execute(SoulsCommand.Intent.Free(sender, soul.id)) }
@@ -135,7 +135,7 @@ internal class SoulsCommandExecutor(
     private fun createTeleportSoulComponent(sender: KCommandSender, soul: DatabaseSoul): Component? {
         if (sender !is KPlayerKCommandSender) return null
         if (!accessPolicy.canTeleportToSoul(sender)) return null
-        return translation.souls.teleportToSoul
+        return translation.soulList.teleportButton
             .toComponent(sender.locale)
             .clickable { execute(SoulsCommand.Intent.TeleportToSoul(sender.instance, soul.id)) }
     }
@@ -146,11 +146,11 @@ internal class SoulsCommandExecutor(
             val maxPages = filteredSouls.size.div(SoulsCommand.PAGE_SIZE)
             val pageSouls = getPageSouls(filteredSouls, input.page)
             if (pageSouls.isEmpty()) {
-                input.sender.sendMessage(translation.souls.noSoulsOnPage(input.page.plus(1)))
+                input.sender.sendMessage(translation.soulList.emptyPage(input.page.plus(1)))
                 return@launch
             }
 
-            input.sender.sendMessage(translation.souls.listSoulsTitle)
+            input.sender.sendMessage(translation.soulList.title)
 
             pageSouls.forEachIndexed { i, soul ->
                 val component = createListingItemComponent(
@@ -185,19 +185,19 @@ internal class SoulsCommandExecutor(
         ioScope.launch {
             val soul = soulsDao.getSoul(input.soulId).getOrNull()
             if (soul == null) {
-                input.sender.sendMessage(translation.souls.soulNotFound)
+                input.sender.sendMessage(translation.soul.notFound)
                 return@launch
             }
             if (!accessPolicy.canFreeSoul(input.sender, soul)) {
-                input.sender.sendMessage(translation.general.noPermission)
+                input.sender.sendMessage(translation.commandError.noPermission)
                 return@launch
             }
             soulsDao.updateSoul(soul.copy(isFree = true))
                 .onSuccess {
-                    input.sender.sendMessage(translation.souls.soulFreed)
+                    input.sender.sendMessage(translation.soul.freed)
                 }
                 .onFailure {
-                    input.sender.sendMessage(translation.souls.couldNotFreeSoul)
+                    input.sender.sendMessage(translation.soul.freeFailed)
                 }
         }
     }
@@ -208,7 +208,7 @@ internal class SoulsCommandExecutor(
                 .getOrNull()
                 ?.location
             if (location == null) {
-                input.player.sendMessage(translation.souls.soulNotFound)
+                input.player.sendMessage(translation.soul.notFound)
                 return@launch
             }
             withContext(dispatchers.Main) {

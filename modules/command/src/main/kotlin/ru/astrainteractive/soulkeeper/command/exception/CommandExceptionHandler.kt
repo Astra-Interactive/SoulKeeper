@@ -20,15 +20,15 @@ class CommandExceptionHandler(
         with(multiplatformCommand) {
             when (t) {
                 is NoPermissionException -> {
-                    ctx.getSender()?.sendMessage(translation.general.noPermission)
+                    ctx.getSender()?.sendMessage(translation.commandError.noPermission)
                 }
 
                 is NotPlayerExecutorException -> {
-                    ctx.getSender()?.sendMessage(translation.general.onlyPlayerCommand)
+                    ctx.getSender()?.sendMessage(translation.commandError.playersOnly)
                 }
 
                 else -> {
-                    ctx.getSender()?.sendMessage(translation.general.wrongUsage)
+                    ctx.getSender()?.sendMessage(translation.commandError.wrongUsage)
                 }
             }
         }
