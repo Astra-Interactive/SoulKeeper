@@ -31,6 +31,7 @@ dependencies {
     shadow(libs.driver.jdbc)
     shadow(libs.minecraft.kyori.plain)
     shadow(libs.minecraft.kyori.legacy)
+    shadow(libs.minecraft.kyori.minimessage)
     shadow(libs.minecraft.kyori.gson)
     // Local
     shadow(projects.modules.core.api)
