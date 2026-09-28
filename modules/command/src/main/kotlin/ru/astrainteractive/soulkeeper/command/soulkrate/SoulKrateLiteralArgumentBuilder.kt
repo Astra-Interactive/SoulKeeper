@@ -12,14 +12,13 @@ import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
-import ru.astrainteractive.soulkeeper.command.exception.CommandExceptionHandler
+import ru.astrainteractive.soulkeeper.core.command.CommandExceptionHandler
 import ru.astrainteractive.soulkeeper.core.plugin.PluginPermission
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
 import ru.astrainteractive.soulkeeper.module.souls.domain.AddSoulItemsIntoInventoryUseCase
 import ru.astrainteractive.soulkeeper.module.souls.krate.PlayerSoulKrate
 import java.io.File
 import java.time.Instant
-import java.util.UUID
 
 @Suppress("LongParameterList")
 internal class SoulKrateLiteralArgumentBuilder(
@@ -32,18 +31,21 @@ internal class SoulKrateLiteralArgumentBuilder(
     translationKrate: CachedKrate<PluginTranslation>
 ) : Logger by JUtiltLogger("SoulKrateLiteralArgumentBuilder") {
     private val translation by translationKrate
+
+    private val instantArgumentType = LongArgumentType.longArg(Instant.MIN.epochSecond, Instant.MAX.epochSecond)
+
     fun create(): LiteralArgumentBuilder<*> {
         return with(multiplatformCommand) {
             command("soulkrate") {
                 argument("uuid", StringArgumentType.string()) { uuidArg ->
-                    argument("instant", LongArgumentType.longArg()) { instantArg ->
+                    argument("instant", instantArgumentType) { instantArg ->
                         argument("index", IntegerArgumentType.integer()) { indexArg ->
                             runs(commandExceptionHandler::handle) { ctx ->
                                 ctx.requirePermission(PluginPermission.LoadSouls)
                                 val player = ctx.requirePlayer()
                                 val instant = ctx.requireArgument(instantArg).let(Instant::ofEpochSecond)
                                 val index = ctx.requireArgument(indexArg)
-                                val uuid = ctx.requireArgument(uuidArg).let(UUID::fromString)
+                                val uuid = ctx.requireArgument(uuidArg, UuidArgumentConverter)
                                 ioScope.launch {
                                     val soul = PlayerSoulKrate(
                                         stringFormat = stringFormat,

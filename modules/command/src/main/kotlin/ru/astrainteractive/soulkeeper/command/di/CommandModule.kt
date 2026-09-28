@@ -1,10 +1,8 @@
 package ru.astrainteractive.soulkeeper.command.di
 
-import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
 import ru.astrainteractive.astralibs.command.api.registrar.CommandRegistrarContext
 import ru.astrainteractive.astralibs.command.api.registrar.registerWhenReady
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
-import ru.astrainteractive.soulkeeper.command.exception.CommandExceptionHandler
 import ru.astrainteractive.soulkeeper.command.reload.SoulsReloadLiteralArgumentBuilder
 import ru.astrainteractive.soulkeeper.command.soulkrate.SoulKrateLiteralArgumentBuilder
 import ru.astrainteractive.soulkeeper.command.souls.SoulsAccessPolicy
@@ -19,18 +17,12 @@ class CommandModule(
     soulsDaoModule: SoulsDaoModule,
     serviceModule: ServiceModule,
     private val commandRegistrarContext: CommandRegistrarContext,
-    multiplatformCommand: MultiplatformCommand,
     lifecyclePlugin: Lifecycle
 ) {
-    private val commandExceptionHandler = CommandExceptionHandler(
-        multiplatformCommand = multiplatformCommand,
-        translationKrate = coreModule.translation
-    )
-
     private val nodes = listOf(
         SoulsListLiteralArgumentBuilder(
-            multiplatformCommand = multiplatformCommand,
-            commandExceptionHandler = commandExceptionHandler,
+            multiplatformCommand = coreModule.multiplatformCommand,
+            commandExceptionHandler = coreModule.commandExceptionHandler,
             soulsCommandExecutor = SoulsCommandExecutor(
                 ioScope = coreModule.ioScope,
                 soulsDao = soulsDaoModule.soulsDao,
@@ -40,19 +32,19 @@ class CommandModule(
             ),
         ).create(),
         SoulKrateLiteralArgumentBuilder(
-            multiplatformCommand = multiplatformCommand,
+            multiplatformCommand = coreModule.multiplatformCommand,
             stringFormat = coreModule.yamlFormat,
             dataFolder = coreModule.dataFolder,
             ioScope = coreModule.ioScope,
             addSoulItemsIntoInventoryUseCase = serviceModule.addSoulItemsIntoInventoryUseCase,
             translationKrate = coreModule.translation,
-            commandExceptionHandler = commandExceptionHandler,
+            commandExceptionHandler = coreModule.commandExceptionHandler,
         ).create(),
         SoulsReloadLiteralArgumentBuilder(
             lifecyclePlugin = lifecyclePlugin,
             translationKrate = coreModule.translation,
-            multiplatformCommand = multiplatformCommand,
-            commandExceptionHandler = commandExceptionHandler,
+            multiplatformCommand = coreModule.multiplatformCommand,
+            commandExceptionHandler = coreModule.commandExceptionHandler,
         ).create()
     )
 

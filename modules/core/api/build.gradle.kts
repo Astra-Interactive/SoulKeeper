@@ -8,6 +8,8 @@ plugins {
 dependencies {
     api(libs.klibs.kstorage)
 
+    compileOnly(libs.minecraft.brigadier)
+
     implementation(libs.klibs.mikro.core)
     implementation(libs.klibs.mikro.core)
     implementation(libs.klibs.mikro.core)
@@ -16,8 +18,11 @@ dependencies {
     implementation(libs.kotlin.coroutines.core)
     implementation(libs.kotlin.serialization.json)
     implementation(libs.kotlin.serialization.kaml)
+    implementation(libs.minecraft.astralibs.command)
     implementation(libs.minecraft.astralibs.core)
 
+    testImplementation(libs.minecraft.brigadier)
+    testImplementation(libs.minecraft.kyori.api)
     testImplementation(libs.tests.kotlin.test)
     testImplementation(libs.tests.kotlin.test)
 }

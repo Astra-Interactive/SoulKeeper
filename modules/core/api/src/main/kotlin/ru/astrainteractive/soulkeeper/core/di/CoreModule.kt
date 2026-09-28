@@ -5,6 +5,7 @@ import com.charleskorn.kaml.Yaml
 import kotlinx.coroutines.cancel
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.json.Json
+import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
 import ru.astrainteractive.astralibs.coroutines.withTimings
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.util.YamlStringFormat
@@ -15,6 +16,7 @@ import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
+import ru.astrainteractive.soulkeeper.core.command.CommandExceptionHandler
 import ru.astrainteractive.soulkeeper.core.platform.EffectEmitter
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
@@ -23,7 +25,8 @@ import java.io.File
 class CoreModule(
     val dispatchers: KotlinDispatchers,
     val dataFolder: File,
-    val effectEmitter: EffectEmitter
+    val effectEmitter: EffectEmitter,
+    val multiplatformCommand: MultiplatformCommand
 ) : Logger by JUtiltLogger("CoreModule").withoutParentHandlers() {
 
     val ioScope = CoroutineFeature.IO.withTimings()
@@ -51,6 +54,11 @@ class CoreModule(
             )
         }
     ).asCachedKrate()
+
+    val commandExceptionHandler = CommandExceptionHandler(
+        multiplatformCommand = multiplatformCommand,
+        translationKrate = translation
+    )
 
     val soulsConfigKrate = DefaultMutableKrate(
         factory = ::SoulsConfig,
