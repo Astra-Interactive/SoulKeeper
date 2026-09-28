@@ -5,6 +5,7 @@ import com.charleskorn.kaml.Yaml
 import kotlinx.coroutines.cancel
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.json.Json
+import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
 import ru.astrainteractive.astralibs.coroutines.withTimings
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.util.YamlStringFormat
@@ -23,7 +24,8 @@ import java.io.File
 class CoreModule(
     val dispatchers: KotlinDispatchers,
     val dataFolder: File,
-    val effectEmitter: EffectEmitter
+    val effectEmitter: EffectEmitter,
+    val multiplatformCommand: MultiplatformCommand
 ) : Logger by JUtiltLogger("CoreModule").withoutParentHandlers() {
 
     val ioScope = CoroutineFeature.IO.withTimings()

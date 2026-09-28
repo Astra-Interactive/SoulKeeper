@@ -29,7 +29,8 @@ class RootModule(private val plugin: Lifecycle) {
         CoreModule(
             dataFolder = dataFolder,
             dispatchers = MinecraftDispatchers(),
-            effectEmitter = NeoForgeEffectEmitter
+            effectEmitter = NeoForgeEffectEmitter,
+            multiplatformCommand = MultiplatformCommand(MinecraftMultiplatformCommands())
         )
     }
 
@@ -68,7 +69,6 @@ class RootModule(private val plugin: Lifecycle) {
             soulsDaoModule = soulsDaoModule,
             commandRegistrarContext = commandRegistrarContext,
             serviceModule = serviceModule,
-            multiplatformCommand = MultiplatformCommand(MinecraftMultiplatformCommands()),
             lifecyclePlugin = plugin,
         )
     }

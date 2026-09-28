@@ -1,6 +1,5 @@
 package ru.astrainteractive.soulkeeper.command.di
 
-import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
 import ru.astrainteractive.astralibs.command.api.registrar.CommandRegistrarContext
 import ru.astrainteractive.astralibs.command.api.registrar.registerWhenReady
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
@@ -19,17 +18,16 @@ class CommandModule(
     soulsDaoModule: SoulsDaoModule,
     serviceModule: ServiceModule,
     private val commandRegistrarContext: CommandRegistrarContext,
-    multiplatformCommand: MultiplatformCommand,
     lifecyclePlugin: Lifecycle
 ) {
     private val commandExceptionHandler = CommandExceptionHandler(
-        multiplatformCommand = multiplatformCommand,
+        multiplatformCommand = coreModule.multiplatformCommand,
         translationKrate = coreModule.translation
     )
 
     private val nodes = listOf(
         SoulsListLiteralArgumentBuilder(
-            multiplatformCommand = multiplatformCommand,
+            multiplatformCommand = coreModule.multiplatformCommand,
             commandExceptionHandler = commandExceptionHandler,
             soulsCommandExecutor = SoulsCommandExecutor(
                 ioScope = coreModule.ioScope,
@@ -40,7 +38,7 @@ class CommandModule(
             ),
         ).create(),
         SoulKrateLiteralArgumentBuilder(
-            multiplatformCommand = multiplatformCommand,
+            multiplatformCommand = coreModule.multiplatformCommand,
             stringFormat = coreModule.yamlFormat,
             dataFolder = coreModule.dataFolder,
             ioScope = coreModule.ioScope,
@@ -51,7 +49,7 @@ class CommandModule(
         SoulsReloadLiteralArgumentBuilder(
             lifecyclePlugin = lifecyclePlugin,
             translationKrate = coreModule.translation,
-            multiplatformCommand = multiplatformCommand,
+            multiplatformCommand = coreModule.multiplatformCommand,
             commandExceptionHandler = commandExceptionHandler,
         ).create()
     )

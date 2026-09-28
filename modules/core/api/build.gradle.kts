@@ -16,6 +16,7 @@ dependencies {
     implementation(libs.kotlin.coroutines.core)
     implementation(libs.kotlin.serialization.json)
     implementation(libs.kotlin.serialization.kaml)
+    implementation(libs.minecraft.astralibs.command)
     implementation(libs.minecraft.astralibs.core)
 
     testImplementation(libs.tests.kotlin.test)

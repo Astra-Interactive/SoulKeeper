@@ -20,7 +20,8 @@ class RootModule(plugin: LifecyclePlugin) {
     private val coreModule: CoreModule = CoreModule(
         dispatchers = DefaultBukkitDispatchers(plugin),
         dataFolder = plugin.dataFolder,
-        effectEmitter = BukkitEffectEmitter
+        effectEmitter = BukkitEffectEmitter,
+        multiplatformCommand = MultiplatformCommand(PaperMultiplatformCommands())
     )
     private val bukkitCoreModule = BukkitCoreModule(plugin)
 
@@ -53,7 +54,6 @@ class RootModule(plugin: LifecyclePlugin) {
             mainScope = coreModule.unconfinedScope,
             plugin = plugin
         ),
-        multiplatformCommand = MultiplatformCommand(PaperMultiplatformCommands()),
         soulsDaoModule = soulsDaoModule,
         serviceModule = serviceModule,
         lifecyclePlugin = plugin,
