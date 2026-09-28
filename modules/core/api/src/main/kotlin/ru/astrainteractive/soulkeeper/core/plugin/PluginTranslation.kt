@@ -53,6 +53,20 @@ data class PluginTranslation(
                 translation(MinecraftLocales.RU_RU, "&#db2c18Эта команда только для игроков!")
             }
         ),
+        @SerialName("player_not_found")
+        val playerNotFound: LocalizedText = PREFIX.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.EN_US, "&#db2c18Player not found!")
+                translation(MinecraftLocales.RU_RU, "&#db2c18Игрок не найден!")
+            }
+        ),
+        @SerialName("invalid_argument")
+        val invalidArgument: LocalizedText = PREFIX.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.EN_US, "&#db2c18Invalid argument value!")
+                translation(MinecraftLocales.RU_RU, "&#db2c18Неверное значение аргумента!")
+            }
+        ),
         @SerialName("unknown_error")
         val unknownError: LocalizedText = PREFIX.concat(
             LocalizedText.build {
