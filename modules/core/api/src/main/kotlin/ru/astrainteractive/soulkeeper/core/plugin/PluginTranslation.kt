@@ -35,22 +35,22 @@ data class PluginTranslation(
         @SerialName("no_permission")
         val noPermission: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&#db2c18У вас нет прав!")
                 translation(MinecraftLocales.EN_US, "&#db2c18You don't have permission!")
+                translation(MinecraftLocales.RU_RU, "&#db2c18У вас нет прав!")
             }
         ),
         @SerialName("wrong_usage")
         val wrongUsage: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&#db2c18Неверное использование!")
                 translation(MinecraftLocales.EN_US, "&#db2c18Wrong usage!")
+                translation(MinecraftLocales.RU_RU, "&#db2c18Неверное использование!")
             }
         ),
         @SerialName("players_only")
         val playersOnly: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&#db2c18Эта команда только для игроков!")
                 translation(MinecraftLocales.EN_US, "&#db2c18This command is for players only!")
+                translation(MinecraftLocales.RU_RU, "&#db2c18Эта команда только для игроков!")
             }
         )
     )
@@ -60,15 +60,15 @@ data class PluginTranslation(
         @SerialName("started")
         val started: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&#dbbb18Перезагрузка плагина")
                 translation(MinecraftLocales.EN_US, "&#dbbb18Reloading the plugin")
+                translation(MinecraftLocales.RU_RU, "&#dbbb18Перезагрузка плагина")
             }
         ),
         @SerialName("completed")
         val completed: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&#42f596Перезагрузка успешно завершена")
                 translation(MinecraftLocales.EN_US, "&#42f596Reload complete")
+                translation(MinecraftLocales.RU_RU, "&#42f596Перезагрузка успешно завершена")
             }
         )
     )
@@ -79,15 +79,15 @@ data class PluginTranslation(
         @SerialName("title")
         val title: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&#42f596Список видимых вам душ:")
                 translation(MinecraftLocales.EN_US, "&#42f596Souls you can see:")
+                translation(MinecraftLocales.RU_RU, "&#42f596Список видимых вам душ:")
             }
         ),
         @SerialName("empty_page")
         private val emptyPage: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&#db2c18Нет душ на странице %page%")
                 translation(MinecraftLocales.EN_US, "&#db2c18No souls on page %page%")
+                translation(MinecraftLocales.RU_RU, "&#db2c18Нет душ на странице %page%")
             }
         ),
         @SerialName("entry")
@@ -100,13 +100,13 @@ data class PluginTranslation(
         val teleportButton: LocalizedText = LocalizedText.shared("&#1db2b8[TP]"),
         @SerialName("next_page")
         val nextPage: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "&#42f596[>>ДАЛЬШЕ>>]")
             translation(MinecraftLocales.EN_US, "&#42f596[>>NEXT>>]")
+            translation(MinecraftLocales.RU_RU, "&#42f596[>>ДАЛЬШЕ>>]")
         },
         @SerialName("previous_page")
         val previousPage: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "&#42f596[<<РАНЬШЕ<<]")
             translation(MinecraftLocales.EN_US, "&#42f596[<<BACK<<]")
+            translation(MinecraftLocales.RU_RU, "&#42f596[<<РАНЬШЕ<<]")
         }
     ) {
         fun emptyPage(page: Int): LocalizableComponent = emptyPage.replace("%page%", page.toString())
@@ -135,28 +135,28 @@ data class PluginTranslation(
     data class TimeAgo(
         @SerialName("seconds")
         private val seconds: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "%time% секунд назад")
             translation(MinecraftLocales.EN_US, "%time% seconds ago")
+            translation(MinecraftLocales.RU_RU, "%time% секунд назад")
         },
         @SerialName("minutes")
         private val minutes: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "%time% минут назад")
             translation(MinecraftLocales.EN_US, "%time% minutes ago")
+            translation(MinecraftLocales.RU_RU, "%time% минут назад")
         },
         @SerialName("hours")
         private val hours: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "%time% часов назад")
             translation(MinecraftLocales.EN_US, "%time% hours ago")
+            translation(MinecraftLocales.RU_RU, "%time% часов назад")
         },
         @SerialName("days")
         private val days: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "%time% дней назад")
             translation(MinecraftLocales.EN_US, "%time% days ago")
+            translation(MinecraftLocales.RU_RU, "%time% дней назад")
         },
         @SerialName("months")
         private val months: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "%time% месяцев назад")
             translation(MinecraftLocales.EN_US, "%time% months ago")
+            translation(MinecraftLocales.RU_RU, "%time% месяцев назад")
         }
     ) {
         fun seconds(time: Duration): LocalizableComponent = seconds.replace("%time%", time.inWholeSeconds.toString())
@@ -177,28 +177,28 @@ data class PluginTranslation(
         @SerialName("freed")
         val freed: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&#42f596Душа теперь свободна!")
                 translation(MinecraftLocales.EN_US, "&#42f596The soul is free now!")
+                translation(MinecraftLocales.RU_RU, "&#42f596Душа теперь свободна!")
             }
         ),
         @SerialName("free_failed")
         val freeFailed: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&#db2c18Не удалось освободить душу!")
                 translation(MinecraftLocales.EN_US, "&#db2c18Could not free the soul!")
+                translation(MinecraftLocales.RU_RU, "&#db2c18Не удалось освободить душу!")
             }
         ),
         @SerialName("not_found")
         val notFound: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&#db2c18Душа не найдена!")
                 translation(MinecraftLocales.EN_US, "&#db2c18Soul not found!")
+                translation(MinecraftLocales.RU_RU, "&#db2c18Душа не найдена!")
             }
         ),
         @SerialName("name")
         private val name: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "&#317dd4Душа игрока &#31d43c%player%")
             translation(MinecraftLocales.EN_US, "&#317dd4Soul of &#31d43c%player%")
+            translation(MinecraftLocales.RU_RU, "&#317dd4Душа игрока &#31d43c%player%")
         }
     ) {
         fun name(owner: String): LocalizableComponent = name.replace("%player%", owner)
