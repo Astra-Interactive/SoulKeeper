@@ -52,6 +52,13 @@ data class PluginTranslation(
                 translation(MinecraftLocales.EN_US, "&#db2c18This command is for players only!")
                 translation(MinecraftLocales.RU_RU, "&#db2c18Эта команда только для игроков!")
             }
+        ),
+        @SerialName("unknown_error")
+        val unknownError: LocalizedText = PREFIX.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.EN_US, "&#db2c18The command failed with an unknown error")
+                translation(MinecraftLocales.RU_RU, "&#db2c18Команда завершилась с неизвестной ошибкой")
+            }
         )
     )
 
