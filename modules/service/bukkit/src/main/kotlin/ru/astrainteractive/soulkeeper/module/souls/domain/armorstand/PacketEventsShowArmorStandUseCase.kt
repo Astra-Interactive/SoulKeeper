@@ -11,7 +11,6 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSp
 import io.github.retrooper.packetevents.util.SpigotReflectionUtil
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.astralibs.server.util.asBukkitLocation
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
@@ -22,10 +21,8 @@ import java.util.Optional
 import java.util.UUID
 
 internal class PacketEventsShowArmorStandUseCase(
-    kyoriKrate: CachedKrate<KyoriComponentSerializer>,
     translationKrate: CachedKrate<PluginTranslation>
 ) : ShowArmorStandUseCase {
-    private val kyori by kyoriKrate
     private val translation by translationKrate
 
     override fun generateEntityId(): Int {
@@ -68,7 +65,7 @@ internal class PacketEventsShowArmorStandUseCase(
                 EntityData(
                     2,
                     EntityDataTypes.OPTIONAL_ADV_COMPONENT,
-                    Optional.of(translation.souls.soulOf(soul.ownerLastName).let(kyori::toComponent))
+                    Optional.of(translation.soul.name(soul.ownerLastName).toComponent(player.locale()))
                 ),
                 // Show custom name
                 EntityData(

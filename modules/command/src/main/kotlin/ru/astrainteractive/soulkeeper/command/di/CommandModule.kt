@@ -24,20 +24,17 @@ class CommandModule(
 ) {
     private val commandExceptionHandler = CommandExceptionHandler(
         multiplatformCommand = multiplatformCommand,
-        translationKrate = coreModule.translation,
-        kyoriKrate = coreModule.kyoriComponentSerializer
+        translationKrate = coreModule.translation
     )
 
     private val nodes = listOf(
         SoulsListLiteralArgumentBuilder(
-            kyoriKrate = coreModule.kyoriComponentSerializer,
             multiplatformCommand = multiplatformCommand,
             commandExceptionHandler = commandExceptionHandler,
             soulsCommandExecutor = SoulsCommandExecutor(
                 ioScope = coreModule.ioScope,
                 soulsDao = soulsDaoModule.soulsDao,
                 translationKrate = coreModule.translation,
-                kyoriKrate = coreModule.kyoriComponentSerializer,
                 dispatchers = coreModule.dispatchers,
                 accessPolicy = SoulsAccessPolicy(),
             ),
@@ -49,13 +46,11 @@ class CommandModule(
             ioScope = coreModule.ioScope,
             addSoulItemsIntoInventoryUseCase = serviceModule.addSoulItemsIntoInventoryUseCase,
             translationKrate = coreModule.translation,
-            kyoriKrate = coreModule.kyoriComponentSerializer,
             commandExceptionHandler = commandExceptionHandler,
         ).create(),
         SoulsReloadLiteralArgumentBuilder(
             lifecyclePlugin = lifecyclePlugin,
             translationKrate = coreModule.translation,
-            kyoriKrate = coreModule.kyoriComponentSerializer,
             multiplatformCommand = multiplatformCommand,
             commandExceptionHandler = commandExceptionHandler,
         ).create()

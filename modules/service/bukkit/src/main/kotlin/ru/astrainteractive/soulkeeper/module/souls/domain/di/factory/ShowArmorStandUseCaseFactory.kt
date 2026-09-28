@@ -14,7 +14,6 @@ internal class ShowArmorStandUseCaseFactory(
             return StubShowArmorStandUseCase
         }
         return PacketEventsShowArmorStandUseCase(
-            kyoriKrate = coreModule.kyoriComponentSerializer,
             translationKrate = coreModule.translation
         )
     }

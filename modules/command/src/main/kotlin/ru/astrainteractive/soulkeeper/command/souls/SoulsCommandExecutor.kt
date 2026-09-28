@@ -7,13 +7,11 @@ import net.kyori.adventure.text.Component
 import ru.astrainteractive.astralibs.command.api.brigadier.sender.ConsoleKCommandSender
 import ru.astrainteractive.astralibs.command.api.brigadier.sender.KCommandSender
 import ru.astrainteractive.astralibs.command.api.brigadier.sender.KPlayerKCommandSender
-import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
-import ru.astrainteractive.astralibs.kyori.unwrap
+import ru.astrainteractive.astralibs.localization.component.clickable
+import ru.astrainteractive.astralibs.localization.component.isEmpty
+import ru.astrainteractive.astralibs.localization.component.orEmpty
 import ru.astrainteractive.astralibs.server.location.KLocation
 import ru.astrainteractive.astralibs.server.location.dist
-import ru.astrainteractive.astralibs.util.clickable
-import ru.astrainteractive.astralibs.util.isEmpty
-import ru.astrainteractive.astralibs.util.orEmpty
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
@@ -25,6 +23,7 @@ import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
 import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
 import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.database.model.Soul
+import java.util.Locale
 
 private fun Component.append(
     other: Component?,
@@ -44,17 +43,17 @@ internal class SoulsCommandExecutor(
     private val soulsDao: SoulsDao,
     private val dispatchers: KotlinDispatchers,
     private val accessPolicy: SoulsAccessPolicy,
-    translationKrate: CachedKrate<PluginTranslation>,
-    kyoriKrate: CachedKrate<KyoriComponentSerializer>
-) : KyoriComponentSerializer by kyoriKrate.unwrap() {
+    translationKrate: CachedKrate<PluginTranslation>
+) {
     private val translation by translationKrate
 
     private fun createPagingMessage(input: SoulsCommand.Intent.List, maxPages: Int): Component {
-        val nextPageComponent = translation.souls.nextPage.component
+        val locale = input.sender.locale
+        val nextPageComponent = translation.soulList.nextPage.toComponent(locale)
             .clickable { execute(input.copy(page = input.page.plus(1))) }
             .takeIf { input.page < maxPages }
             .orEmpty()
-        val prevPageComponent = translation.souls.prevPage.component
+        val prevPageComponent = translation.soulList.previousPage.toComponent(locale)
             .clickable { execute(input.copy(page = input.page.plus(-1))) }
             .appendSpace().takeIf { input.page > 0 }
             .orEmpty()
@@ -103,16 +102,17 @@ internal class SoulsCommandExecutor(
         soul: Soul,
         page: Int,
         i: Int,
-        location: KLocation?
+        location: KLocation?,
+        locale: Locale
     ): Component {
         val timeAgo = TimeAgoFormatter.format(soul.createdAt)
         val timeAgoFormatted = TimeAgoTranslationFormatter(translation)
             .format(timeAgo)
 
-        return translation.souls.listingFormat(
+        return translation.soulList.entry(
             index = page.times(SoulsCommand.PAGE_SIZE).plus(i.plus(1)),
             owner = soul.ownerLastName,
-            timeAgo = timeAgoFormatted.raw,
+            timeAgo = timeAgoFormatted,
             x = soul.location.x.toInt(),
             y = soul.location.y.toInt(),
             z = soul.location.z.toInt(),
@@ -120,14 +120,14 @@ internal class SoulsCommandExecutor(
                 ?.dist(soul.location)
                 ?.toInt()
                 ?: 0
-        ).component
+        ).toComponent(locale)
     }
 
     private fun createFreeSoulComponent(sender: KCommandSender, soul: DatabaseSoul): Component? {
         if (soul.isFree) return null
         if (!accessPolicy.canFreeSoul(sender, soul)) return null
-        return translation.souls.freeSoul
-            .component
+        return translation.soulList.freeButton
+            .toComponent(sender.locale)
             .appendSpace()
             .clickable { execute(SoulsCommand.Intent.Free(sender, soul.id)) }
     }
@@ -135,8 +135,8 @@ internal class SoulsCommandExecutor(
     private fun createTeleportSoulComponent(sender: KCommandSender, soul: DatabaseSoul): Component? {
         if (sender !is KPlayerKCommandSender) return null
         if (!accessPolicy.canTeleportToSoul(sender)) return null
-        return translation.souls.teleportToSoul
-            .component
+        return translation.soulList.teleportButton
+            .toComponent(sender.locale)
             .clickable { execute(SoulsCommand.Intent.TeleportToSoul(sender.instance, soul.id)) }
     }
 
@@ -146,12 +146,11 @@ internal class SoulsCommandExecutor(
             val maxPages = filteredSouls.size.div(SoulsCommand.PAGE_SIZE)
             val pageSouls = getPageSouls(filteredSouls, input.page)
             if (pageSouls.isEmpty()) {
-                val title = translation.souls.noSoulsOnPage(input.page.plus(1)).component
-                input.sender.sendMessage(title)
+                input.sender.sendMessage(translation.soulList.emptyPage(input.page.plus(1)))
                 return@launch
             }
 
-            input.sender.sendMessage(translation.souls.listSoulsTitle.component)
+            input.sender.sendMessage(translation.soulList.title)
 
             pageSouls.forEachIndexed { i, soul ->
                 val component = createListingItemComponent(
@@ -161,7 +160,8 @@ internal class SoulsCommandExecutor(
                     location = input.sender
                         .tryCast<KPlayerKCommandSender>()
                         ?.instance
-                        ?.getLocation()
+                        ?.getLocation(),
+                    locale = input.sender.locale
                 ).append(
                     addSpace = true,
                     other = createFreeSoulComponent(
@@ -185,19 +185,19 @@ internal class SoulsCommandExecutor(
         ioScope.launch {
             val soul = soulsDao.getSoul(input.soulId).getOrNull()
             if (soul == null) {
-                input.sender.sendMessage(translation.souls.soulNotFound.component)
+                input.sender.sendMessage(translation.soul.notFound)
                 return@launch
             }
             if (!accessPolicy.canFreeSoul(input.sender, soul)) {
-                input.sender.sendMessage(translation.general.noPermission.component)
+                input.sender.sendMessage(translation.commandError.noPermission)
                 return@launch
             }
             soulsDao.updateSoul(soul.copy(isFree = true))
                 .onSuccess {
-                    input.sender.sendMessage(translation.souls.soulFreed.component)
+                    input.sender.sendMessage(translation.soul.freed)
                 }
                 .onFailure {
-                    input.sender.sendMessage(translation.souls.couldNotFreeSoul.component)
+                    input.sender.sendMessage(translation.soul.freeFailed)
                 }
         }
     }
@@ -208,7 +208,7 @@ internal class SoulsCommandExecutor(
                 .getOrNull()
                 ?.location
             if (location == null) {
-                input.player.sendMessage(translation.souls.soulNotFound.component)
+                input.player.sendMessage(translation.soul.notFound)
                 return@launch
             }
             withContext(dispatchers.Main) {
