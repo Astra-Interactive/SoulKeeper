@@ -8,6 +8,8 @@ plugins {
 dependencies {
     api(libs.klibs.kstorage)
 
+    compileOnly(libs.minecraft.brigadier)
+
     implementation(libs.klibs.mikro.core)
     implementation(libs.klibs.mikro.core)
     implementation(libs.klibs.mikro.core)

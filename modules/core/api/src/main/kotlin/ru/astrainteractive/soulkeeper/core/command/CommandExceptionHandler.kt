@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.command.exception
+package ru.astrainteractive.soulkeeper.core.command
 
 import com.mojang.brigadier.context.CommandContext
 import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
