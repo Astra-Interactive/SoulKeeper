@@ -32,7 +32,6 @@ internal class SoulKrateLiteralArgumentBuilder(
 ) : Logger by JUtiltLogger("SoulKrateLiteralArgumentBuilder") {
     private val translation by translationKrate
 
-    /** Seconds outside this range make [Instant.ofEpochSecond] throw, so Brigadier rejects them while parsing. */
     private val instantArgumentType = LongArgumentType.longArg(Instant.MIN.epochSecond, Instant.MAX.epochSecond)
 
     fun create(): LiteralArgumentBuilder<*> {
