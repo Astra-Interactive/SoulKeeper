@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.core.command
+package ru.astrainteractive.soulkeeper.command.fake
 
 import net.kyori.adventure.text.Component
 import ru.astrainteractive.astralibs.command.api.brigadier.sender.ConsoleKCommandSender

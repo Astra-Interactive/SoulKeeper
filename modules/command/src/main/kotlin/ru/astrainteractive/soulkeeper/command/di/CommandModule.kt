@@ -3,6 +3,7 @@ package ru.astrainteractive.soulkeeper.command.di
 import ru.astrainteractive.astralibs.command.api.registrar.CommandRegistrarContext
 import ru.astrainteractive.astralibs.command.api.registrar.registerWhenReady
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
+import ru.astrainteractive.soulkeeper.command.error.CommandExceptionHandler
 import ru.astrainteractive.soulkeeper.command.reload.command.SoulsReloadLiteralArgumentBuilder
 import ru.astrainteractive.soulkeeper.command.soulkrate.command.SoulKrateLiteralArgumentBuilder
 import ru.astrainteractive.soulkeeper.command.souls.command.SoulsCommandExecutor
@@ -18,10 +19,15 @@ class CommandModule(
     private val commandRegistrarContext: CommandRegistrarContext,
     lifecyclePlugin: Lifecycle
 ) {
+    private val commandExceptionHandler = CommandExceptionHandler(
+        multiplatformCommand = coreModule.multiplatformCommand,
+        translationKrate = coreModule.translation
+    )
+
     private val nodes = listOf(
         SoulsListLiteralArgumentBuilder(
             multiplatformCommand = coreModule.multiplatformCommand,
-            commandExceptionHandler = coreModule.commandExceptionHandler,
+            commandExceptionHandler = commandExceptionHandler,
             soulsCommandExecutor = SoulsCommandExecutor(
                 ioScope = coreModule.ioScope,
                 soulRepository = soulRepository,
@@ -36,13 +42,13 @@ class CommandModule(
             ioScope = coreModule.ioScope,
             playerInventory = serviceModule.playerInventory,
             translationKrate = coreModule.translation,
-            commandExceptionHandler = coreModule.commandExceptionHandler,
+            commandExceptionHandler = commandExceptionHandler,
         ).create(),
         SoulsReloadLiteralArgumentBuilder(
             lifecyclePlugin = lifecyclePlugin,
             translationKrate = coreModule.translation,
             multiplatformCommand = coreModule.multiplatformCommand,
-            commandExceptionHandler = coreModule.commandExceptionHandler,
+            commandExceptionHandler = commandExceptionHandler,
         ).create()
     )
 

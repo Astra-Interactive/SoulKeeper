@@ -22,8 +22,6 @@ dependencies {
     implementation(libs.minecraft.astralibs.command)
     implementation(libs.minecraft.astralibs.core)
 
-    testImplementation(libs.minecraft.brigadier)
-    testImplementation(libs.minecraft.kyori.api)
     testImplementation(libs.tests.kotlin.test)
     testImplementation(libs.tests.kotlin.test)
 

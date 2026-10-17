@@ -1,6 +1,6 @@
 @file:Suppress("FunctionNaming")
 
-package ru.astrainteractive.soulkeeper.core.command
+package ru.astrainteractive.soulkeeper.command.error
 
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.CommandDispatcher
@@ -17,6 +17,8 @@ import ru.astrainteractive.astralibs.localization.component.LocalizableComponent
 import ru.astrainteractive.astralibs.localization.text.LocalizedText
 import ru.astrainteractive.klibs.kstorage.api.asCachedMutableKrate
 import ru.astrainteractive.klibs.kstorage.api.impl.DefaultMutableKrate
+import ru.astrainteractive.soulkeeper.command.fake.FakeMultiplatformCommands
+import ru.astrainteractive.soulkeeper.command.fake.RecordingConsoleKCommandSender
 import ru.astrainteractive.soulkeeper.core.plugin.model.PluginPermission
 import ru.astrainteractive.soulkeeper.core.plugin.model.PluginTranslation
 import kotlin.test.Test

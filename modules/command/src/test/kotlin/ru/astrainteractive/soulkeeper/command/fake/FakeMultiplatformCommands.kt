@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.core.command
+package ru.astrainteractive.soulkeeper.command.fake
 
 import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder

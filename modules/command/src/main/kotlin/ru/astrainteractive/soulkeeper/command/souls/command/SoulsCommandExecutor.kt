@@ -19,13 +19,14 @@ import ru.astrainteractive.soulkeeper.command.souls.model.SoulsCommand
 import ru.astrainteractive.soulkeeper.command.souls.util.append
 import ru.astrainteractive.soulkeeper.command.souls.util.canFreeSoul
 import ru.astrainteractive.soulkeeper.command.souls.util.canTeleportToSoul
-import ru.astrainteractive.soulkeeper.core.datetime.TimeAgoFormatter
-import ru.astrainteractive.soulkeeper.core.datetime.TimeAgoTranslationFormatter
+import ru.astrainteractive.soulkeeper.command.souls.util.format
+import ru.astrainteractive.soulkeeper.command.souls.util.timeAgo
 import ru.astrainteractive.soulkeeper.core.plugin.model.PluginPermission
 import ru.astrainteractive.soulkeeper.core.plugin.model.PluginTranslation
 import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.Soul
+import java.time.Instant
 import java.util.Locale
 
 internal class SoulsCommandExecutor(
@@ -94,10 +95,7 @@ internal class SoulsCommandExecutor(
         location: KLocation?,
         locale: Locale
     ): Component {
-        val timeAgo = TimeAgoFormatter.format(soul.createdAt)
-        val timeAgoFormatted = TimeAgoTranslationFormatter(translation)
-            .format(timeAgo)
-
+        val timeAgoFormatted = translation.format(soul.createdAt.timeAgo(now = Instant.now()))
         return translation.soulList.entry(
             index = page.times(SoulsCommand.PAGE_SIZE).plus(i.plus(1)),
             owner = soul.ownerLastName,
