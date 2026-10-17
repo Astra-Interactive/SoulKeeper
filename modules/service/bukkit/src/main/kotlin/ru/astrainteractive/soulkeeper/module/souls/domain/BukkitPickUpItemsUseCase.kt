@@ -2,6 +2,7 @@ package ru.astrainteractive.soulkeeper.module.souls.domain
 
 import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
+import org.bukkit.inventory.ItemStack
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
@@ -41,13 +42,14 @@ internal class BukkitPickUpItemsUseCase(
                     .onFailure { error(it) { "Failed to deserialize item stack" } }
                     .getOrNull()
             }
+        val requestedAmount = items.sumOf(ItemStack::getAmount)
         val notAddedItems = withContext(dispatchers.Main) {
             bukkitPlayer.inventory
                 .addItem(*items.toTypedArray())
                 .values
                 .toList()
         }
-        if (notAddedItems != soul.items) {
+        if (notAddedItems.sumOf(ItemStack::getAmount) < requestedAmount) {
             withContext(dispatchers.Main) {
                 effectEmitter.playSoundForPlayer(
                     location = soul.location,

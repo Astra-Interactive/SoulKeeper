@@ -1,6 +1,7 @@
 package ru.astrainteractive.soulkeeper.module.souls.domain
 
 import kotlinx.coroutines.withContext
+import net.minecraft.world.item.ItemStack
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.astralibs.server.util.MinecraftUtil
 import ru.astrainteractive.astralibs.server.util.getOnlinePlayer
@@ -34,16 +35,18 @@ internal class ForgePickUpItemsUseCase(
         if (serverPlayer.gameMode.isCreative) return Output.SomeItemsRemain
         if (isDeadPlayerProvider.isDead(player)) return Output.SomeItemsRemain
 
+        val items = soul.items
+            .map(StringFormatObject::raw)
+            .map(ItemStackSerializer::decodeFromString)
+            .mapNotNull { result -> result.getOrNull() }
+        val requestedAmount = items.sumOf(ItemStack::getCount)
         val notAddedItems = withContext(dispatchers.Main) {
             player.addItems(
-                items = soul.items
-                    .map(StringFormatObject::raw)
-                    .map(ItemStackSerializer::decodeFromString)
-                    .mapNotNull { result -> result.getOrNull() },
+                items = items,
                 isDead = isDeadPlayerProvider::isDead
             )
         }
-        if (notAddedItems.isEmpty()) {
+        if (notAddedItems.sumOf(ItemStack::getCount) < requestedAmount) {
             withContext(dispatchers.Main) {
                 effectEmitter.playSoundForPlayer(
                     location = soul.location,
