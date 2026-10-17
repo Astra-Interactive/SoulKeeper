@@ -6,13 +6,13 @@ import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.DatabaseSoul
-import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorStandUseCase
-import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.StubShowArmorStandUseCase
+import ru.astrainteractive.soulkeeper.module.souls.armorstand.api.ArmorStandDisplay
+import ru.astrainteractive.soulkeeper.module.souls.armorstand.stub.StubArmorStandDisplay
 import ru.astrainteractive.soulkeeper.module.souls.renderer.api.SoulEffectRenderer
 
 internal class ArmorStandRenderer(
     soulsConfigKrate: CachedKrate<SoulsConfig>,
-    private val showArmorStandUseCase: ShowArmorStandUseCase,
+    private val armorStandDisplay: ArmorStandDisplay,
     private val platformServer: PlatformServer
 ) : SoulEffectRenderer {
     private val soulsConfig by soulsConfigKrate
@@ -20,24 +20,24 @@ internal class ArmorStandRenderer(
     private val soulByArmorStandId = HashMap<Long, Int>()
 
     private fun rememberSoulArmorStandId(soul: DatabaseSoul) {
-        if (showArmorStandUseCase is StubShowArmorStandUseCase) return
+        if (armorStandDisplay is StubArmorStandDisplay) return
         if (soulsConfig.displaySoulTitles) return
-        soulByArmorStandId.getOrPut(soul.id) { showArmorStandUseCase.generateEntityId() }
+        soulByArmorStandId.getOrPut(soul.id) { armorStandDisplay.generateEntityId() }
     }
 
     override suspend fun renderOnce(player: OnlineKPlayer, souls: List<DatabaseSoul>) {
-        showArmorStandUseCase.destroy(player, soulByArmorStandId.values)
+        armorStandDisplay.destroy(player, soulByArmorStandId.values)
         souls
             .onEach(::rememberSoulArmorStandId)
             .forEach { soul ->
                 val armorStandId = soulByArmorStandId[soul.id] ?: return@forEach
-                showArmorStandUseCase.show(armorStandId, player, soul)
+                armorStandDisplay.show(armorStandId, player, soul)
             }
     }
 
     fun onDisable() {
         platformServer.getOnlinePlayers().forEach { player ->
-            showArmorStandUseCase.destroy(player, soulByArmorStandId.values)
+            armorStandDisplay.destroy(player, soulByArmorStandId.values)
         }
         soulByArmorStandId.clear()
     }

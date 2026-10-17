@@ -1,9 +1,10 @@
-package ru.astrainteractive.soulkeeper.module.souls.domain.armorstand
+package ru.astrainteractive.soulkeeper.module.souls.armorstand.stub
 
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.Soul
+import ru.astrainteractive.soulkeeper.module.souls.armorstand.api.ArmorStandDisplay
 
-object StubShowArmorStandUseCase : ShowArmorStandUseCase {
+object StubArmorStandDisplay : ArmorStandDisplay {
     override fun destroy(player: OnlineKPlayer, ids: Collection<Int>) = Unit
 
     override fun show(id: Int, player: OnlineKPlayer, soul: Soul) = Unit

@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.module.souls.domain.armorstand
+package ru.astrainteractive.soulkeeper.module.souls.armorstand.packetevents
 
 import com.github.retrooper.packetevents.PacketEvents
 import com.github.retrooper.packetevents.protocol.entity.data.EntityData
@@ -17,12 +17,13 @@ import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.Soul
+import ru.astrainteractive.soulkeeper.module.souls.armorstand.api.ArmorStandDisplay
 import java.util.Optional
 import java.util.UUID
 
-internal class PacketEventsShowArmorStandUseCase(
+internal class PacketEventsArmorStandDisplay(
     translationKrate: CachedKrate<PluginTranslation>
-) : ShowArmorStandUseCase {
+) : ArmorStandDisplay {
     private val translation by translationKrate
 
     override fun generateEntityId(): Int {

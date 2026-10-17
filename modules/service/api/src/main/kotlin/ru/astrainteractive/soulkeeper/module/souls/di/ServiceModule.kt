@@ -26,7 +26,7 @@ class ServiceModule(
     val playerInventory = platformServiceModule.playerInventory
     private val armorStandRenderer = ArmorStandRenderer(
         soulsConfigKrate = coreModule.soulsConfigKrate,
-        showArmorStandUseCase = platformServiceModule.showArmorStandUseCase,
+        armorStandDisplay = platformServiceModule.armorStandDisplay,
         platformServer = platformServiceModule.platformServer
     )
     private val soulParticleRenderer = SoulParticleRenderer(
