@@ -27,7 +27,7 @@ internal class PickUpWorker(
 
     private suspend fun processPickupSoulEvents() {
         platformServer.getOnlinePlayers()
-            .filter { !isDeadPlayerProvider.isDead(it) }
+            .filter { player -> !isDeadPlayerProvider.isDead(player) }
             .forEach { player ->
                 val databaseSoul = getNearestSoulUseCase(player) ?: return@forEach
                 val itemStackSoul = soulRepository.toItemDatabaseSoul(databaseSoul).getOrNull() ?: return@forEach

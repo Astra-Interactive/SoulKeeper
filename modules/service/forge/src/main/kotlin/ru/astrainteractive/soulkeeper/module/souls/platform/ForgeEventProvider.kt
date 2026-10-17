@@ -18,7 +18,7 @@ import ru.astrainteractive.soulkeeper.module.souls.platform.model.SharedPlayerMo
 object ForgeEventProvider : EventProvider {
     override fun getPlayerMoveEvent(): Flow<SharedPlayerMoveEvent> {
         return flowEvent<TickEvent.PlayerTickEvent>()
-            .filter { it.phase == TickEvent.Phase.END }
+            .filter { event -> event.phase == TickEvent.Phase.END }
             .mapNotNull { event ->
                 val serverPlayer = event.player
                     .tryCast<ServerPlayer>()

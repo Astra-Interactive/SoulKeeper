@@ -100,6 +100,10 @@ class ExposedSoulRepositoryTest {
         }
     }
 
+    private fun CoroutineScope.cancelSelf() {
+        cancel()
+    }
+
     @Test
     fun GIVEN_two_souls_WHEN_get_soul_by_id_THEN_returns_soul_with_requested_id() = runTest {
         val dao = createDao()
@@ -305,9 +309,5 @@ class ExposedSoulRepositoryTest {
         job.join()
 
         assertIs<CancellationException>(propagated)
-    }
-
-    private fun CoroutineScope.cancelSelf() {
-        cancel()
     }
 }

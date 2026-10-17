@@ -56,6 +56,38 @@ internal class ForgeSoulEvents(
 ) : Logger by JUtiltLogger("SoulKeeper-ForgeSoulEvents") {
     private val soulsConfig by soulsConfigKrate
     private val mutex = Mutex()
+
+    val expDropEvent = flowEvent<LivingExperienceDropEvent>(EventPriority.HIGHEST)
+        .filter { event -> !event.isCanceled }
+        .onEach { event ->
+            val serverPlayer = event.entity.tryCast<ServerPlayer>() ?: return@onEach
+
+            val droppedXp = getAndClearDroppedXp(event)
+            if (droppedXp <= 0) return@onEach
+
+            createOrUpdateSoul(
+                serverPlayer = serverPlayer,
+                droppedXp = droppedXp,
+                soulItems = null
+            )
+        }
+        .launchIn(mainScope)
+
+    val livingDropsEvent = flowEvent<LivingDropsEvent>(EventPriority.HIGHEST)
+        .filter { event -> !event.isCanceled }
+        .onEach { event ->
+            val serverPlayer = event.entity.tryCast<ServerPlayer>() ?: return@onEach
+
+            val soulItems = getAndClearItems(event)
+            if (soulItems.isEmpty()) return@onEach
+            createOrUpdateSoul(
+                serverPlayer = serverPlayer,
+                droppedXp = null,
+                soulItems = soulItems
+            )
+        }
+        .launchIn(mainScope)
+
     private suspend fun spawnSoulEffects(
         location: KLocation,
         onlineMinecraftPlayer: OnlineKPlayer
@@ -213,35 +245,4 @@ internal class ForgeSoulEvents(
             }
         }
     }
-
-    val expDropEvent = flowEvent<LivingExperienceDropEvent>(EventPriority.HIGHEST)
-        .filter { !it.isCanceled }
-        .onEach { event ->
-            val serverPlayer = event.entity.tryCast<ServerPlayer>() ?: return@onEach
-
-            val droppedXp = getAndClearDroppedXp(event)
-            if (droppedXp <= 0) return@onEach
-
-            createOrUpdateSoul(
-                serverPlayer = serverPlayer,
-                droppedXp = droppedXp,
-                soulItems = null
-            )
-        }
-        .launchIn(mainScope)
-
-    val livingDropsEvent = flowEvent<LivingDropsEvent>(EventPriority.HIGHEST)
-        .filter { event -> !event.isCanceled }
-        .onEach { event ->
-            val serverPlayer = event.entity.tryCast<ServerPlayer>() ?: return@onEach
-
-            val soulItems = getAndClearItems(event)
-            if (soulItems.isEmpty()) return@onEach
-            createOrUpdateSoul(
-                serverPlayer = serverPlayer,
-                droppedXp = null,
-                soulItems = soulItems
-            )
-        }
-        .launchIn(mainScope)
 }

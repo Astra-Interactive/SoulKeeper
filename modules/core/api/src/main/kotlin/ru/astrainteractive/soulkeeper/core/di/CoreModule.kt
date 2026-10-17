@@ -54,7 +54,6 @@ class CoreModule(
         }
     ).asCachedKrate()
 
-
     val soulsConfigKrate = DefaultMutableKrate(
         factory = ::SoulsConfig,
         loader = {

@@ -15,16 +15,6 @@ object ItemStackSerializer : KSerializer<ItemStack> {
         kind = PrimitiveKind.STRING
     )
 
-    override fun serialize(encoder: Encoder, value: ItemStack) {
-        val string = encodeToString(value)
-        encoder.encodeString(string)
-    }
-
-    override fun deserialize(decoder: Decoder): ItemStack {
-        val string = decoder.decodeString()
-        return decodeFromString(string).getOrThrow()
-    }
-
     private const val KEY = "item_stack"
 
     fun encodeToString(itemStack: ItemStack): String {
@@ -40,5 +30,15 @@ object ItemStackSerializer : KSerializer<ItemStack> {
             configuration.getItemStack(KEY)
                 ?: error("Could not get item stack from string: $string")
         }
+    }
+
+    override fun serialize(encoder: Encoder, value: ItemStack) {
+        val string = encodeToString(value)
+        encoder.encodeString(string)
+    }
+
+    override fun deserialize(decoder: Decoder): ItemStack {
+        val string = decoder.decodeString()
+        return decodeFromString(string).getOrThrow()
     }
 }

@@ -18,18 +18,18 @@ object ItemStackSerializer : KSerializer<ItemStack> {
         kind = PrimitiveKind.STRING
     )
 
-    override fun serialize(encoder: Encoder, value: ItemStack) {
-        encoder.encodeString(encodeToString(value))
-    }
-
-    override fun deserialize(decoder: Decoder): ItemStack {
-        return decodeFromString(decoder.decodeString()).getOrThrow()
-    }
-
     private fun requireHolderLookup(): RegistryAccess.Frozen {
         return MinecraftUtil.serverOrNull
             ?.registryAccess()
             ?: error("Server is not running")
+    }
+
+    private fun parseNbt(string: String): CompoundTag {
+        return try {
+            TagParser.parseTag(string)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Could not parse ItemStack string: $string", e)
+        }
     }
 
     fun encodeToString(itemStack: ItemStack): String {
@@ -42,11 +42,11 @@ object ItemStackSerializer : KSerializer<ItemStack> {
         ItemStack.parse(requireHolderLookup(), nbt).get()
     }
 
-    private fun parseNbt(string: String): CompoundTag {
-        return try {
-            TagParser.parseTag(string)
-        } catch (e: Exception) {
-            throw IllegalArgumentException("Could not parse ItemStack string: $string", e)
-        }
+    override fun serialize(encoder: Encoder, value: ItemStack) {
+        encoder.encodeString(encodeToString(value))
+    }
+
+    override fun deserialize(decoder: Decoder): ItemStack {
+        return decodeFromString(decoder.decodeString()).getOrThrow()
     }
 }

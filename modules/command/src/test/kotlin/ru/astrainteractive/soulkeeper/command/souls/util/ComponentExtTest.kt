@@ -22,11 +22,15 @@ class ComponentExtTest {
 
     @Test
     fun GIVEN_button_WHEN_appended_with_space_THEN_space_separates_them() {
-        assertEquals("entry [TP]", Component.text("entry").append(other = Component.text("[TP]"), addSpace = true).plain())
+        val entry = Component.text("entry").append(other = Component.text("[TP]"), addSpace = true)
+
+        assertEquals("entry [TP]", entry.plain())
     }
 
     @Test
     fun GIVEN_button_WHEN_appended_without_space_THEN_they_are_joined() {
-        assertEquals("entry[TP]", Component.text("entry").append(other = Component.text("[TP]"), addSpace = false).plain())
+        val entry = Component.text("entry").append(other = Component.text("[TP]"), addSpace = false)
+
+        assertEquals("entry[TP]", entry.plain())
     }
 }

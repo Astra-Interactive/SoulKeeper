@@ -20,6 +20,26 @@ class PlayerSoulKrate(
     private val readIndex: Int = 0
 ) : SuspendMutableKrate<DefaultSoul?>, Logger by JUtiltLogger("SoulKeeper-PlayerSoulKrate") {
     private val kratesFolder = dataFolder.resolve(".deaths")
+    private val krate = DefaultSuspendMutableKrate(
+        factory = { null },
+        loader = {
+            val file = kratesFolder
+                .resolve("$ownerUUID")
+                .resolve("${createdAt.epochSecond}_$readIndex.yml")
+            stringFormat.parse<DefaultSoul>(file)
+                .onFailure { throwable -> error(throwable) { "Failed to load soul for $ownerUUID" } }
+                .getOrNull()
+        },
+        saver = saver@{ defaultSoul ->
+            val file = createFile()
+            if (defaultSoul == null) {
+                file.renameTo(file.resolveSibling("${file.nameWithoutExtension}.deleted"))
+                return@saver
+            }
+            stringFormat.writeIntoFile(defaultSoul, file)
+        }
+    )
+
     private fun createFile(): File {
         val parentDir = kratesFolder.resolve("$ownerUUID")
         parentDir.mkdirs()
@@ -33,26 +53,6 @@ class PlayerSoulKrate(
         file.createNewFile()
         return file
     }
-
-    private val krate = DefaultSuspendMutableKrate(
-        factory = { null },
-        loader = {
-            val file = kratesFolder
-                .resolve("$ownerUUID")
-                .resolve("${createdAt.epochSecond}_$readIndex.yml")
-            stringFormat.parse<DefaultSoul>(file)
-                .onFailure { error(it) { "Failed to load soul for $ownerUUID" } }
-                .getOrNull()
-        },
-        saver = saver@{ defaultSoul ->
-            val file = createFile()
-            if (defaultSoul == null) {
-                file.renameTo(file.resolveSibling("${file.nameWithoutExtension}.deleted"))
-                return@saver
-            }
-            stringFormat.writeIntoFile(defaultSoul, file)
-        }
-    )
 
     override suspend fun save(value: DefaultSoul?) {
         krate.save(value)

@@ -37,14 +37,18 @@ internal class SoulsCommandExecutor(
 ) {
     private val translation by translationKrate
 
-    private fun createPagingMessage(input: SoulsCommand.Intent.List, maxPages: Int): Component {
+    private fun createPagingMessage(
+        input: SoulsCommand.Intent.List,
+        maxPages: Int,
+        onClick: (SoulsCommand.Intent) -> Unit
+    ): Component {
         val locale = input.sender.locale
         val nextPageComponent = translation.soulList.nextPage.toComponent(locale)
-            .clickable { execute(input.copy(page = input.page.plus(1))) }
+            .clickable { onClick(input.copy(page = input.page.plus(1))) }
             .takeIf { input.page < maxPages }
             .orEmpty()
         val prevPageComponent = translation.soulList.previousPage.toComponent(locale)
-            .clickable { execute(input.copy(page = input.page.plus(-1))) }
+            .clickable { onClick(input.copy(page = input.page.plus(-1))) }
             .appendSpace().takeIf { input.page > 0 }
             .orEmpty()
         return nextPageComponent.append(prevPageComponent, true)
@@ -110,21 +114,29 @@ internal class SoulsCommandExecutor(
         ).toComponent(locale)
     }
 
-    private fun createFreeSoulComponent(sender: KCommandSender, soul: DatabaseSoul): Component? {
+    private fun createFreeSoulComponent(
+        sender: KCommandSender,
+        soul: DatabaseSoul,
+        onClick: (SoulsCommand.Intent) -> Unit
+    ): Component? {
         if (soul.isFree) return null
         if (!sender.canFreeSoul(soul)) return null
         return translation.soulList.freeButton
             .toComponent(sender.locale)
             .appendSpace()
-            .clickable { execute(SoulsCommand.Intent.Free(sender, soul.id)) }
+            .clickable { onClick(SoulsCommand.Intent.Free(sender, soul.id)) }
     }
 
-    private fun createTeleportSoulComponent(sender: KCommandSender, soul: DatabaseSoul): Component? {
+    private fun createTeleportSoulComponent(
+        sender: KCommandSender,
+        soul: DatabaseSoul,
+        onClick: (SoulsCommand.Intent) -> Unit
+    ): Component? {
         if (sender !is KPlayerKCommandSender) return null
         if (!sender.canTeleportToSoul()) return null
         return translation.soulList.teleportButton
             .toComponent(sender.locale)
-            .clickable { execute(SoulsCommand.Intent.TeleportToSoul(sender.instance, soul.id)) }
+            .clickable { onClick(SoulsCommand.Intent.TeleportToSoul(sender.instance, soul.id)) }
     }
 
     private fun executeList(input: SoulsCommand.Intent.List) {
@@ -153,18 +165,20 @@ internal class SoulsCommandExecutor(
                     addSpace = true,
                     other = createFreeSoulComponent(
                         sender = input.sender,
-                        soul = soul
+                        soul = soul,
+                        onClick = ::execute
                     )
                 ).append(
                     addSpace = true,
                     other = createTeleportSoulComponent(
                         sender = input.sender,
-                        soul = soul
+                        soul = soul,
+                        onClick = ::execute
                     )
                 )
                 input.sender.sendMessage(component)
             }
-            input.sender.sendMessage(createPagingMessage(input, maxPages))
+            input.sender.sendMessage(createPagingMessage(input, maxPages, ::execute))
         }
     }
 

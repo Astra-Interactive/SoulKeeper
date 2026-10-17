@@ -11,28 +11,6 @@ internal class DatabaseMigrator(
     private val latestDbVersion: Int
 ) : Logger by JUtiltLogger("SoulKeeper-DatabaseMigrator") {
 
-    suspend fun migrate(database: Database) {
-        val currentDbVersion = getCurrentVersion(database)
-        if (latestDbVersion == currentDbVersion) {
-            info { "#migrate database is up to date" }
-            return
-        }
-
-        info { "#migrate current version=$currentDbVersion, latest=$latestDbVersion, running pending migrations..." }
-        migrations
-            .filter { migration -> migration.requiredDbVersion == currentDbVersion }
-            .forEach { migration ->
-                info { "#migrate running migration to version $currentDbVersion..." }
-                migration.migrate(database)
-            }
-
-        val newVersion = currentDbVersion + 1
-        info { "#migrate migrated to version $newVersion" }
-        setVersion(database, newVersion)
-
-        migrate(database)
-    }
-
     private suspend fun isTableExists(
         database: Database,
         tableName: String
@@ -56,6 +34,21 @@ internal class DatabaseMigrator(
         }
     }
 
+    private suspend fun setVersion(database: Database, version: Int) {
+        transaction(database) {
+            exec("CREATE TABLE IF NOT EXISTS DB_VERSION (version INTEGER NOT NULL)")
+            var hasRow = false
+            exec("SELECT COUNT(*) AS cnt FROM DB_VERSION") { rs ->
+                if (rs.next()) hasRow = rs.getInt("cnt") > 0
+            }
+            if (hasRow) {
+                exec("UPDATE DB_VERSION SET version = $version")
+            } else {
+                exec("INSERT INTO DB_VERSION (version) VALUES ($version)")
+            }
+        }
+    }
+
     @Suppress("MaxLineLength", "MaximumLineLength")
     private suspend fun getCurrentVersion(database: Database): Int {
         val versionTableExists = isTableExists(database, "DB_VERSION")
@@ -75,19 +68,26 @@ internal class DatabaseMigrator(
         }
     }
 
-    private suspend fun setVersion(database: Database, version: Int) {
-        transaction(database) {
-            exec("CREATE TABLE IF NOT EXISTS DB_VERSION (version INTEGER NOT NULL)")
-            var hasRow = false
-            exec("SELECT COUNT(*) AS cnt FROM DB_VERSION") { rs ->
-                if (rs.next()) hasRow = rs.getInt("cnt") > 0
-            }
-            if (hasRow) {
-                exec("UPDATE DB_VERSION SET version = $version")
-            } else {
-                exec("INSERT INTO DB_VERSION (version) VALUES ($version)")
-            }
+    suspend fun migrate(database: Database) {
+        val currentDbVersion = getCurrentVersion(database)
+        if (latestDbVersion == currentDbVersion) {
+            info { "#migrate database is up to date" }
+            return
         }
+
+        info { "#migrate current version=$currentDbVersion, latest=$latestDbVersion, running pending migrations..." }
+        migrations
+            .filter { migration -> migration.requiredDbVersion == currentDbVersion }
+            .forEach { migration ->
+                info { "#migrate running migration to version $currentDbVersion..." }
+                migration.migrate(database)
+            }
+
+        val newVersion = currentDbVersion + 1
+        info { "#migrate migrated to version $newVersion" }
+        setVersion(database, newVersion)
+
+        migrate(database)
     }
 
     companion object {
