@@ -8,7 +8,7 @@ import ru.astrainteractive.soulkeeper.module.souls.armorstand.api.ArmorStandDisp
 import ru.astrainteractive.soulkeeper.module.souls.platform.api.EventProvider
 import ru.astrainteractive.soulkeeper.module.souls.soul.api.PlayerInventory
 
-interface PlatformServiceModule {
+interface PlatformSoulsModule {
 
     val platformServer: PlatformServer
     val eventProvider: EventProvider

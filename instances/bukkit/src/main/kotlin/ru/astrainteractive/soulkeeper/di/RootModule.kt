@@ -13,8 +13,8 @@ import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.core.platform.BukkitEffectEmitter
 import ru.astrainteractive.soulkeeper.data.exposed.di.SoulsDaoModule
 import ru.astrainteractive.soulkeeper.module.event.di.BukkitEventModule
-import ru.astrainteractive.soulkeeper.module.souls.di.BukkitPlatformServiceModule
-import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
+import ru.astrainteractive.soulkeeper.module.souls.di.BukkitPlatformSoulsModule
+import ru.astrainteractive.soulkeeper.module.souls.di.SoulsModule
 
 class RootModule(plugin: LifecyclePlugin) {
     private val coreModule: CoreModule = CoreModule(
@@ -31,14 +31,14 @@ class RootModule(plugin: LifecyclePlugin) {
         dispatchers = coreModule.dispatchers
     )
 
-    private val bukkitPlatformServiceModule = BukkitPlatformServiceModule(
+    private val bukkitPlatformSoulsModule = BukkitPlatformSoulsModule(
         coreModule = coreModule,
         bukkitCoreModule = bukkitCoreModule
     )
-    private val serviceModule = ServiceModule(
+    private val soulsModule = SoulsModule(
         coreModule = coreModule,
         soulRepository = soulsDaoModule.soulRepository,
-        platformServiceModule = bukkitPlatformServiceModule
+        platformSoulsModule = bukkitPlatformSoulsModule
     )
 
     private val bukkitEventModule = BukkitEventModule(
@@ -54,7 +54,7 @@ class RootModule(plugin: LifecyclePlugin) {
             plugin = plugin
         ),
         soulRepository = soulsDaoModule.soulRepository,
-        serviceModule = serviceModule,
+        soulsModule = soulsModule,
         lifecyclePlugin = plugin,
     )
 
@@ -64,7 +64,7 @@ class RootModule(plugin: LifecyclePlugin) {
             bukkitCoreModule.lifecycle,
             soulsDaoModule.lifecycle,
             bukkitEventModule.lifecycle,
-            serviceModule.lifecycle,
+            soulsModule.lifecycle,
             commandModule.lifecycle
         )
 

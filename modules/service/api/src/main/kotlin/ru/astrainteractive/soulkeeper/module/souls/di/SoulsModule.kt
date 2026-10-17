@@ -16,18 +16,18 @@ import ru.astrainteractive.soulkeeper.module.souls.soul.usecase.GetNearestSoulUs
 import ru.astrainteractive.soulkeeper.module.souls.soul.usecase.PickUpSoulUseCase
 import kotlin.time.Duration.Companion.seconds
 
-class ServiceModule(
+class SoulsModule(
     coreModule: CoreModule,
     soulRepository: SoulRepository,
-    platformServiceModule: PlatformServiceModule
+    platformSoulsModule: PlatformSoulsModule
 
 ) {
 
-    val playerInventory = platformServiceModule.playerInventory
+    val playerInventory = platformSoulsModule.playerInventory
     private val armorStandRenderer = ArmorStandRenderer(
         soulsConfigKrate = coreModule.soulsConfigKrate,
-        armorStandDisplay = platformServiceModule.armorStandDisplay,
-        platformServer = platformServiceModule.platformServer
+        armorStandDisplay = platformSoulsModule.armorStandDisplay,
+        platformServer = platformSoulsModule.platformServer
     )
     private val soulParticleRenderer = SoulParticleRenderer(
         soulsConfigKrate = coreModule.soulsConfigKrate,
@@ -66,7 +66,7 @@ class ServiceModule(
         soulParticleRenderer = soulParticleRenderer,
         soulSoundRenderer = soulSoundRenderer,
         soulArmorStandRenderer = armorStandRenderer,
-        eventProvider = platformServiceModule.eventProvider,
+        eventProvider = platformSoulsModule.eventProvider,
     )
 
     private val pickUpSoulService = IntervalService(
@@ -76,8 +76,8 @@ class ServiceModule(
         task = PickUpWorker(
             pickUpSoulUseCase = PickUpSoulUseCase(
                 soulRepository = soulRepository,
-                playerInventory = platformServiceModule.playerInventory,
-                experiencedFactory = platformServiceModule.onlineMinecraftPlayerExperiencedFactory,
+                playerInventory = platformSoulsModule.playerInventory,
+                experiencedFactory = platformSoulsModule.onlineMinecraftPlayerExperiencedFactory,
                 effectEmitter = coreModule.effectEmitter,
                 dispatchers = coreModule.dispatchers,
                 soulsConfigKrate = coreModule.soulsConfigKrate
@@ -86,8 +86,8 @@ class ServiceModule(
                 soulRepository = soulRepository,
             ),
             soulRepository = soulRepository,
-            platformServer = platformServiceModule.platformServer,
-            isDeadPlayerProvider = platformServiceModule.isDeadPlayerProvider,
+            platformServer = platformSoulsModule.platformServer,
+            isDeadPlayerProvider = platformSoulsModule.isDeadPlayerProvider,
         )
     )
 

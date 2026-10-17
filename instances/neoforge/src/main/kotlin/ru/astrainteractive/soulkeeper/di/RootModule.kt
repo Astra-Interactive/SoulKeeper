@@ -11,8 +11,8 @@ import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.core.platform.NeoForgeEffectEmitter
 import ru.astrainteractive.soulkeeper.data.exposed.di.SoulsDaoModule
 import ru.astrainteractive.soulkeeper.module.event.di.ForgeEventModule
-import ru.astrainteractive.soulkeeper.module.souls.di.NeoForgePlatformServiceModule
-import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
+import ru.astrainteractive.soulkeeper.module.souls.di.NeoForgePlatformSoulsModule
+import ru.astrainteractive.soulkeeper.module.souls.di.SoulsModule
 import java.io.File
 
 class RootModule(private val plugin: Lifecycle) {
@@ -41,15 +41,15 @@ class RootModule(private val plugin: Lifecycle) {
             dispatchers = coreModule.dispatchers
         )
     }
-    private val forgePlatformServiceModule by lazy {
-        NeoForgePlatformServiceModule()
+    private val forgePlatformSoulsModule by lazy {
+        NeoForgePlatformSoulsModule()
     }
 
-    private val serviceModule by lazy {
-        ServiceModule(
+    private val soulsModule by lazy {
+        SoulsModule(
             coreModule = coreModule,
             soulRepository = soulsDaoModule.soulRepository,
-            platformServiceModule = forgePlatformServiceModule
+            platformSoulsModule = forgePlatformSoulsModule
         )
     }
     private val forgeEventModule by lazy {
@@ -65,7 +65,7 @@ class RootModule(private val plugin: Lifecycle) {
             coreModule = coreModule,
             soulRepository = soulsDaoModule.soulRepository,
             commandRegistrarContext = commandRegistrarContext,
-            serviceModule = serviceModule,
+            soulsModule = soulsModule,
             lifecyclePlugin = plugin,
         )
     }
@@ -75,7 +75,7 @@ class RootModule(private val plugin: Lifecycle) {
             coreModule.lifecycle,
             soulsDaoModule.lifecycle,
             forgeEventModule.lifecycle,
-            serviceModule.lifecycle,
+            soulsModule.lifecycle,
             commandModule.lifecycle
         )
 

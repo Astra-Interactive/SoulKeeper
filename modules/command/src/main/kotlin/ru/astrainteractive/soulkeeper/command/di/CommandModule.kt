@@ -10,12 +10,12 @@ import ru.astrainteractive.soulkeeper.command.souls.command.SoulsCommandExecutor
 import ru.astrainteractive.soulkeeper.command.souls.command.SoulsListLiteralArgumentBuilder
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
-import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
+import ru.astrainteractive.soulkeeper.module.souls.di.SoulsModule
 
 class CommandModule(
     private val coreModule: CoreModule,
     soulRepository: SoulRepository,
-    serviceModule: ServiceModule,
+    soulsModule: SoulsModule,
     private val commandRegistrarContext: CommandRegistrarContext,
     lifecyclePlugin: Lifecycle
 ) {
@@ -40,7 +40,7 @@ class CommandModule(
             stringFormat = coreModule.yamlFormat,
             dataFolder = coreModule.dataFolder,
             ioScope = coreModule.ioScope,
-            playerInventory = serviceModule.playerInventory,
+            playerInventory = soulsModule.playerInventory,
             translationKrate = coreModule.translation,
             commandExceptionHandler = commandExceptionHandler,
         ).create(),

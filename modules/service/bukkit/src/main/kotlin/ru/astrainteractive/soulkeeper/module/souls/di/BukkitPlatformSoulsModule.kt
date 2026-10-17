@@ -16,10 +16,10 @@ import ru.astrainteractive.soulkeeper.module.souls.platform.api.EventProvider
 import ru.astrainteractive.soulkeeper.module.souls.soul.BukkitPlayerInventory
 import ru.astrainteractive.soulkeeper.module.souls.soul.api.PlayerInventory
 
-class BukkitPlatformServiceModule(
+class BukkitPlatformSoulsModule(
     coreModule: CoreModule,
     bukkitCoreModule: BukkitCoreModule
-) : PlatformServiceModule {
+) : PlatformSoulsModule {
     override val platformServer: PlatformServer = BukkitPlatformServer()
     override val eventProvider: EventProvider = BukkitEventProvider(
         plugin = bukkitCoreModule.plugin
