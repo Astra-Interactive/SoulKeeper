@@ -5,9 +5,9 @@ import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
-import ru.astrainteractive.soulkeeper.core.platform.EffectEmitter
-import ru.astrainteractive.soulkeeper.core.platform.Experienced
-import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
+import ru.astrainteractive.soulkeeper.core.platform.api.EffectEmitter
+import ru.astrainteractive.soulkeeper.core.platform.api.Experienced
+import ru.astrainteractive.soulkeeper.core.plugin.model.SoulsConfig
 import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.ItemDatabaseSoul
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.StringFormatObject

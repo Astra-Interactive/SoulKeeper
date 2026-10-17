@@ -12,10 +12,10 @@ import ru.astrainteractive.astralibs.server.location.KLocation
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.klibs.kstorage.api.asCachedKrate
 import ru.astrainteractive.klibs.kstorage.api.impl.DefaultMutableKrate
-import ru.astrainteractive.soulkeeper.core.platform.Experienced
+import ru.astrainteractive.soulkeeper.core.platform.api.Experienced
 import ru.astrainteractive.soulkeeper.core.platform.fake.FakeEffectEmitter
 import ru.astrainteractive.soulkeeper.core.platform.fake.FakeExperienced
-import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
+import ru.astrainteractive.soulkeeper.core.plugin.model.SoulsConfig
 import ru.astrainteractive.soulkeeper.data.dao.soul.fake.FakeSoulRepository
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.ItemDatabaseSoul
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.StringFormatObject

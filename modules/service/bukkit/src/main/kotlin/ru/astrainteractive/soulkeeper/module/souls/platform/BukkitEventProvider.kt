@@ -10,10 +10,10 @@ import org.bukkit.plugin.java.JavaPlugin
 import ru.astrainteractive.astralibs.event.flowEvent
 import ru.astrainteractive.astralibs.server.util.asKLocation
 import ru.astrainteractive.astralibs.server.util.asOnlineMinecraftPlayer
-import ru.astrainteractive.soulkeeper.module.souls.platform.event.EventProvider
-import ru.astrainteractive.soulkeeper.module.souls.platform.event.model.SharedPlayerJoinEvent
-import ru.astrainteractive.soulkeeper.module.souls.platform.event.model.SharedPlayerLeaveEvent
-import ru.astrainteractive.soulkeeper.module.souls.platform.event.model.SharedPlayerMoveEvent
+import ru.astrainteractive.soulkeeper.module.souls.platform.api.EventProvider
+import ru.astrainteractive.soulkeeper.module.souls.platform.model.SharedPlayerJoinEvent
+import ru.astrainteractive.soulkeeper.module.souls.platform.model.SharedPlayerLeaveEvent
+import ru.astrainteractive.soulkeeper.module.souls.platform.model.SharedPlayerMoveEvent
 
 internal class BukkitEventProvider(
     private val plugin: JavaPlugin

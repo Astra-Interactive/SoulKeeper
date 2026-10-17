@@ -7,6 +7,10 @@ plugins {
     id("ru.astrainteractive.gradleplugin.java.version")
 }
 
+linter {
+    unitKind.set("technology")
+}
+
 dependencies {
     implementation(libs.klibs.mikro.core)
     implementation(libs.kotlin.coroutines.core)

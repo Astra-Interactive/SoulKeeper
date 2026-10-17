@@ -15,7 +15,7 @@ import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.astralibs.server.util.asBukkitLocation
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
-import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
+import ru.astrainteractive.soulkeeper.core.plugin.model.PluginTranslation
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.Soul
 import ru.astrainteractive.soulkeeper.module.souls.armorstand.api.ArmorStandDisplay
 import java.util.Optional

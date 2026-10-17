@@ -1,0 +1,11 @@
+package ru.astrainteractive.soulkeeper.core.plugin.model
+
+import ru.astrainteractive.astralibs.server.permission.Permission
+
+sealed class PluginPermission(override val value: String) : Permission {
+    data object Reload : PluginPermission("soulkeeper.reload")
+    data object ViewAllSouls : PluginPermission("soulkeeper.all")
+    data object FreeAllSouls : PluginPermission("soulkeeper.free.all")
+    data object TeleportToSouls : PluginPermission("soulkeeper.teleport")
+    data object LoadSouls : PluginPermission("soulkeeper.load")
+}

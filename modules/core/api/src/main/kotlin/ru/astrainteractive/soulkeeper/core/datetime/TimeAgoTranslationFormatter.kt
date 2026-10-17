@@ -1,7 +1,7 @@
 package ru.astrainteractive.soulkeeper.core.datetime
 
 import ru.astrainteractive.astralibs.localization.component.LocalizableComponent
-import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
+import ru.astrainteractive.soulkeeper.core.plugin.model.PluginTranslation
 
 class TimeAgoTranslationFormatter(private val translation: PluginTranslation) {
     fun format(timeAgo: TimeAgoFormatter.Format): LocalizableComponent {

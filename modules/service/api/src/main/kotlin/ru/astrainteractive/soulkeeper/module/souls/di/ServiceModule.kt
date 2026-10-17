@@ -5,9 +5,9 @@ import ru.astrainteractive.astralibs.service.IntervalService
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
-import ru.astrainteractive.soulkeeper.module.souls.renderer.ArmorStandRenderer
-import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulParticleRenderer
-import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulSoundRenderer
+import ru.astrainteractive.soulkeeper.module.souls.renderer.armorstand.ArmorStandRenderer
+import ru.astrainteractive.soulkeeper.module.souls.renderer.particle.SoulParticleRenderer
+import ru.astrainteractive.soulkeeper.module.souls.renderer.sound.SoulSoundRenderer
 import ru.astrainteractive.soulkeeper.module.souls.service.DeleteSoulWorker
 import ru.astrainteractive.soulkeeper.module.souls.service.FreeSoulWorker
 import ru.astrainteractive.soulkeeper.module.souls.service.PickUpWorker

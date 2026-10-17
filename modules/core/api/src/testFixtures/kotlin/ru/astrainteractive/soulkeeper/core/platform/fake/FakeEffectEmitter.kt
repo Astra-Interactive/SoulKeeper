@@ -2,8 +2,8 @@ package ru.astrainteractive.soulkeeper.core.platform.fake
 
 import ru.astrainteractive.astralibs.server.location.KLocation
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
-import ru.astrainteractive.soulkeeper.core.platform.EffectEmitter
-import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
+import ru.astrainteractive.soulkeeper.core.platform.api.EffectEmitter
+import ru.astrainteractive.soulkeeper.core.plugin.model.SoulsConfig
 
 class FakeEffectEmitter : EffectEmitter {
     val playedSounds = mutableListOf<SoulsConfig.Sounds.SoundConfig>()

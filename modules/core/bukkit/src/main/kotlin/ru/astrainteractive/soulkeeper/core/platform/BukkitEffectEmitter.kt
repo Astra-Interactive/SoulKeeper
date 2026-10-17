@@ -10,7 +10,8 @@ import org.bukkit.Particle
 import ru.astrainteractive.astralibs.server.location.KLocation
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.astralibs.server.util.asBukkitLocation
-import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
+import ru.astrainteractive.soulkeeper.core.platform.api.EffectEmitter
+import ru.astrainteractive.soulkeeper.core.plugin.model.SoulsConfig
 
 object BukkitEffectEmitter : EffectEmitter {
     private fun SoulsConfig.Sounds.SoundConfig.toKyoriSound(): Sound {

@@ -10,10 +10,10 @@ import ru.astrainteractive.astralibs.event.flowEvent
 import ru.astrainteractive.astralibs.server.util.asLocatable
 import ru.astrainteractive.astralibs.server.util.asOnlineMinecraftPlayer
 import ru.astrainteractive.klibs.mikro.core.util.tryCast
-import ru.astrainteractive.soulkeeper.module.souls.platform.event.EventProvider
-import ru.astrainteractive.soulkeeper.module.souls.platform.event.model.SharedPlayerJoinEvent
-import ru.astrainteractive.soulkeeper.module.souls.platform.event.model.SharedPlayerLeaveEvent
-import ru.astrainteractive.soulkeeper.module.souls.platform.event.model.SharedPlayerMoveEvent
+import ru.astrainteractive.soulkeeper.module.souls.platform.api.EventProvider
+import ru.astrainteractive.soulkeeper.module.souls.platform.model.SharedPlayerJoinEvent
+import ru.astrainteractive.soulkeeper.module.souls.platform.model.SharedPlayerLeaveEvent
+import ru.astrainteractive.soulkeeper.module.souls.platform.model.SharedPlayerMoveEvent
 
 object ForgeEventProvider : EventProvider {
     override fun getPlayerMoveEvent(): Flow<SharedPlayerMoveEvent> {

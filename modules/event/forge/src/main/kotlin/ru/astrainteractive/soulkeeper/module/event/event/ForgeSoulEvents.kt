@@ -28,14 +28,14 @@ import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.klibs.mikro.core.util.tryCast
-import ru.astrainteractive.soulkeeper.core.platform.EffectEmitter
-import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
+import ru.astrainteractive.soulkeeper.core.platform.api.EffectEmitter
+import ru.astrainteractive.soulkeeper.core.plugin.model.SoulsConfig
+import ru.astrainteractive.soulkeeper.core.serialization.ItemStackSerializer
 import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import ru.astrainteractive.soulkeeper.data.dao.soul.krate.PlayerSoulKrate
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.DefaultSoul
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.ItemDatabaseSoul
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.StringFormatObject
-import ru.astrainteractive.soulkeeper.module.souls.platform.ItemStackSerializer
 import java.io.File
 import java.time.Instant
 import kotlin.collections.isNotEmpty

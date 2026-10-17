@@ -17,6 +17,7 @@ dependencies {
     implementation(projects.modules.data.dao)
     implementation(projects.modules.service.api)
 
+    testImplementation(libs.minecraft.kyori.plain)
     testImplementation(libs.tests.kotlin.test)
 }
 

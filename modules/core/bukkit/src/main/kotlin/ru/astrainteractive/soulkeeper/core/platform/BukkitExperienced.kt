@@ -2,6 +2,7 @@ package ru.astrainteractive.soulkeeper.core.platform
 
 import org.bukkit.Bukkit
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
+import ru.astrainteractive.soulkeeper.core.platform.api.Experienced
 
 class BukkitExperienced(
     private val player: OnlineKPlayer

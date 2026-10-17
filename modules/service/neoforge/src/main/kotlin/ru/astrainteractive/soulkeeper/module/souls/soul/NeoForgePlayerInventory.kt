@@ -6,9 +6,9 @@ import ru.astrainteractive.astralibs.server.util.MinecraftUtil
 import ru.astrainteractive.astralibs.server.util.getOnlinePlayer
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
-import ru.astrainteractive.soulkeeper.core.platform.IsDeadPlayerProvider
+import ru.astrainteractive.soulkeeper.core.platform.api.IsDeadPlayerProvider
+import ru.astrainteractive.soulkeeper.core.serialization.ItemStackSerializer
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.StringFormatObject
-import ru.astrainteractive.soulkeeper.module.souls.platform.ItemStackSerializer
 import ru.astrainteractive.soulkeeper.module.souls.soul.api.PlayerInventory
 import ru.astrainteractive.soulkeeper.module.souls.soul.model.AddItemsResult
 import ru.astrainteractive.soulkeeper.module.souls.util.addItems

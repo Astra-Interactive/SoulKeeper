@@ -3,11 +3,10 @@ package ru.astrainteractive.soulkeeper.command.di
 import ru.astrainteractive.astralibs.command.api.registrar.CommandRegistrarContext
 import ru.astrainteractive.astralibs.command.api.registrar.registerWhenReady
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
-import ru.astrainteractive.soulkeeper.command.reload.SoulsReloadLiteralArgumentBuilder
-import ru.astrainteractive.soulkeeper.command.soulkrate.SoulKrateLiteralArgumentBuilder
-import ru.astrainteractive.soulkeeper.command.souls.SoulsAccessPolicy
-import ru.astrainteractive.soulkeeper.command.souls.SoulsCommandExecutor
-import ru.astrainteractive.soulkeeper.command.souls.SoulsListLiteralArgumentBuilder
+import ru.astrainteractive.soulkeeper.command.reload.command.SoulsReloadLiteralArgumentBuilder
+import ru.astrainteractive.soulkeeper.command.soulkrate.command.SoulKrateLiteralArgumentBuilder
+import ru.astrainteractive.soulkeeper.command.souls.command.SoulsCommandExecutor
+import ru.astrainteractive.soulkeeper.command.souls.command.SoulsListLiteralArgumentBuilder
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
@@ -28,7 +27,6 @@ class CommandModule(
                 soulRepository = soulRepository,
                 translationKrate = coreModule.translation,
                 dispatchers = coreModule.dispatchers,
-                accessPolicy = SoulsAccessPolicy(),
             ),
         ).create(),
         SoulKrateLiteralArgumentBuilder(

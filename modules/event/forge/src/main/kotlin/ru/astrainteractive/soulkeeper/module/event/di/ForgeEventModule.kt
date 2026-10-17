@@ -2,7 +2,7 @@ package ru.astrainteractive.soulkeeper.module.event.di
 
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
-import ru.astrainteractive.soulkeeper.core.platform.EffectEmitter
+import ru.astrainteractive.soulkeeper.core.platform.api.EffectEmitter
 import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import ru.astrainteractive.soulkeeper.module.event.event.ForgeSoulEvents
 

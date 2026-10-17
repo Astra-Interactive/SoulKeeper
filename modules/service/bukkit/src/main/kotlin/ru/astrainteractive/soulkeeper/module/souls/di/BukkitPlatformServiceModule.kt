@@ -7,12 +7,12 @@ import ru.astrainteractive.soulkeeper.core.di.BukkitCoreModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.core.platform.BukkitExperienced
 import ru.astrainteractive.soulkeeper.core.platform.BukkitIsDeadPlayerProvider
-import ru.astrainteractive.soulkeeper.core.platform.IsDeadPlayerProvider
+import ru.astrainteractive.soulkeeper.core.platform.api.IsDeadPlayerProvider
 import ru.astrainteractive.soulkeeper.module.souls.armorstand.api.ArmorStandDisplay
 import ru.astrainteractive.soulkeeper.module.souls.armorstand.packetevents.PacketEventsArmorStandDisplay
 import ru.astrainteractive.soulkeeper.module.souls.armorstand.stub.StubArmorStandDisplay
 import ru.astrainteractive.soulkeeper.module.souls.platform.BukkitEventProvider
-import ru.astrainteractive.soulkeeper.module.souls.platform.event.EventProvider
+import ru.astrainteractive.soulkeeper.module.souls.platform.api.EventProvider
 import ru.astrainteractive.soulkeeper.module.souls.soul.BukkitPlayerInventory
 import ru.astrainteractive.soulkeeper.module.souls.soul.api.PlayerInventory
 

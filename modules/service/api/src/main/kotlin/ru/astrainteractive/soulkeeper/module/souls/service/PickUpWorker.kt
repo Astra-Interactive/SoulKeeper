@@ -8,7 +8,7 @@ import ru.astrainteractive.astralibs.server.bridge.PlatformServer
 import ru.astrainteractive.astralibs.service.ServiceTask
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
-import ru.astrainteractive.soulkeeper.core.platform.IsDeadPlayerProvider
+import ru.astrainteractive.soulkeeper.core.platform.api.IsDeadPlayerProvider
 import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import ru.astrainteractive.soulkeeper.module.souls.soul.usecase.GetNearestSoulUseCase
 import ru.astrainteractive.soulkeeper.module.souls.soul.usecase.PickUpSoulUseCase

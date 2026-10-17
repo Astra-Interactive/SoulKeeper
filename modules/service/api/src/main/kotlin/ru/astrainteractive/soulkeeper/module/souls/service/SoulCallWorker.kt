@@ -26,15 +26,15 @@ import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
 import ru.astrainteractive.klibs.mikro.core.coroutines.TickFlow
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
-import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
+import ru.astrainteractive.soulkeeper.core.plugin.model.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.util.ThrottleExecutor
 import ru.astrainteractive.soulkeeper.core.util.combineInstantly
 import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.DatabaseSoul
-import ru.astrainteractive.soulkeeper.module.souls.platform.event.EventProvider
-import ru.astrainteractive.soulkeeper.module.souls.renderer.ArmorStandRenderer
-import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulParticleRenderer
-import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulSoundRenderer
+import ru.astrainteractive.soulkeeper.module.souls.platform.api.EventProvider
+import ru.astrainteractive.soulkeeper.module.souls.renderer.armorstand.ArmorStandRenderer
+import ru.astrainteractive.soulkeeper.module.souls.renderer.particle.SoulParticleRenderer
+import ru.astrainteractive.soulkeeper.module.souls.renderer.sound.SoulSoundRenderer
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 

@@ -8,11 +8,11 @@ import ru.astrainteractive.astralibs.coroutines.MinecraftDispatchers
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.soulkeeper.command.di.CommandModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
+import ru.astrainteractive.soulkeeper.core.platform.NeoForgeEffectEmitter
 import ru.astrainteractive.soulkeeper.data.exposed.di.SoulsDaoModule
 import ru.astrainteractive.soulkeeper.module.event.di.ForgeEventModule
 import ru.astrainteractive.soulkeeper.module.souls.di.NeoForgePlatformServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
-import ru.astrainteractive.soulkeeper.module.souls.platform.NeoForgeEffectEmitter
 import java.io.File
 
 class RootModule(private val plugin: Lifecycle) {
