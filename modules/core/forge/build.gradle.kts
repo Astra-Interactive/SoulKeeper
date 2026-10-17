@@ -10,8 +10,6 @@ dependencies {
     implementation(libs.minecraft.astralibs.core)
     implementation(libs.minecraft.astralibs.core.forge)
     implementation(projects.modules.core.api)
-    implementation(projects.modules.dao)
-    implementation(projects.modules.service.api)
 }
 
 dependencies {

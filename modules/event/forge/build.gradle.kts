@@ -14,8 +14,6 @@ dependencies {
     implementation(projects.modules.core.api)
     implementation(projects.modules.core.forge)
     implementation(projects.modules.dao)
-    implementation(projects.modules.service.api)
-    implementation(projects.modules.service.forge)
 }
 
 dependencies {
