@@ -8,17 +8,17 @@ import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
-import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
+import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import java.time.Instant
 
 internal class DeleteSoulWorker(
-    private val soulsDao: SoulsDao,
+    private val soulRepository: SoulRepository,
     configKrate: CachedKrate<SoulsConfig>
 ) : ServiceTask, Logger by JUtiltLogger("SoulKeeper-DeleteSoulWorker") {
     private val config by configKrate
 
     private suspend fun doWorkInternal() {
-        val soulsToDelete = soulsDao.getSouls()
+        val soulsToDelete = soulRepository.getSouls()
             .getOrNull()
             .orEmpty()
             .filter { soul ->
@@ -28,7 +28,7 @@ internal class DeleteSoulWorker(
         if (soulsToDelete.isEmpty()) return
 
         soulsToDelete.forEach { soul ->
-            soulsDao.deleteSoul(soul.id)
+            soulRepository.deleteSoul(soul.id)
         }
     }
 

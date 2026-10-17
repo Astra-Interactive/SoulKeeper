@@ -20,9 +20,9 @@ import ru.astrainteractive.soulkeeper.core.datetime.TimeAgoFormatter
 import ru.astrainteractive.soulkeeper.core.datetime.TimeAgoTranslationFormatter
 import ru.astrainteractive.soulkeeper.core.plugin.PluginPermission
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
-import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
-import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
-import ru.astrainteractive.soulkeeper.module.souls.database.model.Soul
+import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
+import ru.astrainteractive.soulkeeper.data.dao.soul.model.DatabaseSoul
+import ru.astrainteractive.soulkeeper.data.dao.soul.model.Soul
 import java.util.Locale
 
 private fun Component.append(
@@ -40,7 +40,7 @@ private fun Component.append(
 
 internal class SoulsCommandExecutor(
     private val ioScope: CoroutineScope,
-    private val soulsDao: SoulsDao,
+    private val soulRepository: SoulRepository,
     private val dispatchers: KotlinDispatchers,
     private val accessPolicy: SoulsAccessPolicy,
     translationKrate: CachedKrate<PluginTranslation>
@@ -61,7 +61,7 @@ internal class SoulsCommandExecutor(
     }
 
     private suspend fun getFilteredSouls(sender: KCommandSender): List<DatabaseSoul> {
-        val souls = soulsDao.getSouls()
+        val souls = soulRepository.getSouls()
             .getOrNull()
             .orEmpty()
         return when (sender) {
@@ -183,7 +183,7 @@ internal class SoulsCommandExecutor(
 
     private fun executeFree(input: SoulsCommand.Intent.Free) {
         ioScope.launch {
-            val soul = soulsDao.getSoul(input.soulId).getOrNull()
+            val soul = soulRepository.getSoul(input.soulId).getOrNull()
             if (soul == null) {
                 input.sender.sendMessage(translation.soul.notFound)
                 return@launch
@@ -192,7 +192,7 @@ internal class SoulsCommandExecutor(
                 input.sender.sendMessage(translation.commandError.noPermission)
                 return@launch
             }
-            soulsDao.updateSoul(soul.copy(isFree = true))
+            soulRepository.updateSoul(soul.copy(isFree = true))
                 .onSuccess {
                     input.sender.sendMessage(translation.soul.freed)
                 }
@@ -204,7 +204,7 @@ internal class SoulsCommandExecutor(
 
     private fun executeTeleport(input: SoulsCommand.Intent.TeleportToSoul) {
         ioScope.launch {
-            val location = soulsDao.getSoul(input.soulId)
+            val location = soulRepository.getSoul(input.soulId)
                 .getOrNull()
                 ?.location
             if (location == null) {

@@ -16,7 +16,7 @@ import ru.astrainteractive.astralibs.server.util.asBukkitLocation
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
-import ru.astrainteractive.soulkeeper.module.souls.database.model.Soul
+import ru.astrainteractive.soulkeeper.data.dao.soul.model.Soul
 import java.util.Optional
 import java.util.UUID
 

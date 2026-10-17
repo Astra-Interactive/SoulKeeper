@@ -9,7 +9,7 @@ import ru.astrainteractive.astralibs.service.ServiceTask
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.platform.IsDeadPlayerProvider
-import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
+import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import ru.astrainteractive.soulkeeper.module.souls.domain.GetNearestSoulUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpSoulUseCase
 
@@ -19,7 +19,7 @@ import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpSoulUseCase
 internal class PickUpWorker(
     private val pickUpSoulUseCase: PickUpSoulUseCase,
     private val getNearestSoulUseCase: GetNearestSoulUseCase,
-    private val soulsDao: SoulsDao,
+    private val soulRepository: SoulRepository,
     private val platformServer: PlatformServer,
     private val isDeadPlayerProvider: IsDeadPlayerProvider
 ) : ServiceTask, Logger by JUtiltLogger("SoulKeeper-PickUpWorker") {
@@ -30,7 +30,7 @@ internal class PickUpWorker(
             .filter { !isDeadPlayerProvider.isDead(it) }
             .forEach { player ->
                 val databaseSoul = getNearestSoulUseCase.invoke(player) ?: return@forEach
-                val itemStackSoul = soulsDao.toItemDatabaseSoul(databaseSoul).getOrNull() ?: return@forEach
+                val itemStackSoul = soulRepository.toItemDatabaseSoul(databaseSoul).getOrNull() ?: return@forEach
                 when (pickUpSoulUseCase.invoke(player, itemStackSoul)) {
                     PickUpSoulUseCase.Output.AllPickedUp -> Unit
 

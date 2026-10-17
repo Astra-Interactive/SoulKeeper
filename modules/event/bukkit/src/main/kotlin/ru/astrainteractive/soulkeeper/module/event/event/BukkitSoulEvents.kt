@@ -19,16 +19,16 @@ import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.platform.EffectEmitter
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.serialization.ItemStackSerializer
-import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
-import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
-import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
-import ru.astrainteractive.soulkeeper.module.souls.krate.PlayerSoulKrate
+import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
+import ru.astrainteractive.soulkeeper.data.dao.soul.krate.PlayerSoulKrate
+import ru.astrainteractive.soulkeeper.data.dao.soul.model.DefaultSoul
+import ru.astrainteractive.soulkeeper.data.dao.soul.model.StringFormatObject
 import java.io.File
 import java.time.Instant
 import kotlin.time.Duration.Companion.seconds
 
 internal class BukkitSoulEvents(
-    private val soulsDao: SoulsDao,
+    private val soulRepository: SoulRepository,
     private val ioScope: CoroutineScope,
     private val dataFolder: File,
     private val stringFormat: StringFormat,
@@ -112,7 +112,7 @@ internal class BukkitSoulEvents(
                 ownerUUID = soul.ownerUUID,
             ).save(soul)
         }
-        ioScope.launch { soulsDao.insertSoul(soul) }
+        ioScope.launch { soulRepository.insertSoul(soul) }
         info { "#playerDeathEvent soul: $soul" }
         playEffects(soul, event.player.asOnlineMinecraftPlayer())
     }

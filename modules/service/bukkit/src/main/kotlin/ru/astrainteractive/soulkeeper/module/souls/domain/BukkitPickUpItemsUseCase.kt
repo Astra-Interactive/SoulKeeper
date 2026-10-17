@@ -10,14 +10,14 @@ import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.platform.EffectEmitter
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.serialization.ItemStackSerializer
-import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
-import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
-import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
+import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
+import ru.astrainteractive.soulkeeper.data.dao.soul.model.ItemDatabaseSoul
+import ru.astrainteractive.soulkeeper.data.dao.soul.model.StringFormatObject
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase.Output
 
 internal class BukkitPickUpItemsUseCase(
     private val collectItemSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
-    private val soulsDao: SoulsDao,
+    private val soulRepository: SoulRepository,
     private val dispatchers: KotlinDispatchers,
     private val effectEmitter: EffectEmitter
 ) : PickUpItemsUseCase,
@@ -59,7 +59,7 @@ internal class BukkitPickUpItemsUseCase(
             }
         }
 
-        soulsDao.updateSoul(
+        soulRepository.updateSoul(
             soul.copy(
                 items = notAddedItems
                     .map(ItemStackSerializer::encodeToString)

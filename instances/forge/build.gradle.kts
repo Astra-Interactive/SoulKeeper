@@ -40,7 +40,8 @@ dependencies {
     // Local
     shadow(projects.modules.core.api)
     shadow(projects.modules.command)
-    shadow(projects.modules.dao)
+    shadow(projects.modules.data.dao)
+    shadow(projects.modules.data.exposed)
     shadow(projects.modules.service.api)
     shadow(projects.modules.core.forge)
     shadow(projects.modules.service.forge)

@@ -4,16 +4,16 @@ import org.bukkit.event.HandlerList
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.soulkeeper.core.di.BukkitCoreModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
+import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import ru.astrainteractive.soulkeeper.module.event.event.BukkitSoulEvents
-import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
 
 class BukkitEventModule(
     coreModule: CoreModule,
     bukkitCoreModule: BukkitCoreModule,
-    soulsDaoModule: SoulsDaoModule
+    soulRepository: SoulRepository
 ) {
     private val event = BukkitSoulEvents(
-        soulsDao = soulsDaoModule.soulsDao,
+        soulRepository = soulRepository,
         soulsConfigKrate = coreModule.soulsConfigKrate,
         ioScope = coreModule.ioScope,
         dataFolder = coreModule.dataFolder,

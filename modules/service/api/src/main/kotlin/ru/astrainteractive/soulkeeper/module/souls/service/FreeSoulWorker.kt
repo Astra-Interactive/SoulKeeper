@@ -8,17 +8,17 @@ import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
-import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
+import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import java.time.Instant
 
 internal class FreeSoulWorker(
-    private val soulsDao: SoulsDao,
+    private val soulRepository: SoulRepository,
     configKrate: CachedKrate<SoulsConfig>
 ) : ServiceTask, Logger by JUtiltLogger("SoulKeeper-FreeSoulWorker") {
     private val config by configKrate
 
     private suspend fun doWorkInternal() {
-        val soulsToFree = soulsDao.getSouls()
+        val soulsToFree = soulRepository.getSouls()
             .getOrNull()
             .orEmpty()
             .filter { soul -> !soul.isFree }
@@ -32,7 +32,7 @@ internal class FreeSoulWorker(
         soulsToFree
             .map { soul -> soul.copy(isFree = true) }
             .forEach { soul ->
-                soulsDao.updateSoul(soul)
+                soulRepository.updateSoul(soul)
             }
     }
 

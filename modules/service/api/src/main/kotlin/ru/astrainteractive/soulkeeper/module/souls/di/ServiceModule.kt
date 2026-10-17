@@ -4,6 +4,7 @@ import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.service.IntervalService
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
+import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import ru.astrainteractive.soulkeeper.module.souls.domain.GetNearestSoulUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpExpUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpSoulUseCase
@@ -18,7 +19,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class ServiceModule(
     coreModule: CoreModule,
-    soulsDaoModule: SoulsDaoModule,
+    soulRepository: SoulRepository,
     platformServiceModule: PlatformServiceModule
 
 ) {
@@ -45,7 +46,7 @@ class ServiceModule(
         scope = coreModule.ioScope,
         logger = JUtiltLogger("DeleteSoulService"),
         task = DeleteSoulWorker(
-            soulsDao = soulsDaoModule.soulsDao,
+            soulRepository = soulRepository,
             configKrate = coreModule.soulsConfigKrate,
         )
     )
@@ -55,13 +56,13 @@ class ServiceModule(
         scope = coreModule.ioScope,
         logger = JUtiltLogger("FreeSoulService"),
         task = FreeSoulWorker(
-            soulsDao = soulsDaoModule.soulsDao,
+            soulRepository = soulRepository,
             configKrate = coreModule.soulsConfigKrate,
         )
     )
 
     private val soulCallWorker = SoulCallWorker(
-        soulsDao = soulsDaoModule.soulsDao,
+        soulRepository = soulRepository,
         config = coreModule.soulsConfigKrate.cachedValue,
         soulParticleRenderer = soulParticleRenderer,
         soulSoundRenderer = soulSoundRenderer,
@@ -71,7 +72,7 @@ class ServiceModule(
 
     private val pickUpExpUseCase: PickUpExpUseCase = PickUpExpUseCase(
         collectXpSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectXp },
-        soulsDao = soulsDaoModule.soulsDao,
+        soulRepository = soulRepository,
         effectEmitter = coreModule.effectEmitter,
         experiencedFactory = platformServiceModule.onlineMinecraftPlayerExperiencedFactory,
         dispatchers = coreModule.dispatchers
@@ -85,7 +86,7 @@ class ServiceModule(
                 dispatchers = coreModule.dispatchers,
                 pickUpExpUseCase = pickUpExpUseCase,
                 pickUpItemsUseCase = platformServiceModule.pickUpItemsUseCase,
-                soulsDao = soulsDaoModule.soulsDao,
+                soulRepository = soulRepository,
                 soulGoneParticleProvider = { coreModule.soulsConfigKrate.cachedValue.particles.soulGone },
                 soulDisappearSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.soulDisappear },
                 soulContentLeftParticleProvider = {
@@ -97,9 +98,9 @@ class ServiceModule(
                 effectEmitter = coreModule.effectEmitter
             ),
             getNearestSoulUseCase = GetNearestSoulUseCase(
-                soulsDao = soulsDaoModule.soulsDao,
+                soulRepository = soulRepository,
             ),
-            soulsDao = soulsDaoModule.soulsDao,
+            soulRepository = soulRepository,
             platformServer = platformServiceModule.platformServer,
             isDeadPlayerProvider = platformServiceModule.isDeadPlayerProvider,
         )

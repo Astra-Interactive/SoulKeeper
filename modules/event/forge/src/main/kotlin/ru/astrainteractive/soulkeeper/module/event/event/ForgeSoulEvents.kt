@@ -30,11 +30,11 @@ import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.klibs.mikro.core.util.tryCast
 import ru.astrainteractive.soulkeeper.core.platform.EffectEmitter
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
-import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
-import ru.astrainteractive.soulkeeper.module.souls.database.model.DefaultSoul
-import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
-import ru.astrainteractive.soulkeeper.module.souls.database.model.StringFormatObject
-import ru.astrainteractive.soulkeeper.module.souls.krate.PlayerSoulKrate
+import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
+import ru.astrainteractive.soulkeeper.data.dao.soul.krate.PlayerSoulKrate
+import ru.astrainteractive.soulkeeper.data.dao.soul.model.DefaultSoul
+import ru.astrainteractive.soulkeeper.data.dao.soul.model.ItemDatabaseSoul
+import ru.astrainteractive.soulkeeper.data.dao.soul.model.StringFormatObject
 import ru.astrainteractive.soulkeeper.module.souls.platform.ItemStackSerializer
 import java.io.File
 import java.time.Instant
@@ -45,7 +45,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @Suppress("LongParameterList")
 internal class ForgeSoulEvents(
-    private val soulsDao: SoulsDao,
+    private val soulRepository: SoulRepository,
     private val effectEmitter: EffectEmitter,
     private val dispatchers: KotlinDispatchers,
     private val dataFolder: File,
@@ -87,7 +87,7 @@ internal class ForgeSoulEvents(
             items = updatedItems,
             hasItems = updatedItems.isNotEmpty()
         )
-        soulsDao.updateSoul(soul = updatedSoul)
+        soulRepository.updateSoul(soul = updatedSoul)
         if (soulItems != null) {
             ioScope.launch {
                 val defaultSoul = DefaultSoul(
@@ -131,7 +131,7 @@ internal class ForgeSoulEvents(
             },
             items = soulItems.orEmpty(),
         )
-        soulsDao.insertSoul(soul)
+        soulRepository.insertSoul(soul)
         if (!soulItems.isNullOrEmpty()) {
             ioScope.launch {
                 PlayerSoulKrate(
@@ -155,11 +155,11 @@ internal class ForgeSoulEvents(
                 .asLocatable()
                 .getLocation()
 
-            val existingSoul = soulsDao.getSoulsNear(location, 1)
+            val existingSoul = soulRepository.getSoulsNear(location, 1)
                 .getOrNull()
                 .orEmpty()
                 .firstOrNull { soul -> soul.ownerUUID == serverPlayer.uuid }
-                ?.let { dbSoul -> soulsDao.toItemDatabaseSoul(dbSoul) }
+                ?.let { dbSoul -> soulRepository.toItemDatabaseSoul(dbSoul) }
                 ?.getOrNull()
 
             if (existingSoul != null) {

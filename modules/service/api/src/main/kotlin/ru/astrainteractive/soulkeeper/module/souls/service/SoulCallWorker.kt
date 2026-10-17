@@ -29,8 +29,8 @@ import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
 import ru.astrainteractive.soulkeeper.core.util.ThrottleExecutor
 import ru.astrainteractive.soulkeeper.core.util.combineInstantly
-import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
-import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
+import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
+import ru.astrainteractive.soulkeeper.data.dao.soul.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.platform.event.EventProvider
 import ru.astrainteractive.soulkeeper.module.souls.renderer.ArmorStandRenderer
 import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulParticleRenderer
@@ -43,7 +43,7 @@ import kotlin.time.Duration.Companion.seconds
  */
 @Suppress("LongParameterList")
 internal class SoulCallWorker(
-    private val soulsDao: SoulsDao,
+    private val soulRepository: SoulRepository,
     private val config: SoulsConfig,
     private val soulParticleRenderer: SoulParticleRenderer,
     private val soulSoundRenderer: SoulSoundRenderer,
@@ -89,11 +89,11 @@ internal class SoulCallWorker(
     ): Flow<List<DatabaseSoul>> {
         return combineInstantly(
             flow = distancedPlayerMoveEvent(player).shareIn(scope, SharingStarted.Eagerly, 1),
-            flow2 = soulsDao.getSoulsChangeFlow(),
+            flow2 = soulRepository.getSoulsChangeFlow(),
             transform = { event, _ -> event }
         ).filterNotNull().map { event ->
             val location = event.player.getLocation()
-            soulsDao.getSoulsNear(location, config.soulCallRadius)
+            soulRepository.getSoulsNear(location, config.soulCallRadius)
                 .getOrNull()
                 .orEmpty()
                 .filter { soul -> soul.ownerUUID == player.uuid || soul.isFree }

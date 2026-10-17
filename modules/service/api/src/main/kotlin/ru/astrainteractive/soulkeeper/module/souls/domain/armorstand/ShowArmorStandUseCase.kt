@@ -1,7 +1,7 @@
 package ru.astrainteractive.soulkeeper.module.souls.domain.armorstand
 
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
-import ru.astrainteractive.soulkeeper.module.souls.database.model.Soul
+import ru.astrainteractive.soulkeeper.data.dao.soul.model.Soul
 
 interface ShowArmorStandUseCase {
     fun destroy(

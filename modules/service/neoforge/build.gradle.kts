@@ -20,7 +20,7 @@ dependencies {
     implementation(libs.minecraft.astralibs.core.neoforge)
     implementation(projects.modules.core.api)
     implementation(projects.modules.core.neoforge)
-    implementation(projects.modules.dao)
+    implementation(projects.modules.data.dao)
     implementation(projects.modules.service.api)
 
     testImplementation(libs.tests.kotlin.test)

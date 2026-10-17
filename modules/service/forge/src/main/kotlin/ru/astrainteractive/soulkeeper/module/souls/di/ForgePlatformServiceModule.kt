@@ -4,6 +4,7 @@ import ru.astrainteractive.astralibs.server.bridge.MinecraftPlatformServer
 import ru.astrainteractive.astralibs.server.bridge.PlatformServer
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.core.platform.IsDeadPlayerProvider
+import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import ru.astrainteractive.soulkeeper.module.souls.domain.ForgeAddSoulItemsIntoInventoryUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.ForgePickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase
@@ -16,7 +17,7 @@ import ru.astrainteractive.soulkeeper.module.souls.platform.event.EventProvider
 
 class ForgePlatformServiceModule(
     coreModule: CoreModule,
-    soulsDaoModule: SoulsDaoModule,
+    soulRepository: SoulRepository,
 ) : PlatformServiceModule {
     override val platformServer: PlatformServer = MinecraftPlatformServer
     override val eventProvider: EventProvider = ForgeEventProvider
@@ -26,7 +27,7 @@ class ForgePlatformServiceModule(
     override val onlineMinecraftPlayerExperiencedFactory = ForgeExperienced.OnlineMinecraftPlayerFactory
     override val pickUpItemsUseCase: PickUpItemsUseCase = ForgePickUpItemsUseCase(
         collectItemSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectItem },
-        soulsDao = soulsDaoModule.soulsDao,
+        soulRepository = soulRepository,
         effectEmitter = coreModule.effectEmitter,
         isDeadPlayerProvider = isDeadPlayerProvider,
         dispatchers = coreModule.dispatchers

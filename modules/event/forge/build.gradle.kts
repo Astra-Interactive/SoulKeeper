@@ -13,7 +13,7 @@ dependencies {
     implementation(libs.minecraft.astralibs.core.forge)
     implementation(projects.modules.core.api)
     implementation(projects.modules.core.forge)
-    implementation(projects.modules.dao)
+    implementation(projects.modules.data.dao)
 }
 
 dependencies {

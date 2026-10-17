@@ -9,12 +9,12 @@ import ru.astrainteractive.soulkeeper.command.souls.SoulsAccessPolicy
 import ru.astrainteractive.soulkeeper.command.souls.SoulsCommandExecutor
 import ru.astrainteractive.soulkeeper.command.souls.SoulsListLiteralArgumentBuilder
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
+import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
-import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
 
 class CommandModule(
     private val coreModule: CoreModule,
-    soulsDaoModule: SoulsDaoModule,
+    soulRepository: SoulRepository,
     serviceModule: ServiceModule,
     private val commandRegistrarContext: CommandRegistrarContext,
     lifecyclePlugin: Lifecycle
@@ -25,7 +25,7 @@ class CommandModule(
             commandExceptionHandler = coreModule.commandExceptionHandler,
             soulsCommandExecutor = SoulsCommandExecutor(
                 ioScope = coreModule.ioScope,
-                soulsDao = soulsDaoModule.soulsDao,
+                soulRepository = soulRepository,
                 translationKrate = coreModule.translation,
                 dispatchers = coreModule.dispatchers,
                 accessPolicy = SoulsAccessPolicy(),

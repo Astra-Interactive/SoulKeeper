@@ -8,12 +8,12 @@ import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.platform.EffectEmitter
 import ru.astrainteractive.soulkeeper.core.platform.Experienced
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
-import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
-import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
+import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
+import ru.astrainteractive.soulkeeper.data.dao.soul.model.ItemDatabaseSoul
 
 class PickUpExpUseCase(
     private val collectXpSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
-    private val soulsDao: SoulsDao,
+    private val soulRepository: SoulRepository,
     private val effectEmitter: EffectEmitter,
     private val dispatchers: KotlinDispatchers,
     private val experiencedFactory: Experienced.Factory<OnlineKPlayer>
@@ -33,7 +33,7 @@ class PickUpExpUseCase(
             )
             experiencedFactory.create(player).giveExperience(soul.exp)
         }
-        soulsDao.updateSoul(soul = soul.copy(exp = 0))
+        soulRepository.updateSoul(soul = soul.copy(exp = 0))
         return Output.ExpCollected
     }
 }

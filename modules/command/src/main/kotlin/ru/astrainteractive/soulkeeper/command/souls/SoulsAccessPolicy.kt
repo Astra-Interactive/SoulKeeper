@@ -6,7 +6,7 @@ import ru.astrainteractive.astralibs.command.api.brigadier.sender.KPlayerKComman
 import ru.astrainteractive.astralibs.server.permission.Permission
 import ru.astrainteractive.klibs.mikro.core.util.tryCast
 import ru.astrainteractive.soulkeeper.core.plugin.PluginPermission
-import ru.astrainteractive.soulkeeper.module.souls.database.model.DatabaseSoul
+import ru.astrainteractive.soulkeeper.data.dao.soul.model.DatabaseSoul
 
 internal class SoulsAccessPolicy {
 

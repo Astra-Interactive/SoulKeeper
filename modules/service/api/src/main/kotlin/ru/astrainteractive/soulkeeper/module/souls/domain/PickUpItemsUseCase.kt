@@ -1,7 +1,7 @@
 package ru.astrainteractive.soulkeeper.module.souls.domain
 
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
-import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
+import ru.astrainteractive.soulkeeper.data.dao.soul.model.ItemDatabaseSoul
 
 interface PickUpItemsUseCase {
     sealed interface Output {

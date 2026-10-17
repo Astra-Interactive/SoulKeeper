@@ -14,7 +14,7 @@ dependencies {
     implementation(libs.minecraft.astralibs.core)
     implementation(libs.minecraft.kyori.api)
     implementation(projects.modules.core.api)
-    implementation(projects.modules.dao)
+    implementation(projects.modules.data.dao)
     implementation(projects.modules.service.api)
 
     testImplementation(libs.tests.kotlin.test)

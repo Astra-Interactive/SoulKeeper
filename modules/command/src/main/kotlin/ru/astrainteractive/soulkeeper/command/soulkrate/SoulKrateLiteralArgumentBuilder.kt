@@ -15,8 +15,8 @@ import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.command.CommandExceptionHandler
 import ru.astrainteractive.soulkeeper.core.plugin.PluginPermission
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
+import ru.astrainteractive.soulkeeper.data.dao.soul.krate.PlayerSoulKrate
 import ru.astrainteractive.soulkeeper.module.souls.domain.AddSoulItemsIntoInventoryUseCase
-import ru.astrainteractive.soulkeeper.module.souls.krate.PlayerSoulKrate
 import java.io.File
 import java.time.Instant
 

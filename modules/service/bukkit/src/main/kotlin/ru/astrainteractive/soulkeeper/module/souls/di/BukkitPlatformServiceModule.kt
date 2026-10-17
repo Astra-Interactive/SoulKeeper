@@ -7,6 +7,7 @@ import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.core.platform.BukkitExperienced
 import ru.astrainteractive.soulkeeper.core.platform.BukkitIsDeadPlayerProvider
 import ru.astrainteractive.soulkeeper.core.platform.IsDeadPlayerProvider
+import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import ru.astrainteractive.soulkeeper.module.souls.domain.BukkitAddSoulItemsIntoInventoryUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.BukkitPickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase
@@ -18,7 +19,7 @@ import ru.astrainteractive.soulkeeper.module.souls.platform.event.EventProvider
 class BukkitPlatformServiceModule(
     coreModule: CoreModule,
     bukkitCoreModule: BukkitCoreModule,
-    soulsDaoModule: SoulsDaoModule,
+    soulRepository: SoulRepository,
 ) : PlatformServiceModule {
     override val platformServer: PlatformServer = BukkitPlatformServer()
     override val eventProvider: EventProvider = BukkitEventProvider(
@@ -30,7 +31,7 @@ class BukkitPlatformServiceModule(
     override val showArmorStandUseCase: ShowArmorStandUseCase = ShowArmorStandUseCaseFactory(coreModule).create()
     override val pickUpItemsUseCase: PickUpItemsUseCase = BukkitPickUpItemsUseCase(
         collectItemSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectItem },
-        soulsDao = soulsDaoModule.soulsDao,
+        soulRepository = soulRepository,
         dispatchers = coreModule.dispatchers,
         effectEmitter = coreModule.effectEmitter
     )

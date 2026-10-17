@@ -8,10 +8,10 @@ import ru.astrainteractive.astralibs.coroutines.MinecraftDispatchers
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.soulkeeper.command.di.CommandModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
+import ru.astrainteractive.soulkeeper.data.exposed.di.SoulsDaoModule
 import ru.astrainteractive.soulkeeper.module.event.di.ForgeEventModule
 import ru.astrainteractive.soulkeeper.module.souls.di.ForgePlatformServiceModule
 import ru.astrainteractive.soulkeeper.module.souls.di.ServiceModule
-import ru.astrainteractive.soulkeeper.module.souls.di.SoulsDaoModule
 import ru.astrainteractive.soulkeeper.module.souls.platform.ForgeEffectEmitter
 import java.io.File
 
@@ -44,21 +44,21 @@ class RootModule(private val plugin: Lifecycle) {
     private val forgePlatformServiceModule by lazy {
         ForgePlatformServiceModule(
             coreModule = coreModule,
-            soulsDaoModule = soulsDaoModule
+            soulRepository = soulsDaoModule.soulRepository
         )
     }
 
     private val serviceModule by lazy {
         ServiceModule(
             coreModule = coreModule,
-            soulsDaoModule = soulsDaoModule,
+            soulRepository = soulsDaoModule.soulRepository,
             platformServiceModule = forgePlatformServiceModule
         )
     }
     private val forgeEventModule by lazy {
         ForgeEventModule(
             coreModule = coreModule,
-            soulsDaoModule = soulsDaoModule,
+            soulRepository = soulsDaoModule.soulRepository,
             effectEmitter = coreModule.effectEmitter
         )
     }
@@ -66,7 +66,7 @@ class RootModule(private val plugin: Lifecycle) {
     private val commandModule by lazy {
         CommandModule(
             coreModule = coreModule,
-            soulsDaoModule = soulsDaoModule,
+            soulRepository = soulsDaoModule.soulRepository,
             commandRegistrarContext = commandRegistrarContext,
             serviceModule = serviceModule,
             lifecyclePlugin = plugin,

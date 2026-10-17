@@ -7,15 +7,15 @@ import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.platform.EffectEmitter
 import ru.astrainteractive.soulkeeper.core.plugin.SoulsConfig
-import ru.astrainteractive.soulkeeper.module.souls.dao.SoulsDao
-import ru.astrainteractive.soulkeeper.module.souls.database.model.ItemDatabaseSoul
+import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
+import ru.astrainteractive.soulkeeper.data.dao.soul.model.ItemDatabaseSoul
 
 @Suppress("LongParameterList")
 internal class PickUpSoulUseCase(
     private val dispatchers: KotlinDispatchers,
     private val pickUpExpUseCase: PickUpExpUseCase,
     private val pickUpItemsUseCase: PickUpItemsUseCase,
-    private val soulsDao: SoulsDao,
+    private val soulRepository: SoulRepository,
     private val soulDisappearSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
     private val soulGoneParticleProvider: () -> SoulsConfig.Particles.Particle,
     private val soulContentLeftSoundProvider: () -> SoulsConfig.Sounds.SoundConfig,
@@ -58,7 +58,7 @@ internal class PickUpSoulUseCase(
             }
             return Output.SomethingRest
         }
-        soulsDao.deleteSoul(updatedSoul.id)
+        soulRepository.deleteSoul(updatedSoul.id)
         withContext(dispatchers.Main) {
             effectEmitter.playSoundForPlayer(
                 location = updatedSoul.location,

@@ -14,6 +14,6 @@ dependencies {
     implementation(libs.minecraft.astralibs.core.bukkit)
     implementation(projects.modules.core.api)
     implementation(projects.modules.core.bukkit)
-    implementation(projects.modules.dao)
+    implementation(projects.modules.data.dao)
     implementation(projects.modules.service.api)
 }
