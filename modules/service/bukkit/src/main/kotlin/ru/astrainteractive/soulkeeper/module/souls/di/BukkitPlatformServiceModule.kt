@@ -7,19 +7,16 @@ import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.core.platform.BukkitExperienced
 import ru.astrainteractive.soulkeeper.core.platform.BukkitIsDeadPlayerProvider
 import ru.astrainteractive.soulkeeper.core.platform.IsDeadPlayerProvider
-import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
-import ru.astrainteractive.soulkeeper.module.souls.domain.BukkitAddSoulItemsIntoInventoryUseCase
-import ru.astrainteractive.soulkeeper.module.souls.domain.BukkitPickUpItemsUseCase
-import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpItemsUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.armorstand.ShowArmorStandUseCase
 import ru.astrainteractive.soulkeeper.module.souls.domain.di.factory.ShowArmorStandUseCaseFactory
 import ru.astrainteractive.soulkeeper.module.souls.platform.BukkitEventProvider
 import ru.astrainteractive.soulkeeper.module.souls.platform.event.EventProvider
+import ru.astrainteractive.soulkeeper.module.souls.soul.BukkitPlayerInventory
+import ru.astrainteractive.soulkeeper.module.souls.soul.api.PlayerInventory
 
 class BukkitPlatformServiceModule(
     coreModule: CoreModule,
-    bukkitCoreModule: BukkitCoreModule,
-    soulRepository: SoulRepository,
+    bukkitCoreModule: BukkitCoreModule
 ) : PlatformServiceModule {
     override val platformServer: PlatformServer = BukkitPlatformServer()
     override val eventProvider: EventProvider = BukkitEventProvider(
@@ -29,11 +26,5 @@ class BukkitPlatformServiceModule(
     override val onlineMinecraftPlayerExperiencedFactory = BukkitExperienced.OnlineMinecraftPlayerFactory
 
     override val showArmorStandUseCase: ShowArmorStandUseCase = ShowArmorStandUseCaseFactory(coreModule).create()
-    override val pickUpItemsUseCase: PickUpItemsUseCase = BukkitPickUpItemsUseCase(
-        collectItemSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectItem },
-        soulRepository = soulRepository,
-        dispatchers = coreModule.dispatchers,
-        effectEmitter = coreModule.effectEmitter
-    )
-    override val addSoulItemsIntoInventoryUseCase = BukkitAddSoulItemsIntoInventoryUseCase()
+    override val playerInventory: PlayerInventory = BukkitPlayerInventory()
 }

@@ -96,7 +96,7 @@ internal class SoulCallWorker(
             soulRepository.getSoulsNear(location, config.soulCallRadius)
                 .getOrNull()
                 .orEmpty()
-                .filter { soul -> soul.ownerUUID == player.uuid || soul.isFree }
+                .filter { soul -> soul.isAvailableTo(player.uuid) }
         }
     }
 

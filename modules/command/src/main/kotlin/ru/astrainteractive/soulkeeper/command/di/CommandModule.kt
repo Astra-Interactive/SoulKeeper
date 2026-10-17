@@ -36,7 +36,7 @@ class CommandModule(
             stringFormat = coreModule.yamlFormat,
             dataFolder = coreModule.dataFolder,
             ioScope = coreModule.ioScope,
-            addSoulItemsIntoInventoryUseCase = serviceModule.addSoulItemsIntoInventoryUseCase,
+            playerInventory = serviceModule.playerInventory,
             translationKrate = coreModule.translation,
             commandExceptionHandler = coreModule.commandExceptionHandler,
         ).create(),

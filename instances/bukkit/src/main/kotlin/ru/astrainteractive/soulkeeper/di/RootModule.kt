@@ -33,8 +33,7 @@ class RootModule(plugin: LifecyclePlugin) {
 
     private val bukkitPlatformServiceModule = BukkitPlatformServiceModule(
         coreModule = coreModule,
-        bukkitCoreModule = bukkitCoreModule,
-        soulRepository = soulsDaoModule.soulRepository
+        bukkitCoreModule = bukkitCoreModule
     )
     private val serviceModule = ServiceModule(
         coreModule = coreModule,

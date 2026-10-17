@@ -5,6 +5,10 @@ plugins {
     id("ru.astrainteractive.gradleplugin.java.version")
 }
 
+linter {
+    unitKind.set("technology")
+}
+
 dependencies {
     compileOnly(libs.minecraft.packetevents)
     compileOnly(libs.minecraft.paper.api)

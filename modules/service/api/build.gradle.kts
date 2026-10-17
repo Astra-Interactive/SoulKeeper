@@ -18,5 +18,9 @@ dependencies {
     implementation(projects.modules.core.api)
     implementation(projects.modules.data.dao)
 
+    testImplementation(libs.kotlin.coroutines.test)
+    testImplementation(libs.minecraft.kyori.api)
     testImplementation(libs.tests.kotlin.test)
+    testImplementation(testFixtures(projects.modules.core.api))
+    testImplementation(testFixtures(projects.modules.data.dao))
 }

@@ -5,9 +5,6 @@ import ru.astrainteractive.astralibs.service.IntervalService
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
-import ru.astrainteractive.soulkeeper.module.souls.domain.GetNearestSoulUseCase
-import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpExpUseCase
-import ru.astrainteractive.soulkeeper.module.souls.domain.PickUpSoulUseCase
 import ru.astrainteractive.soulkeeper.module.souls.renderer.ArmorStandRenderer
 import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulParticleRenderer
 import ru.astrainteractive.soulkeeper.module.souls.renderer.SoulSoundRenderer
@@ -15,6 +12,8 @@ import ru.astrainteractive.soulkeeper.module.souls.service.DeleteSoulWorker
 import ru.astrainteractive.soulkeeper.module.souls.service.FreeSoulWorker
 import ru.astrainteractive.soulkeeper.module.souls.service.PickUpWorker
 import ru.astrainteractive.soulkeeper.module.souls.service.SoulCallWorker
+import ru.astrainteractive.soulkeeper.module.souls.soul.usecase.GetNearestSoulUseCase
+import ru.astrainteractive.soulkeeper.module.souls.soul.usecase.PickUpSoulUseCase
 import kotlin.time.Duration.Companion.seconds
 
 class ServiceModule(
@@ -24,7 +23,7 @@ class ServiceModule(
 
 ) {
 
-    val addSoulItemsIntoInventoryUseCase = platformServiceModule.addSoulItemsIntoInventoryUseCase
+    val playerInventory = platformServiceModule.playerInventory
     private val armorStandRenderer = ArmorStandRenderer(
         soulsConfigKrate = coreModule.soulsConfigKrate,
         showArmorStandUseCase = platformServiceModule.showArmorStandUseCase,
@@ -70,32 +69,18 @@ class ServiceModule(
         eventProvider = platformServiceModule.eventProvider,
     )
 
-    private val pickUpExpUseCase: PickUpExpUseCase = PickUpExpUseCase(
-        collectXpSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.collectXp },
-        soulRepository = soulRepository,
-        effectEmitter = coreModule.effectEmitter,
-        experiencedFactory = platformServiceModule.onlineMinecraftPlayerExperiencedFactory,
-        dispatchers = coreModule.dispatchers
-    )
     private val pickUpSoulService = IntervalService(
         interval = SOUL_PICK_UP_INTERVAL,
         scope = coreModule.ioScope,
         logger = JUtiltLogger("PickUpSoulService"),
         task = PickUpWorker(
             pickUpSoulUseCase = PickUpSoulUseCase(
-                dispatchers = coreModule.dispatchers,
-                pickUpExpUseCase = pickUpExpUseCase,
-                pickUpItemsUseCase = platformServiceModule.pickUpItemsUseCase,
                 soulRepository = soulRepository,
-                soulGoneParticleProvider = { coreModule.soulsConfigKrate.cachedValue.particles.soulGone },
-                soulDisappearSoundProvider = { coreModule.soulsConfigKrate.cachedValue.sounds.soulDisappear },
-                soulContentLeftParticleProvider = {
-                    coreModule.soulsConfigKrate.cachedValue.particles.soulContentLeft
-                },
-                soulContentLeftSoundProvider = {
-                    coreModule.soulsConfigKrate.cachedValue.sounds.soulContentLeft
-                },
-                effectEmitter = coreModule.effectEmitter
+                playerInventory = platformServiceModule.playerInventory,
+                experiencedFactory = platformServiceModule.onlineMinecraftPlayerExperiencedFactory,
+                effectEmitter = coreModule.effectEmitter,
+                dispatchers = coreModule.dispatchers,
+                soulsConfigKrate = coreModule.soulsConfigKrate
             ),
             getNearestSoulUseCase = GetNearestSoulUseCase(
                 soulRepository = soulRepository,

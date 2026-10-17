@@ -12,4 +12,6 @@ interface Soul {
     val location: KLocation
     val hasItems: Boolean
     val exp: Int
+
+    fun isAvailableTo(playerUuid: UUID): Boolean = isFree || ownerUUID == playerUuid
 }

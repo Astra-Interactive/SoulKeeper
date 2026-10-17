@@ -42,10 +42,7 @@ class RootModule(private val plugin: Lifecycle) {
         )
     }
     private val forgePlatformServiceModule by lazy {
-        ForgePlatformServiceModule(
-            coreModule = coreModule,
-            soulRepository = soulsDaoModule.soulRepository
-        )
+        ForgePlatformServiceModule()
     }
 
     private val serviceModule by lazy {

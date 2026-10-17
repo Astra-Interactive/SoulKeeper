@@ -42,10 +42,7 @@ class RootModule(private val plugin: Lifecycle) {
         )
     }
     private val forgePlatformServiceModule by lazy {
-        NeoForgePlatformServiceModule(
-            coreModule = coreModule,
-            soulRepository = soulsDaoModule.soulRepository
-        )
+        NeoForgePlatformServiceModule()
     }
 
     private val serviceModule by lazy {

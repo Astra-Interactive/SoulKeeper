@@ -16,7 +16,7 @@ import ru.astrainteractive.soulkeeper.core.command.CommandExceptionHandler
 import ru.astrainteractive.soulkeeper.core.plugin.PluginPermission
 import ru.astrainteractive.soulkeeper.core.plugin.PluginTranslation
 import ru.astrainteractive.soulkeeper.data.dao.soul.krate.PlayerSoulKrate
-import ru.astrainteractive.soulkeeper.module.souls.domain.AddSoulItemsIntoInventoryUseCase
+import ru.astrainteractive.soulkeeper.module.souls.soul.api.PlayerInventory
 import java.io.File
 import java.time.Instant
 
@@ -26,7 +26,7 @@ internal class SoulKrateLiteralArgumentBuilder(
     private val stringFormat: StringFormat,
     private val dataFolder: File,
     private val ioScope: CoroutineScope,
-    private val addSoulItemsIntoInventoryUseCase: AddSoulItemsIntoInventoryUseCase,
+    private val playerInventory: PlayerInventory,
     private val commandExceptionHandler: CommandExceptionHandler,
     translationKrate: CachedKrate<PluginTranslation>
 ) : Logger by JUtiltLogger("SoulKrateLiteralArgumentBuilder") {
@@ -58,9 +58,9 @@ internal class SoulKrateLiteralArgumentBuilder(
                                         player.sendMessage(translation.soul.notFound)
                                         return@launch
                                     }
-                                    addSoulItemsIntoInventoryUseCase.invoke(
+                                    playerInventory.addItems(
                                         player = player,
-                                        soul = soul,
+                                        items = soul.items
                                     )
                                 }
                             }
