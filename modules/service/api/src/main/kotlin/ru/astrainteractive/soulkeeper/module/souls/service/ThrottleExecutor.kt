@@ -1,9 +1,9 @@
-package ru.astrainteractive.soulkeeper.core.util
+package ru.astrainteractive.soulkeeper.module.souls.service
 
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-class ThrottleExecutor(private val duration: Duration) {
+internal class ThrottleExecutor(private val duration: Duration) {
     private val now: Duration
         get() = System.currentTimeMillis().milliseconds
 

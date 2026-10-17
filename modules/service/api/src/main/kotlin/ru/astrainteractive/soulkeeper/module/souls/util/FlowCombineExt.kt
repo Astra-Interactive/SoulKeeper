@@ -1,10 +1,10 @@
-package ru.astrainteractive.soulkeeper.core.util
+package ru.astrainteractive.soulkeeper.module.souls.util
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
 
-inline fun <reified T, R> combineInstantly(
+internal inline fun <reified T, R> combineInstantly(
     vararg flows: Flow<T>,
     crossinline transform: (Array<T?>) -> R
 ): Flow<R> {
@@ -12,8 +12,8 @@ inline fun <reified T, R> combineInstantly(
         val array = arrayOfNulls<T>(flows.size)
         flows.forEachIndexed { index, flow ->
             launch {
-                flow.collect {
-                    array[index] = it
+                flow.collect { value ->
+                    array[index] = value
                     send(transform.invoke(array))
                 }
             }
@@ -21,7 +21,7 @@ inline fun <reified T, R> combineInstantly(
     }
 }
 
-inline fun <reified T1, reified T2, R> combineInstantly(
+internal inline fun <reified T1, reified T2, R> combineInstantly(
     flow: Flow<T1>,
     flow2: Flow<T2>,
     crossinline transform: (T1?, T2?) -> R,
@@ -34,7 +34,7 @@ inline fun <reified T1, reified T2, R> combineInstantly(
     }
 }
 
-inline fun <reified T1, reified T2, reified T3, R> combineInstantly(
+internal inline fun <reified T1, reified T2, reified T3, R> combineInstantly(
     flow: Flow<T1>,
     flow2: Flow<T2>,
     flow3: Flow<T3>,
