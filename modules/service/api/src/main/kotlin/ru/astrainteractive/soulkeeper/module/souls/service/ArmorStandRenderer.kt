@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.module.souls.renderer.armorstand
+package ru.astrainteractive.soulkeeper.module.souls.service
 
 import ru.astrainteractive.astralibs.server.bridge.PlatformServer
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer

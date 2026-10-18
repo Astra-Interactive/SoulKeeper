@@ -30,9 +30,6 @@ import ru.astrainteractive.soulkeeper.core.plugin.model.SoulsConfig
 import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.platform.api.EventProvider
-import ru.astrainteractive.soulkeeper.module.souls.renderer.armorstand.ArmorStandRenderer
-import ru.astrainteractive.soulkeeper.module.souls.renderer.particle.SoulParticleRenderer
-import ru.astrainteractive.soulkeeper.module.souls.renderer.sound.SoulSoundRenderer
 import ru.astrainteractive.soulkeeper.module.souls.util.combineInstantly
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds

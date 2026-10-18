@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.module.souls.renderer.particle
+package ru.astrainteractive.soulkeeper.module.souls.service
 
 import kotlinx.coroutines.withContext
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
@@ -10,7 +10,7 @@ import ru.astrainteractive.soulkeeper.core.plugin.model.SoulsConfig
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.renderer.api.SoulEffectRenderer
 
-class SoulParticleRenderer(
+internal class SoulParticleRenderer(
     private val dispatchers: KotlinDispatchers,
     soulsConfigKrate: CachedKrate<SoulsConfig>,
     private val effectEmitter: EffectEmitter

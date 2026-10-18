@@ -5,13 +5,13 @@ import ru.astrainteractive.astralibs.service.IntervalService
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
-import ru.astrainteractive.soulkeeper.module.souls.renderer.armorstand.ArmorStandRenderer
-import ru.astrainteractive.soulkeeper.module.souls.renderer.particle.SoulParticleRenderer
-import ru.astrainteractive.soulkeeper.module.souls.renderer.sound.SoulSoundRenderer
+import ru.astrainteractive.soulkeeper.module.souls.service.ArmorStandRenderer
 import ru.astrainteractive.soulkeeper.module.souls.service.DeleteSoulWorker
 import ru.astrainteractive.soulkeeper.module.souls.service.FreeSoulWorker
 import ru.astrainteractive.soulkeeper.module.souls.service.PickUpWorker
 import ru.astrainteractive.soulkeeper.module.souls.service.SoulCallWorker
+import ru.astrainteractive.soulkeeper.module.souls.service.SoulParticleRenderer
+import ru.astrainteractive.soulkeeper.module.souls.service.SoulSoundRenderer
 import ru.astrainteractive.soulkeeper.module.souls.soul.usecase.GetNearestSoulUseCase
 import ru.astrainteractive.soulkeeper.module.souls.soul.usecase.PickUpSoulUseCase
 import kotlin.time.Duration.Companion.seconds

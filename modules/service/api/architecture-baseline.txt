@@ -1,3 +1,0 @@
-KindShape	src/main/kotlin/ru/astrainteractive/soulkeeper/module/souls/renderer/armorstand/ArmorStandRenderer.kt	ArmorStandRenderer
-KindShape	src/main/kotlin/ru/astrainteractive/soulkeeper/module/souls/renderer/particle/SoulParticleRenderer.kt	SoulParticleRenderer
-KindShape	src/main/kotlin/ru/astrainteractive/soulkeeper/module/souls/renderer/sound/SoulSoundRenderer.kt	SoulSoundRenderer
