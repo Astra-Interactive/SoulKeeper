@@ -7,7 +7,6 @@ import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.soulkeeper.core.plugin.model.SoulsConfig
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.armorstand.api.ArmorStandDisplay
-import ru.astrainteractive.soulkeeper.module.souls.armorstand.stub.StubArmorStandDisplay
 import ru.astrainteractive.soulkeeper.module.souls.renderer.api.SoulEffectRenderer
 
 internal class ArmorStandRenderer(
@@ -20,7 +19,6 @@ internal class ArmorStandRenderer(
     private val soulByArmorStandId = HashMap<Long, Int>()
 
     private fun rememberSoulArmorStandId(soul: DatabaseSoul) {
-        if (armorStandDisplay is StubArmorStandDisplay) return
         if (soulsConfig.displaySoulTitles) return
         soulByArmorStandId.getOrPut(soul.id) { armorStandDisplay.generateEntityId() }
     }
