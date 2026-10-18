@@ -5,7 +5,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainCoroutineDispatcher
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
-@Suppress("VariableNaming")
 internal class TestKotlinDispatchers(
     dispatcher: CoroutineDispatcher
 ) : KotlinDispatchers {
