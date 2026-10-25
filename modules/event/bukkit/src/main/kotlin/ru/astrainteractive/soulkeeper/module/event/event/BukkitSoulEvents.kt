@@ -24,7 +24,7 @@ import ru.astrainteractive.soulkeeper.data.dao.soul.krate.PlayerSoulKrate
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.DefaultSoul
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.StringFormatObject
 import java.io.File
-import java.time.Instant
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 
 internal class BukkitSoulEvents(
@@ -37,7 +37,7 @@ internal class BukkitSoulEvents(
 ) : EventListener, Logger by JUtiltLogger("SoulKeeper-BukkitSoulEvents") {
     private val soulsConfig by soulsConfigKrate
 
-    private fun getAndClearItems(event: PlayerDeathEvent): List<StringFormatObject> {
+    private fun takeItems(event: PlayerDeathEvent): List<StringFormatObject> {
         return when {
             event.keepInventory -> emptyList()
             else -> {
@@ -49,7 +49,7 @@ internal class BukkitSoulEvents(
         }
     }
 
-    private fun getSoulLocation(event: PlayerDeathEvent): KLocation {
+    private fun resolveSoulLocation(event: PlayerDeathEvent): KLocation {
         return when {
             event.player.location.world.environment == World.Environment.THE_END -> {
                 val endLocation = event.player.location.clone()
@@ -63,7 +63,7 @@ internal class BukkitSoulEvents(
         }.asKLocation()
     }
 
-    private fun getAndClearDroppedXp(event: PlayerDeathEvent): Int {
+    private fun takeDroppedXp(event: PlayerDeathEvent): Int {
         return when {
             event.keepLevel -> 0
 
@@ -90,8 +90,8 @@ internal class BukkitSoulEvents(
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     fun playerDeathEvent(event: PlayerDeathEvent) {
-        val soulItems = getAndClearItems(event)
-        val soulExp = getAndClearDroppedXp(event)
+        val soulItems = takeItems(event)
+        val soulExp = takeDroppedXp(event)
 
         if (soulItems.isEmpty() && soulExp <= 0) return
 
@@ -99,9 +99,9 @@ internal class BukkitSoulEvents(
             exp = soulExp,
             ownerUUID = event.player.uniqueId,
             ownerLastName = event.player.name,
-            createdAt = Instant.now(),
+            createdAt = Clock.System.now(),
             isFree = soulsConfig.soulFreeAfter == 0.seconds,
-            location = getSoulLocation(event),
+            location = resolveSoulLocation(event),
             items = soulItems,
         )
         ioScope.launch {

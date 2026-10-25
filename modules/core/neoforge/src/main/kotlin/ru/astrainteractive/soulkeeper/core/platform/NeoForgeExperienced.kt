@@ -5,14 +5,14 @@ import ru.astrainteractive.astralibs.server.util.MinecraftUtil
 import ru.astrainteractive.astralibs.server.util.getOnlinePlayer
 import ru.astrainteractive.soulkeeper.core.platform.api.Experienced
 
-class NeoForgeExperienced(
+internal class NeoForgeExperienced(
     private val player: OnlineKPlayer
 ) : Experienced {
     override fun giveExperience(experience: Int) {
         MinecraftUtil.getOnlinePlayer(player.uuid)?.giveExperiencePoints(experience)
     }
 
-    object OnlineMinecraftPlayerFactory : Experienced.Factory<OnlineKPlayer> {
+    object OnlineMinecraftPlayerResolver : Experienced.Resolver<OnlineKPlayer> {
         override fun create(owner: OnlineKPlayer): Experienced {
             return NeoForgeExperienced(owner)
         }

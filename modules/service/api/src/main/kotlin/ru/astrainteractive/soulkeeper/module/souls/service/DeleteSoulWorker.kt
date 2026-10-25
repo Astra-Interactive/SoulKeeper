@@ -9,7 +9,7 @@ import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.model.SoulsConfig
 import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
-import java.time.Instant
+import kotlin.time.Clock
 
 internal class DeleteSoulWorker(
     private val soulRepository: SoulRepository,
@@ -22,7 +22,7 @@ internal class DeleteSoulWorker(
             .getOrNull()
             .orEmpty()
             .filter { soul ->
-                val diff = Instant.now().minusSeconds(config.soulFadeAfter.inWholeSeconds)
+                val diff = Clock.System.now().minus(config.soulFadeAfter)
                 soul.createdAt < diff
             }
         if (soulsToDelete.isEmpty()) return

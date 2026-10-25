@@ -21,7 +21,12 @@ object ForgeEffectEmitter : EffectEmitter {
     ) {
         val serverPlayer = MinecraftUtil.getOnlinePlayer(player.uuid) ?: return
         val soundEvent = BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.parse(sound.id)) ?: return
-        serverPlayer.playNotifySound(soundEvent, SoundSource.PLAYERS, sound.volume, sound.pitch)
+        serverPlayer.playNotifySound(
+            soundEvent,
+            SoundSource.PLAYERS,
+            sound.volume,
+            sound.pitch
+        )
     }
 
     @Suppress("MagicNumber")
@@ -41,7 +46,11 @@ object ForgeEffectEmitter : EffectEmitter {
                 val g = ((color shr 8) and 0xFF) / 255f
                 val b = (color and 0xFF) / 255f
                 DustParticleOptions(
-                    org.joml.Vector3f(r, g, b),
+                    org.joml.Vector3f(
+                        r,
+                        g,
+                        b
+                    ),
                     dustOptions.size
                 )
             }

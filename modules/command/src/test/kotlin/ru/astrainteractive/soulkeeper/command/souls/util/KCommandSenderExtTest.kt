@@ -9,11 +9,11 @@ import ru.astrainteractive.soulkeeper.command.souls.fake.FakeConsoleKCommandSend
 import ru.astrainteractive.soulkeeper.command.souls.fake.FakeOnlineKPlayer
 import ru.astrainteractive.soulkeeper.core.plugin.model.PluginPermission
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.DatabaseSoul
-import java.time.Instant
 import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.time.Instant
 
 class KCommandSenderExtTest {
     private val ownerUuid = UUID.fromString("0f8fad5b-d9cb-469f-a165-70867728950e")
@@ -22,9 +22,14 @@ class KCommandSenderExtTest {
         id = 1L,
         ownerUUID = ownerUuid,
         ownerLastName = "Owner",
-        createdAt = Instant.EPOCH,
+        createdAt = Instant.fromEpochSeconds(0),
         isFree = false,
-        location = KLocation(x = 0.0, y = 64.0, z = 0.0, worldName = "world"),
+        location = KLocation(
+            x = 0.0,
+            y = 64.0,
+            z = 0.0,
+            worldName = "world"
+        ),
         hasItems = true,
         exp = 0
     )

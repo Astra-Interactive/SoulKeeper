@@ -96,7 +96,7 @@ data class PluginTranslation(
 
     /** Sent by `/souls`: one page of the souls a sender can see, with buttons next to each soul. */
     @Serializable
-    data class SoulList(
+    class SoulList(
         @SerialName("title")
         val title: LocalizedText = PREFIX.concat(
             LocalizedText.build {
@@ -140,20 +140,22 @@ data class PluginTranslation(
             x: Int,
             y: Int,
             z: Int
-        ): LocalizableComponent = entry.replaceAll(
-            PlaceholderReplacement.plain("%index%", "$index"),
-            PlaceholderReplacement.plain("%owner%", owner),
-            PlaceholderReplacement.plain("%dist%", "$distance"),
-            PlaceholderReplacement(placeholder = "%time_ago%", value = timeAgo),
-            PlaceholderReplacement.plain("%x%", "$x"),
-            PlaceholderReplacement.plain("%y%", "$y"),
-            PlaceholderReplacement.plain("%z%", "$z")
-        )
+        ): LocalizableComponent {
+            return entry.replaceAll(
+                PlaceholderReplacement.plain("%index%", "$index"),
+                PlaceholderReplacement.plain("%owner%", owner),
+                PlaceholderReplacement.plain("%dist%", "$distance"),
+                PlaceholderReplacement(placeholder = "%time_ago%", value = timeAgo),
+                PlaceholderReplacement.plain("%x%", "$x"),
+                PlaceholderReplacement.plain("%y%", "$y"),
+                PlaceholderReplacement.plain("%z%", "$z")
+            )
+        }
     }
 
     /** How long ago a soul appeared, shown in its [SoulList] entry. */
     @Serializable
-    data class TimeAgo(
+    class TimeAgo(
         @SerialName("seconds")
         private val seconds: LocalizedText = LocalizedText.build {
             translation(MinecraftLocales.EN_US, "%time% seconds ago")
@@ -194,7 +196,7 @@ data class PluginTranslation(
 
     /** Results of actions on one soul, and the name shown above it. */
     @Serializable
-    data class Soul(
+    class Soul(
         @SerialName("freed")
         val freed: LocalizedText = PREFIX.concat(
             LocalizedText.build {

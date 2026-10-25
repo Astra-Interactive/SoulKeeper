@@ -1,5 +1,6 @@
 package ru.astrainteractive.soulkeeper.data.exposed.database.migration
 
+import ru.astrainteractive.klibs.mikro.core.coroutines.propagateCancellationException
 import ru.astrainteractive.soulkeeper.data.exposed.database.api.FileMigration
 import java.io.File
 import java.nio.file.Files
@@ -25,7 +26,7 @@ internal class KrateFolderMigration(
                         .split("_")
                         .firstOrNull()
                         ?.let(UUID::fromString)
-                }.getOrNull()
+                }.propagateCancellationException().getOrNull()
                 uuidOrNull != null
             }
             .onEach { file ->

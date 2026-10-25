@@ -13,7 +13,7 @@ interface PlatformSoulsModule {
     val platformServer: PlatformServer
     val eventProvider: EventProvider
     val isDeadPlayerProvider: IsDeadPlayerProvider
-    val onlineMinecraftPlayerExperiencedFactory: Experienced.Factory<OnlineKPlayer>
+    val onlineMinecraftPlayerExperiencedFactory: Experienced.Resolver<OnlineKPlayer>
 
     val armorStandDisplay: ArmorStandDisplay
     val playerInventory: PlayerInventory

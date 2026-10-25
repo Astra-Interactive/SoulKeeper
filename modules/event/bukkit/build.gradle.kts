@@ -1,10 +1,17 @@
 plugins {
     id("org.jetbrains.kotlin.jvm")
-    id("ru.astrainteractive.gradleplugin.linter")
+    id("ru.astrainteractive.klibs.rules.gradle.linter")
     id("ru.astrainteractive.gradleplugin.java.version")
 }
 
+configurations.api {
+    dependencies.removeIf { dependency ->
+        dependency.group == "org.jetbrains.kotlin" && dependency.name == "kotlin-stdlib"
+    }
+}
+
 dependencies {
+    implementation(kotlin("stdlib"))
     compileOnly(libs.minecraft.paper.api)
 
     implementation(libs.klibs.mikro.core)

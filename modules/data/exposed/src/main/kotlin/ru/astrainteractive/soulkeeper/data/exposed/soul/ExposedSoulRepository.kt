@@ -25,6 +25,7 @@ import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.jdbc.update
 import ru.astrainteractive.astralibs.server.location.KLocation
 import ru.astrainteractive.astralibs.server.location.dist
+import ru.astrainteractive.klibs.mikro.core.coroutines.propagateCancellationException
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
@@ -37,7 +38,6 @@ import ru.astrainteractive.soulkeeper.data.dao.soul.model.StringFormatObject
 import ru.astrainteractive.soulkeeper.data.exposed.soul.table.SoulItemsTable
 import ru.astrainteractive.soulkeeper.data.exposed.soul.table.SoulTable
 import java.util.UUID
-import kotlin.coroutines.cancellation.CancellationException
 
 @Suppress("TooManyFunctions")
 internal class ExposedSoulRepository(
@@ -54,15 +54,16 @@ internal class ExposedSoulRepository(
     private suspend fun <T> safeRun(
         tag: String,
         block: suspend () -> T
-    ): Result<T> = runCatching {
-        withContext(dispatchers.IO) {
-            mutex.withLock {
-                block.invoke()
+    ): Result<T> {
+        return runCatching {
+            withContext(dispatchers.IO) {
+                mutex.withLock {
+                    block.invoke()
+                }
             }
+        }.propagateCancellationException().onFailure { throwable ->
+            error(throwable) { "#$tag error: ${throwable.message}" }
         }
-    }.onFailure { throwable ->
-        if (throwable is CancellationException) throw throwable
-        error(throwable) { "#$tag error: ${throwable.message}" }
     }
 
     private fun findSoulIdsWithItems(soulIds: List<Long>): Set<Long> {
@@ -122,122 +123,140 @@ internal class ExposedSoulRepository(
         return soulsChangedSharedFlow.asSharedFlow()
     }
 
-    override suspend fun getSouls(): Result<List<DatabaseSoul>> = safeRun("getSouls") {
-        transaction(databaseFlow.first()) {
-            SoulTable.selectAll()
-                .orderBy(SoulTable.created_at to SortOrder.DESC)
-                .toDatabaseSouls()
+    override suspend fun getSouls(): Result<List<DatabaseSoul>> {
+        return safeRun("getSouls") {
+            transaction(databaseFlow.first()) {
+                SoulTable.selectAll()
+                    .orderBy(SoulTable.created_at to SortOrder.DESC)
+                    .toDatabaseSouls()
+            }
         }
     }
 
-    override suspend fun getSoul(id: Long): Result<DatabaseSoul> = safeRun("getSoul") {
-        transaction(databaseFlow.first()) {
-            findSoulUnsafe(id)
+    override suspend fun getSoul(id: Long): Result<DatabaseSoul> {
+        return safeRun("getSoul") {
+            transaction(databaseFlow.first()) {
+                findSoulUnsafe(id)
+            }
         }
     }
 
     override suspend fun getPlayerSouls(
         uuid: UUID
-    ): Result<List<DatabaseSoul>> = safeRun("getPlayerSouls") {
-        transaction(databaseFlow.first()) {
-            SoulTable.selectAll()
-                .where { SoulTable.ownerUUID.eq(uuid.toString()) }
-                .toDatabaseSouls()
+    ): Result<List<DatabaseSoul>> {
+        return safeRun("getPlayerSouls") {
+            transaction(databaseFlow.first()) {
+                SoulTable.selectAll()
+                    .where { SoulTable.ownerUUID.eq(uuid.toString()) }
+                    .toDatabaseSouls()
+            }
         }
     }
 
     override suspend fun insertSoul(
         soul: DefaultSoul,
-    ): Result<DatabaseSoul> = safeRun("insertSoul") {
-        transaction(databaseFlow.first()) {
-            val soulId = SoulTable.insertAndGetId { statement ->
-                statement[SoulTable.ownerUUID] = soul.ownerUUID.toString()
-                statement[SoulTable.ownerLastName] = soul.ownerLastName
-                statement[SoulTable.created_at] = soul.createdAt
-                statement[SoulTable.isFree] = soul.isFree
-                statement[SoulTable.locationWorld] = soul.location.worldName
-                statement[SoulTable.exp] = soul.exp
-                statement[SoulTable.locationX] = soul.location.x
-                statement[SoulTable.locationY] = soul.location.y
-                statement[SoulTable.locationZ] = soul.location.z
-            }
+    ): Result<DatabaseSoul> {
+        return safeRun("insertSoul") {
+            transaction(databaseFlow.first()) {
+                val soulId = SoulTable.insertAndGetId { statement ->
+                    statement[SoulTable.ownerUUID] = soul.ownerUUID.toString()
+                    statement[SoulTable.ownerLastName] = soul.ownerLastName
+                    statement[SoulTable.created_at] = soul.createdAt
+                    statement[SoulTable.isFree] = soul.isFree
+                    statement[SoulTable.locationWorld] = soul.location.worldName
+                    statement[SoulTable.exp] = soul.exp
+                    statement[SoulTable.locationX] = soul.location.x
+                    statement[SoulTable.locationY] = soul.location.y
+                    statement[SoulTable.locationZ] = soul.location.z
+                }
 
-            SoulItemsTable.batchInsert(soul.items) { item ->
-                this[SoulItemsTable.soulId] = soulId
-                this[SoulItemsTable.itemStack] = item
-            }
+                SoulItemsTable.batchInsert(soul.items) { item ->
+                    this[SoulItemsTable.soulId] = soulId
+                    this[SoulItemsTable.itemStack] = item
+                }
 
-            findSoulUnsafe(soulId.value)
-        }
-    }.onSuccess { soulsChangedSharedFlow.emit(Unit) }
+                findSoulUnsafe(soulId.value)
+            }
+        }.onSuccess { soulsChangedSharedFlow.emit(Unit) }
+    }
 
     override suspend fun getSoulsNear(
         location: KLocation,
         radius: Int
-    ): Result<List<DatabaseSoul>> = safeRun("getSoulsNear") {
-        transaction(databaseFlow.first()) {
-            SoulTable.selectAll()
-                .where { SoulTable.locationWorld.eq(location.worldName) }
-                .andWhere { SoulTable.locationX.between(location.x - radius, location.x + radius) }
-                .andWhere { SoulTable.locationY.between(location.y - radius, location.y + radius) }
-                .andWhere { SoulTable.locationZ.between(location.z - radius, location.z + radius) }
-                .toDatabaseSouls()
-                .filter { soul -> soul.location.dist(location) < radius }
+    ): Result<List<DatabaseSoul>> {
+        return safeRun("getSoulsNear") {
+            transaction(databaseFlow.first()) {
+                SoulTable.selectAll()
+                    .where { SoulTable.locationWorld.eq(location.worldName) }
+                    .andWhere { SoulTable.locationX.between(location.x - radius, location.x + radius) }
+                    .andWhere { SoulTable.locationY.between(location.y - radius, location.y + radius) }
+                    .andWhere { SoulTable.locationZ.between(location.z - radius, location.z + radius) }
+                    .toDatabaseSouls()
+                    .filter { soul -> soul.location.dist(location) < radius }
+            }
         }
     }
 
-    override suspend fun deleteSoul(id: Long): Result<Unit> = safeRun("deleteSoul") {
-        transaction(databaseFlow.first()) {
-            SoulItemsTable.deleteWhere { SoulItemsTable.soulId.eq(id) }
-            SoulTable.deleteWhere { SoulTable.id.eq(id) }
-        }
-    }.onSuccess { soulsChangedSharedFlow.emit(Unit) }.map { }
-
-    override suspend fun updateSoul(soul: DatabaseSoul): Result<Unit> = safeRun("updateSoul") {
-        transaction(databaseFlow.first()) {
-            SoulTable.update(
-                where = { SoulTable.id.eq(soul.id) },
-                body = { statement ->
-                    statement[SoulTable.isFree] = soul.isFree
-                    statement[SoulTable.exp] = soul.exp
-                }
-            )
-        }
-    }.onSuccess { soulsChangedSharedFlow.emit(Unit) }.map { }
-
-    override suspend fun updateSoul(soul: ItemDatabaseSoul): Result<Unit> = safeRun("updateSoul") {
-        transaction(databaseFlow.first()) {
-            SoulTable.update(
-                where = { SoulTable.id.eq(soul.id) },
-                body = { statement ->
-                    statement[SoulTable.isFree] = soul.isFree
-                    statement[SoulTable.exp] = soul.exp
-                }
-            )
-            SoulItemsTable.deleteWhere { SoulItemsTable.soulId.eq(soul.id) }
-            SoulItemsTable.batchInsert(soul.items) { item ->
-                this[SoulItemsTable.soulId] = soul.id
-                this[SoulItemsTable.itemStack] = item
+    override suspend fun deleteSoul(id: Long): Result<Unit> {
+        return safeRun("deleteSoul") {
+            transaction(databaseFlow.first()) {
+                SoulItemsTable.deleteWhere { SoulItemsTable.soulId.eq(id) }
+                SoulTable.deleteWhere { SoulTable.id.eq(id) }
             }
-        }
-    }.onSuccess { soulsChangedSharedFlow.emit(Unit) }.map { }
+        }.onSuccess { soulsChangedSharedFlow.emit(Unit) }.map { }
+    }
+
+    override suspend fun updateSoul(soul: DatabaseSoul): Result<Unit> {
+        return safeRun("updateSoul") {
+            transaction(databaseFlow.first()) {
+                SoulTable.update(
+                    where = { SoulTable.id.eq(soul.id) },
+                    body = { statement ->
+                        statement[SoulTable.isFree] = soul.isFree
+                        statement[SoulTable.exp] = soul.exp
+                    }
+                )
+            }
+        }.onSuccess { soulsChangedSharedFlow.emit(Unit) }.map { }
+    }
+
+    override suspend fun updateSoul(soul: ItemDatabaseSoul): Result<Unit> {
+        return safeRun("updateSoul") {
+            transaction(databaseFlow.first()) {
+                SoulTable.update(
+                    where = { SoulTable.id.eq(soul.id) },
+                    body = { statement ->
+                        statement[SoulTable.isFree] = soul.isFree
+                        statement[SoulTable.exp] = soul.exp
+                    }
+                )
+                SoulItemsTable.deleteWhere { SoulItemsTable.soulId.eq(soul.id) }
+                SoulItemsTable.batchInsert(soul.items) { item ->
+                    this[SoulItemsTable.soulId] = soul.id
+                    this[SoulItemsTable.itemStack] = item
+                }
+            }
+        }.onSuccess { soulsChangedSharedFlow.emit(Unit) }.map { }
+    }
 
     override suspend fun toItemDatabaseSoul(
         soul: DatabaseSoul
-    ): Result<ItemDatabaseSoul> = safeRun("toItemDatabaseSoul") {
-        transaction(databaseFlow.first()) {
-            val items = findSoulItems(soul.id)
-            ItemDatabaseSoul(
-                id = soul.id,
-                ownerUUID = soul.ownerUUID,
-                ownerLastName = soul.ownerLastName,
-                createdAt = soul.createdAt,
-                isFree = soul.isFree,
-                location = soul.location,
-                hasItems = items.isNotEmpty(),
-                exp = soul.exp,
-                items = items
-            )
+    ): Result<ItemDatabaseSoul> {
+        return safeRun("toItemDatabaseSoul") {
+            transaction(databaseFlow.first()) {
+                val items = findSoulItems(soul.id)
+                ItemDatabaseSoul(
+                    id = soul.id,
+                    ownerUUID = soul.ownerUUID,
+                    ownerLastName = soul.ownerLastName,
+                    createdAt = soul.createdAt,
+                    isFree = soul.isFree,
+                    location = soul.location,
+                    hasItems = items.isNotEmpty(),
+                    exp = soul.exp,
+                    items = items
+                )
+            }
         }
     }
 }

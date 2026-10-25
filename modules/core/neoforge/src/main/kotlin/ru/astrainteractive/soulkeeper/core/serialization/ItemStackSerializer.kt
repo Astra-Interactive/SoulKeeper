@@ -36,16 +36,19 @@ object ItemStackSerializer : KSerializer<ItemStack> {
         return itemStack.save(requireHolderLookup()).toString()
     }
 
-    fun decodeFromString(string: String): Result<ItemStack> = runCatching {
-        val nbt = CompoundTag()
-        nbt.merge(parseNbt(string))
-        ItemStack.parse(requireHolderLookup(), nbt).get()
+    fun decodeFromString(string: String): Result<ItemStack> {
+        return runCatching {
+            val nbt = CompoundTag()
+            nbt.merge(parseNbt(string))
+            ItemStack.parse(requireHolderLookup(), nbt).get()
+        }
     }
 
     override fun serialize(encoder: Encoder, value: ItemStack) {
         encoder.encodeString(encodeToString(value))
     }
 
+    @Suppress("GetOrThrowInMain")
     override fun deserialize(decoder: Decoder): ItemStack {
         return decodeFromString(decoder.decodeString()).getOrThrow()
     }

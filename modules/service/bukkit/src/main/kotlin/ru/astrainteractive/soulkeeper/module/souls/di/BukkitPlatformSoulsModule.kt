@@ -25,7 +25,7 @@ class BukkitPlatformSoulsModule(
         plugin = bukkitCoreModule.plugin
     )
     override val isDeadPlayerProvider: IsDeadPlayerProvider = BukkitIsDeadPlayerProvider
-    override val onlineMinecraftPlayerExperiencedFactory = BukkitExperienced.OnlineMinecraftPlayerFactory
+    override val onlineMinecraftPlayerExperiencedFactory = BukkitExperienced.OnlineMinecraftPlayerResolver
 
     override val armorStandDisplay: ArmorStandDisplay = when {
         Bukkit.getPluginManager().isPluginEnabled("packetevents") -> PacketEventsArmorStandDisplay(

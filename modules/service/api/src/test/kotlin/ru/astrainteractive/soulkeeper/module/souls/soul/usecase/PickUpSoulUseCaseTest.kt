@@ -46,7 +46,7 @@ class PickUpSoulUseCaseTest {
     private val useCase = PickUpSoulUseCase(
         soulRepository = soulRepository,
         playerInventory = playerInventory,
-        experiencedFactory = Experienced.Factory<OnlineKPlayer> { experienced },
+        experiencedFactory = Experienced.Resolver<OnlineKPlayer> { experienced },
         effectEmitter = effectEmitter,
         dispatchers = TestKotlinDispatchers(dispatcher),
         soulsConfigKrate = DefaultMutableKrate(factory = { config }, loader = { null }).asCachedKrate()

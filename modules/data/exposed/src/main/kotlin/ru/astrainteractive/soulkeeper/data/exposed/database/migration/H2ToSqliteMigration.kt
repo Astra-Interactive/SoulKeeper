@@ -20,46 +20,48 @@ internal class H2ToSqliteMigration(
     private val createRepository: (Database) -> SoulRepository
 ) : FileMigration, Logger by JUtiltLogger("SoulKeeper-H2ToSqliteMigration") {
 
-    override suspend fun migrate() = coroutineScope {
-        if (!dataFolder.resolve("souls_v2.mv.db").exists()) return@coroutineScope
-        info { "#migrate started migration of database..." }
-        val h2Database = dataFolder.resolve("souls_v2")
-            .absolutePath
-            .let(DatabaseConfiguration::H2)
-            .connect()
-        val sqliteDatabase = dataFolder.resolve("souls_v3")
-            .absolutePath
-            .let(DatabaseConfiguration::SQLite)
-            .connect()
-        createSchema(sqliteDatabase)
+    override suspend fun migrate() {
+        return coroutineScope {
+            if (!dataFolder.resolve("souls_v2.mv.db").exists()) return@coroutineScope
+            info { "#migrate started migration of database..." }
+            val h2Database = dataFolder.resolve("souls_v2")
+                .absolutePath
+                .let(DatabaseConfiguration::H2)
+                .connect()
+            val sqliteDatabase = dataFolder.resolve("souls_v3")
+                .absolutePath
+                .let(DatabaseConfiguration::SQLite)
+                .connect()
+            createSchema.invoke(sqliteDatabase)
 
-        val sqliteSoulRepository = createRepository(sqliteDatabase)
-        val h2SoulRepository = createRepository(h2Database)
-        h2SoulRepository.getSouls()
-            .onFailure { throwable ->
-                error(throwable) { "Could not convert souls from H2 to SQLite" }
-                return@coroutineScope
-            }
-            .getOrNull()
-            .orEmpty()
-            .map { dbSoul -> async { h2SoulRepository.toItemDatabaseSoul(dbSoul) } }
-            .awaitAll()
-            .mapNotNull { soul -> soul.getOrNull() }
-            .map { soul ->
-                DefaultSoul(
-                    ownerUUID = soul.ownerUUID,
-                    ownerLastName = soul.ownerLastName,
-                    createdAt = soul.createdAt,
-                    isFree = soul.isFree,
-                    location = soul.location,
-                    exp = soul.exp,
-                    items = soul.items,
-                )
-            }
-            .forEach { soul -> sqliteSoulRepository.insertSoul(soul) }
-        info { "#migrate Migration has been completed. Closing databases..." }
-        TransactionManager.closeAndUnregister(h2Database)
-        TransactionManager.closeAndUnregister(sqliteDatabase)
-        dataFolder.resolve("souls_v2.mv.db").delete()
+            val sqliteSoulRepository = createRepository.invoke(sqliteDatabase)
+            val h2SoulRepository = createRepository.invoke(h2Database)
+            h2SoulRepository.getSouls()
+                .onFailure { throwable ->
+                    error(throwable) { "Could not convert souls from H2 to SQLite" }
+                    return@coroutineScope
+                }
+                .getOrNull()
+                .orEmpty()
+                .map { dbSoul -> async { h2SoulRepository.toItemDatabaseSoul(dbSoul) } }
+                .awaitAll()
+                .mapNotNull { soul -> soul.getOrNull() }
+                .map { soul ->
+                    DefaultSoul(
+                        ownerUUID = soul.ownerUUID,
+                        ownerLastName = soul.ownerLastName,
+                        createdAt = soul.createdAt,
+                        isFree = soul.isFree,
+                        location = soul.location,
+                        exp = soul.exp,
+                        items = soul.items,
+                    )
+                }
+                .forEach { soul -> sqliteSoulRepository.insertSoul(soul) }
+            info { "#migrate Migration has been completed. Closing databases..." }
+            TransactionManager.closeAndUnregister(h2Database)
+            TransactionManager.closeAndUnregister(sqliteDatabase)
+            dataFolder.resolve("souls_v2.mv.db").delete()
+        }
     }
 }

@@ -28,7 +28,8 @@ internal class DatabaseMigrator(
         return transaction(database) {
             var count = 0
             exec("SELECT COUNT(*) AS cnt FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'") { rs ->
-                if (rs.next()) count = rs.getInt("cnt")
+                if (!rs.next()) return@exec
+                count = rs.getInt("cnt")
             }
             count > 0
         }
@@ -39,7 +40,8 @@ internal class DatabaseMigrator(
             exec("CREATE TABLE IF NOT EXISTS DB_VERSION (version INTEGER NOT NULL)")
             var hasRow = false
             exec("SELECT COUNT(*) AS cnt FROM DB_VERSION") { rs ->
-                if (rs.next()) hasRow = rs.getInt("cnt") > 0
+                if (!rs.next()) return@exec
+                hasRow = rs.getInt("cnt") > 0
             }
             if (hasRow) {
                 exec("UPDATE DB_VERSION SET version = $version")
@@ -50,26 +52,27 @@ internal class DatabaseMigrator(
     }
 
     @Suppress("MaxLineLength", "MaximumLineLength")
-    private suspend fun getCurrentVersion(database: Database): Int {
+    private suspend fun loadCurrentVersion(database: Database): Int {
         val versionTableExists = isTableExists(database, "DB_VERSION")
         if (!versionTableExists) {
             val isFreshDatabase = !hasAnyUserTables(database)
             val initialVersion = if (isFreshDatabase) latestDbVersion else DEFAULT_VERSION
-            info { "#getCurrentVersion DB_VERSION table not found, freshDb=$isFreshDatabase, initialVersion=$initialVersion" }
+            info { "#loadCurrentVersion DB_VERSION table not found, freshDb=$isFreshDatabase, initialVersion=$initialVersion" }
             setVersion(database, initialVersion)
             return initialVersion
         }
         return transaction(database) {
             var version: Int? = null
             exec("SELECT version FROM DB_VERSION LIMIT 1") { rs ->
-                if (rs.next()) version = rs.getInt("version")
+                if (!rs.next()) return@exec
+                version = rs.getInt("version")
             }
             version ?: DEFAULT_VERSION
         }
     }
 
     suspend fun migrate(database: Database) {
-        val currentDbVersion = getCurrentVersion(database)
+        val currentDbVersion = loadCurrentVersion(database)
         if (latestDbVersion == currentDbVersion) {
             info { "#migrate database is up to date" }
             return

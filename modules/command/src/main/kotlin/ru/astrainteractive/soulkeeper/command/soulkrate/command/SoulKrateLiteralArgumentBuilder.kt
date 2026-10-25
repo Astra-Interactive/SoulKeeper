@@ -18,7 +18,7 @@ import ru.astrainteractive.soulkeeper.core.plugin.model.PluginTranslation
 import ru.astrainteractive.soulkeeper.data.dao.soul.krate.PlayerSoulKrate
 import ru.astrainteractive.soulkeeper.module.souls.soul.api.PlayerInventory
 import java.io.File
-import java.time.Instant
+import kotlin.time.Instant
 
 @Suppress("LongParameterList")
 internal class SoulKrateLiteralArgumentBuilder(
@@ -32,7 +32,7 @@ internal class SoulKrateLiteralArgumentBuilder(
 ) : Logger by JUtiltLogger("SoulKrateLiteralArgumentBuilder") {
     private val translation by translationKrate
 
-    private val instantArgumentType = LongArgumentType.longArg(Instant.MIN.epochSecond, Instant.MAX.epochSecond)
+    private val instantArgumentType = LongArgumentType.longArg()
 
     fun create(): LiteralArgumentBuilder<*> {
         return with(multiplatformCommand) {
@@ -40,10 +40,10 @@ internal class SoulKrateLiteralArgumentBuilder(
                 argument("uuid", StringArgumentType.string()) { uuidArg ->
                     argument("instant", instantArgumentType) { instantArg ->
                         argument("index", IntegerArgumentType.integer()) { indexArg ->
-                            runs(commandExceptionHandler::handle) { ctx ->
+                            runs(commandExceptionHandler::onFailure) { ctx ->
                                 ctx.requirePermission(PluginPermission.LoadSouls)
                                 val player = ctx.requirePlayer()
-                                val instant = ctx.requireArgument(instantArg).let(Instant::ofEpochSecond)
+                                val instant = ctx.requireArgument(instantArg).let(Instant::fromEpochSeconds)
                                 val index = ctx.requireArgument(indexArg)
                                 val uuid = ctx.requireArgument(uuidArg, UuidArgumentConverter)
                                 ioScope.launch {

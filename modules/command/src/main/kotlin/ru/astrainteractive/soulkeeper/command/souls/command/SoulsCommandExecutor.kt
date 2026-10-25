@@ -26,8 +26,8 @@ import ru.astrainteractive.soulkeeper.core.plugin.model.PluginTranslation
 import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.Soul
-import java.time.Instant
 import java.util.Locale
+import kotlin.time.Clock
 
 internal class SoulsCommandExecutor(
     private val ioScope: CoroutineScope,
@@ -44,17 +44,17 @@ internal class SoulsCommandExecutor(
     ): Component {
         val locale = input.sender.locale
         val nextPageComponent = translation.soulList.nextPage.toComponent(locale)
-            .clickable { onClick(input.copy(page = input.page.plus(1))) }
+            .clickable { onClick.invoke(input.copy(page = input.page.plus(1))) }
             .takeIf { input.page < maxPages }
             .orEmpty()
         val prevPageComponent = translation.soulList.previousPage.toComponent(locale)
-            .clickable { onClick(input.copy(page = input.page.plus(-1))) }
+            .clickable { onClick.invoke(input.copy(page = input.page.plus(-1))) }
             .appendSpace().takeIf { input.page > 0 }
             .orEmpty()
         return nextPageComponent.append(prevPageComponent, true)
     }
 
-    private suspend fun getFilteredSouls(sender: KCommandSender): List<DatabaseSoul> {
+    private suspend fun loadFilteredSouls(sender: KCommandSender): List<DatabaseSoul> {
         val souls = soulRepository.getSouls()
             .getOrNull()
             .orEmpty()
@@ -78,9 +78,10 @@ internal class SoulsCommandExecutor(
         }
     }
 
-    private fun getPageSouls(souls: List<DatabaseSoul>, page: Int): List<DatabaseSoul> {
-        val start = page.times(SoulsCommand.PAGE_SIZE).coerceIn(0, souls.size)
-        val end = page.times(SoulsCommand.PAGE_SIZE)
+    private fun findPageSouls(souls: List<DatabaseSoul>, page: Int): List<DatabaseSoul> {
+        val pageOffset = page.times(SoulsCommand.PAGE_SIZE)
+        val start = pageOffset.coerceIn(0, souls.size)
+        val end = pageOffset
             .plus(SoulsCommand.PAGE_SIZE)
             .coerceAtMost(souls.size)
         return if (start == end) {
@@ -99,9 +100,10 @@ internal class SoulsCommandExecutor(
         location: KLocation?,
         locale: Locale
     ): Component {
-        val timeAgoFormatted = translation.format(soul.createdAt.timeAgo(now = Instant.now()))
+        val timeAgoFormatted = translation.format(soul.createdAt.timeAgo(now = Clock.System.now()))
+        val pageOffset = page.times(SoulsCommand.PAGE_SIZE)
         return translation.soulList.entry(
-            index = page.times(SoulsCommand.PAGE_SIZE).plus(i.plus(1)),
+            index = pageOffset.plus(i.plus(1)),
             owner = soul.ownerLastName,
             timeAgo = timeAgoFormatted,
             x = soul.location.x.toInt(),
@@ -124,7 +126,7 @@ internal class SoulsCommandExecutor(
         return translation.soulList.freeButton
             .toComponent(sender.locale)
             .appendSpace()
-            .clickable { onClick(SoulsCommand.Intent.Free(sender, soul.id)) }
+            .clickable { onClick.invoke(SoulsCommand.Intent.Free(sender, soul.id)) }
     }
 
     private fun createTeleportSoulComponent(
@@ -136,14 +138,14 @@ internal class SoulsCommandExecutor(
         if (!sender.canTeleportToSoul()) return null
         return translation.soulList.teleportButton
             .toComponent(sender.locale)
-            .clickable { onClick(SoulsCommand.Intent.TeleportToSoul(sender.instance, soul.id)) }
+            .clickable { onClick.invoke(SoulsCommand.Intent.TeleportToSoul(sender.instance, soul.id)) }
     }
 
     private fun executeList(input: SoulsCommand.Intent.List) {
         ioScope.launch {
-            val filteredSouls = getFilteredSouls(input.sender)
+            val filteredSouls = loadFilteredSouls(input.sender)
             val maxPages = filteredSouls.size.div(SoulsCommand.PAGE_SIZE)
-            val pageSouls = getPageSouls(filteredSouls, input.page)
+            val pageSouls = findPageSouls(filteredSouls, input.page)
             if (pageSouls.isEmpty()) {
                 input.sender.sendMessage(translation.soulList.emptyPage(input.page.plus(1)))
                 return@launch
@@ -178,7 +180,13 @@ internal class SoulsCommandExecutor(
                 )
                 input.sender.sendMessage(component)
             }
-            input.sender.sendMessage(createPagingMessage(input, maxPages, ::execute))
+            input.sender.sendMessage(
+                createPagingMessage(
+                    input = input,
+                    maxPages = maxPages,
+                    onClick = ::execute
+                )
+            )
         }
     }
 
