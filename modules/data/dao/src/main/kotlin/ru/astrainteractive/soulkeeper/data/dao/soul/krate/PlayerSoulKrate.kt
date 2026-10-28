@@ -12,6 +12,7 @@ import java.io.File
 import java.util.UUID
 import kotlin.time.Instant
 
+@Suppress("ImplementationVisibility")
 class PlayerSoulKrate(
     stringFormat: StringFormat,
     dataFolder: File,

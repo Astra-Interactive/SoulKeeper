@@ -1,4 +1,4 @@
-@file:Suppress("FunctionNaming")
+@file:Suppress("FunctionNaming", "TestOwnerBehaviour")
 
 package ru.astrainteractive.soulkeeper.data.dao.soul.model
 

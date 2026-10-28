@@ -1,3 +1,5 @@
+@file:Suppress("BareIdentifier")
+
 package ru.astrainteractive.soulkeeper.data.dao.soul.model
 
 import ru.astrainteractive.astralibs.server.location.KLocation
