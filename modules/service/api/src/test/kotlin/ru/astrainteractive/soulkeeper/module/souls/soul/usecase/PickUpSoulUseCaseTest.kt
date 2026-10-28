@@ -1,4 +1,4 @@
-@file:Suppress("FunctionNaming")
+@file:Suppress("FunctionNaming", "ExpressionBodyOnOneLine", "ArgumentPerLine", "ExplicitInvoke")
 
 package ru.astrainteractive.soulkeeper.module.souls.soul.usecase
 
@@ -22,13 +22,13 @@ import ru.astrainteractive.soulkeeper.data.dao.soul.model.StringFormatObject
 import ru.astrainteractive.soulkeeper.module.souls.soul.fake.FakeOnlineKPlayer
 import ru.astrainteractive.soulkeeper.module.souls.soul.fake.FakePlayerInventory
 import ru.astrainteractive.soulkeeper.module.souls.soul.model.PickUpSoulResult
-import java.time.Instant
 import java.util.UUID
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PickUpSoulUseCaseTest {
@@ -46,7 +46,7 @@ class PickUpSoulUseCaseTest {
     private val useCase = PickUpSoulUseCase(
         soulRepository = soulRepository,
         playerInventory = playerInventory,
-        experiencedFactory = Experienced.Factory<OnlineKPlayer> { experienced },
+        experiencedFactory = Experienced.Resolver<OnlineKPlayer> { experienced },
         effectEmitter = effectEmitter,
         dispatchers = TestKotlinDispatchers(dispatcher),
         soulsConfigKrate = DefaultMutableKrate(factory = { config }, loader = { null }).asCachedKrate()
@@ -56,7 +56,7 @@ class PickUpSoulUseCaseTest {
         id = 7L,
         ownerUUID = player.uuid,
         ownerLastName = player.name,
-        createdAt = Instant.EPOCH,
+        createdAt = Instant.fromEpochSeconds(0),
         isFree = false,
         location = location,
         hasItems = items.isNotEmpty(),

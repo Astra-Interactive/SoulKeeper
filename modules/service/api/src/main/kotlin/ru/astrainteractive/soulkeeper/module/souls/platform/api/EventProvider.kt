@@ -1,3 +1,5 @@
+@file:Suppress("FunctionVerb")
+
 package ru.astrainteractive.soulkeeper.module.souls.platform.api
 
 import kotlinx.coroutines.flow.Flow

@@ -12,6 +12,7 @@ import ru.astrainteractive.soulkeeper.module.souls.service.PickUpWorker
 import ru.astrainteractive.soulkeeper.module.souls.service.SoulCallWorker
 import ru.astrainteractive.soulkeeper.module.souls.service.SoulParticleRenderer
 import ru.astrainteractive.soulkeeper.module.souls.service.SoulSoundRenderer
+import ru.astrainteractive.soulkeeper.module.souls.service.ThrottleExecutor
 import ru.astrainteractive.soulkeeper.module.souls.soul.usecase.GetNearestSoulUseCase
 import ru.astrainteractive.soulkeeper.module.souls.soul.usecase.PickUpSoulUseCase
 import kotlin.time.Duration.Companion.seconds
@@ -67,6 +68,7 @@ class SoulsModule(
         soulSoundRenderer = soulSoundRenderer,
         soulArmorStandRenderer = armorStandRenderer,
         eventProvider = platformSoulsModule.eventProvider,
+        throttleExecutorFactory = ::ThrottleExecutor,
     )
 
     private val pickUpSoulService = IntervalService(

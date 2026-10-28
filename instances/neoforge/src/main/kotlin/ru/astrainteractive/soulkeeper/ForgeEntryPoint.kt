@@ -9,6 +9,7 @@ import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.di.RootModule
 import javax.annotation.ParametersAreNonnullByDefault
 
+@Suppress("FieldDependencyConstruction")
 @Mod("soulkeeper")
 @ParametersAreNonnullByDefault
 class ForgeEntryPoint :

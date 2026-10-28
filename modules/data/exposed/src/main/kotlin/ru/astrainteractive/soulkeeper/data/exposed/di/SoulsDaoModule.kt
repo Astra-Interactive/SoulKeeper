@@ -80,9 +80,9 @@ interface SoulsDaoModule {
             emit(configuration)
         }
         override val databaseFlow: Flow<Database> = dbConfigurationFlow
-            .onStart { fileMigrations.forEach { migration -> migration.migrate() } }
-            .flatMapLatest { databaseConfiguration -> databaseConfiguration.connectAsFlow() }
-            .onEach { database -> databaseMigrator.migrate(database) }
+            .onStart { runFileMigrations() }
+            .flatMapLatest(::connectDatabase)
+            .onEach(databaseMigrator::migrate)
             .onEach { database ->
                 TransactionManager.manager.defaultIsolationLevel = java.sql.Connection.TRANSACTION_SERIALIZABLE
                 createSoulTables(database)
@@ -92,7 +92,11 @@ interface SoulsDaoModule {
                 delay(5.seconds)
                 true
             }
-            .shareIn(ioScope, SharingStarted.Eagerly, 1)
+            .shareIn(
+                scope = ioScope,
+                started = SharingStarted.Eagerly,
+                replay = 1
+            )
 
         override val soulRepository: SoulRepository = ExposedSoulRepository(
             databaseFlow = databaseFlow,
@@ -107,6 +111,16 @@ interface SoulsDaoModule {
             transaction(database) {
                 SchemaUtils.create(SoulTable)
                 SchemaUtils.create(SoulItemsTable)
+            }
+        }
+
+        private fun connectDatabase(configuration: DatabaseConfiguration): Flow<Database> {
+            return configuration.connectAsFlow()
+        }
+
+        private suspend fun runFileMigrations() {
+            for (migration in fileMigrations) {
+                migration.migrate()
             }
         }
     }

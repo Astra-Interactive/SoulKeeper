@@ -37,6 +37,7 @@ object ItemStackSerializer : KSerializer<ItemStack> {
         encoder.encodeString(string)
     }
 
+    @Suppress("GetOrThrowInMain")
     override fun deserialize(decoder: Decoder): ItemStack {
         val string = decoder.decodeString()
         return decodeFromString(string).getOrThrow()

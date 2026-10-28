@@ -18,6 +18,6 @@ class ForgePlatformSoulsModule : PlatformSoulsModule {
     override val isDeadPlayerProvider: IsDeadPlayerProvider = ForgeIsDeadPlayerProvider
 
     override val armorStandDisplay: ArmorStandDisplay = StubArmorStandDisplay
-    override val onlineMinecraftPlayerExperiencedFactory = ForgeExperienced.OnlineMinecraftPlayerFactory
+    override val onlineMinecraftPlayerExperiencedFactory = ForgeExperienced.OnlineMinecraftPlayerResolver
     override val playerInventory: PlayerInventory = ForgePlayerInventory(isDeadPlayerProvider)
 }

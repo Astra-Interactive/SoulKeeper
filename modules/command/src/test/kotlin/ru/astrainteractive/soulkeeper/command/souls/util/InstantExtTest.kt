@@ -3,7 +3,6 @@
 package ru.astrainteractive.soulkeeper.command.souls.util
 
 import ru.astrainteractive.soulkeeper.command.souls.model.TimeAgo
-import java.time.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Duration
@@ -11,11 +10,12 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 class InstantExtTest {
-    private val now = Instant.ofEpochSecond(1_000_000_000L)
+    private val now = Instant.fromEpochSeconds(1_000_000_000L)
 
-    private fun createdBefore(duration: Duration): Instant = now.minusSeconds(duration.inWholeSeconds)
+    private fun createdBefore(duration: Duration): Instant = now.minus(duration)
 
     @Test
     fun GIVEN_soul_created_seconds_ago_WHEN_time_ago_THEN_returns_seconds() {

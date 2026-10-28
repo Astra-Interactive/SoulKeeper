@@ -1,3 +1,5 @@
+@file:Suppress("KindImportDirection")
+
 package ru.astrainteractive.soulkeeper.module.souls.soul
 
 import net.minecraft.world.item.ItemStack

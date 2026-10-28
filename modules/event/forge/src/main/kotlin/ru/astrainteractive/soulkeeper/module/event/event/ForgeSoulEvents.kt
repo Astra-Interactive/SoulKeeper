@@ -37,10 +37,10 @@ import ru.astrainteractive.soulkeeper.data.dao.soul.model.DefaultSoul
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.ItemDatabaseSoul
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.StringFormatObject
 import java.io.File
-import java.time.Instant
 import kotlin.collections.isNotEmpty
 import kotlin.collections.map
 import kotlin.collections.orEmpty
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 
 @Suppress("LongParameterList")
@@ -62,7 +62,7 @@ internal class ForgeSoulEvents(
         .onEach { event ->
             val serverPlayer = event.entity.tryCast<ServerPlayer>() ?: return@onEach
 
-            val droppedXp = getAndClearDroppedXp(event)
+            val droppedXp = takeDroppedXp(event)
             if (droppedXp <= 0) return@onEach
 
             createOrUpdateSoul(
@@ -78,7 +78,7 @@ internal class ForgeSoulEvents(
         .onEach { event ->
             val serverPlayer = event.entity.tryCast<ServerPlayer>() ?: return@onEach
 
-            val soulItems = getAndClearItems(event)
+            val soulItems = takeItems(event)
             if (soulItems.isEmpty()) return@onEach
             createOrUpdateSoul(
                 serverPlayer = serverPlayer,
@@ -152,7 +152,7 @@ internal class ForgeSoulEvents(
             exp = droppedXp ?: 0,
             ownerUUID = serverPlayer.uuid,
             ownerLastName = serverPlayer.name,
-            createdAt = Instant.now(),
+            createdAt = Clock.System.now(),
             isFree = soulsConfig.soulFreeAfter == 0.seconds,
             location = when (dimension) {
                 Level.END -> {
@@ -216,7 +216,7 @@ internal class ForgeSoulEvents(
         }
     }
 
-    private fun getAndClearDroppedXp(event: LivingExperienceDropEvent): Int {
+    private fun takeDroppedXp(event: LivingExperienceDropEvent): Int {
         val keepLevel = event.entity.level().gameRules.getBoolean(GameRules.RULE_KEEPINVENTORY)
         return when {
             keepLevel -> 0
@@ -230,7 +230,7 @@ internal class ForgeSoulEvents(
         }
     }
 
-    private fun getAndClearItems(event: LivingDropsEvent): List<StringFormatObject> {
+    private fun takeItems(event: LivingDropsEvent): List<StringFormatObject> {
         val keepInventory = event.entity.level()
             .gameRules
             .getBoolean(GameRules.RULE_KEEPINVENTORY)

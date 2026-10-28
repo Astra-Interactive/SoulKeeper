@@ -1,3 +1,5 @@
+@file:Suppress("RootModuleConstruction")
+
 package ru.astrainteractive.soulkeeper.di
 
 import net.neoforged.fml.loading.FMLPaths

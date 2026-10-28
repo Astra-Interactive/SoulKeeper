@@ -61,7 +61,7 @@ internal class PacketEventsArmorStandDisplay(
                 EntityData(
                     0,
                     EntityDataTypes.BYTE,
-                    (0x20 * 1).toByte()
+                    0x20.times(1).toByte()
                 ),
                 EntityData(
                     2,

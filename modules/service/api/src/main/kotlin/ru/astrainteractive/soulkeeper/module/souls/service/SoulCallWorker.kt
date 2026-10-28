@@ -1,3 +1,5 @@
+@file:Suppress("FunctionVerb", "ExpressionBodyOnOneLine")
+
 package ru.astrainteractive.soulkeeper.module.souls.service
 
 import kotlinx.coroutines.CoroutineScope
@@ -32,6 +34,7 @@ import ru.astrainteractive.soulkeeper.data.dao.soul.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.platform.api.EventProvider
 import ru.astrainteractive.soulkeeper.module.souls.util.combineInstantly
 import java.util.UUID
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -45,6 +48,7 @@ internal class SoulCallWorker(
     private val soulSoundRenderer: SoulSoundRenderer,
     private val soulArmorStandRenderer: ArmorStandRenderer,
     private val eventProvider: EventProvider,
+    private val throttleExecutorFactory: (Duration) -> ThrottleExecutor,
 ) : Logger by JUtiltLogger("SoulKeeper-SoulCallWorker"),
     Lifecycle {
     private val scope = CoroutineFeature.IO.withTimings()
@@ -84,7 +88,11 @@ internal class SoulCallWorker(
         player: OnlineKPlayer
     ): Flow<List<DatabaseSoul>> {
         return combineInstantly(
-            flow = distancedPlayerMoveEvent(player).shareIn(scope, SharingStarted.Eagerly, 1),
+            flow = distancedPlayerMoveEvent(player).shareIn(
+                scope,
+                SharingStarted.Eagerly,
+                1
+            ),
             flow2 = soulRepository.getSoulsChangeFlow(),
             transform = { event, _ -> event }
         ).filterNotNull().map { event ->
@@ -99,11 +107,15 @@ internal class SoulCallWorker(
     private fun startPlayerRendererJob(player: OnlineKPlayer) {
         playerRendererJobMap[player.uuid]?.cancel()
         playerRendererJobMap[player.uuid] = scope.launch {
-            val soundThrottleExecutor = ThrottleExecutor(5.seconds)
-            val particleThrottleExecutor = ThrottleExecutor(2.seconds)
+            val soundThrottleExecutor = throttleExecutorFactory.invoke(5.seconds)
+            val particleThrottleExecutor = throttleExecutorFactory.invoke(2.seconds)
             combineInstantly(
                 flow = TickFlow(1.seconds),
-                flow2 = getPlayerVisibleSoulsFlow(this, player).shareIn(this, SharingStarted.Eagerly, 1),
+                flow2 = getPlayerVisibleSoulsFlow(this, player).shareIn(
+                    this,
+                    SharingStarted.Eagerly,
+                    1
+                ),
                 transform = { _, souls -> souls }
             ).filterNotNull().onEach { souls ->
                 listOf(

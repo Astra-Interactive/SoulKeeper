@@ -11,6 +11,9 @@ import ru.astrainteractive.soulkeeper.core.plugin.model.SoulsConfig
 import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.ItemDatabaseSoul
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.StringFormatObject
+import ru.astrainteractive.soulkeeper.data.dao.soul.util.hasExp
+import ru.astrainteractive.soulkeeper.data.dao.soul.util.withItems
+import ru.astrainteractive.soulkeeper.data.dao.soul.util.withoutExp
 import ru.astrainteractive.soulkeeper.module.souls.soul.api.PlayerInventory
 import ru.astrainteractive.soulkeeper.module.souls.soul.model.PickUpSoulResult
 
@@ -18,7 +21,7 @@ import ru.astrainteractive.soulkeeper.module.souls.soul.model.PickUpSoulResult
 internal class PickUpSoulUseCase(
     private val soulRepository: SoulRepository,
     private val playerInventory: PlayerInventory,
-    private val experiencedFactory: Experienced.Factory<OnlineKPlayer>,
+    private val experiencedFactory: Experienced.Resolver<OnlineKPlayer>,
     private val effectEmitter: EffectEmitter,
     private val dispatchers: KotlinDispatchers,
     soulsConfigKrate: CachedKrate<SoulsConfig>

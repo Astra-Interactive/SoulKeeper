@@ -30,7 +30,12 @@ object BukkitEffectEmitter : EffectEmitter {
     ) {
         val bukkitPlayer = Bukkit.getPlayer(player.uuid) ?: return
         val location = location.asBukkitLocation()
-        bukkitPlayer.playSound(sound.toKyoriSound(), location.x, location.y, location.z)
+        bukkitPlayer.playSound(
+            sound.toKyoriSound(),
+            location.x,
+            location.y,
+            location.z
+        )
     }
 
     @Suppress("MagicNumber")
@@ -44,16 +49,19 @@ object BukkitEffectEmitter : EffectEmitter {
         return ParticleBuilder(particle)
             .count(count)
             .location(location)
-            .offset(0.1, 0.1, 0.1)
+            .offset(
+                0.1,
+                0.1,
+                0.1
+            )
             .apply {
-                if (localDustOptions != null) {
-                    data(
-                        Particle.DustOptions(
-                            Color.fromRGB(localDustOptions.color),
-                            localDustOptions.size
-                        )
+                if (localDustOptions == null) return@apply
+                data(
+                    Particle.DustOptions(
+                        Color.fromRGB(localDustOptions.color),
+                        localDustOptions.size
                     )
-                }
+                )
             }
     }
 

@@ -1,13 +1,13 @@
 plugins {
     id("org.jetbrains.kotlin.jvm")
     id("org.jetbrains.kotlin.plugin.serialization")
-    id("ru.astrainteractive.gradleplugin.linter")
+    id("ru.astrainteractive.klibs.rules.gradle.linter")
     id("ru.astrainteractive.gradleplugin.java.version")
     `java-test-fixtures`
 }
 
 dependencies {
-    api(libs.klibs.kstorage)
+    implementation(libs.klibs.kstorage)
 
     compileOnly(libs.minecraft.brigadier)
 

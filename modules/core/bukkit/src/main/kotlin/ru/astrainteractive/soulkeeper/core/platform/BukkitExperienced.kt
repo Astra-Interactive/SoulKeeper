@@ -4,6 +4,7 @@ import org.bukkit.Bukkit
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.soulkeeper.core.platform.api.Experienced
 
+@Suppress("ImplementationVisibility")
 class BukkitExperienced(
     private val player: OnlineKPlayer
 ) : Experienced {
@@ -11,7 +12,7 @@ class BukkitExperienced(
         Bukkit.getPlayer(player.uuid)?.giveExp(experience)
     }
 
-    object OnlineMinecraftPlayerFactory : Experienced.Factory<OnlineKPlayer> {
+    object OnlineMinecraftPlayerResolver : Experienced.Resolver<OnlineKPlayer> {
         override fun create(owner: OnlineKPlayer): Experienced {
             return BukkitExperienced(owner)
         }

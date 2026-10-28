@@ -1,4 +1,4 @@
-@file:Suppress("FunctionNaming")
+@file:Suppress("FunctionNaming", "ExpressionBodyOnOneLine", "ArgumentPerLine", "ExplicitInvoke")
 
 package ru.astrainteractive.soulkeeper.module.souls.soul.usecase
 
@@ -7,11 +7,11 @@ import ru.astrainteractive.astralibs.server.location.KLocation
 import ru.astrainteractive.soulkeeper.data.dao.soul.fake.FakeSoulRepository
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.module.souls.soul.fake.FakeOnlineKPlayer
-import java.time.Instant
 import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.time.Instant
 
 class GetNearestSoulUseCaseTest {
     private val location = KLocation(x = 0.0, y = 64.0, z = 0.0, worldName = "world")
@@ -27,7 +27,7 @@ class GetNearestSoulUseCaseTest {
         id = id,
         ownerUUID = owner,
         ownerLastName = "Owner",
-        createdAt = Instant.EPOCH,
+        createdAt = Instant.fromEpochSeconds(0),
         isFree = isFree,
         location = location,
         hasItems = true,

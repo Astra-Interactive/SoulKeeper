@@ -18,6 +18,6 @@ class NeoForgePlatformSoulsModule : PlatformSoulsModule {
     override val isDeadPlayerProvider: IsDeadPlayerProvider = NeoForgeIsDeadPlayerProvider
 
     override val armorStandDisplay: ArmorStandDisplay = StubArmorStandDisplay
-    override val onlineMinecraftPlayerExperiencedFactory = NeoForgeExperienced.OnlineMinecraftPlayerFactory
+    override val onlineMinecraftPlayerExperiencedFactory = NeoForgeExperienced.OnlineMinecraftPlayerResolver
     override val playerInventory: PlayerInventory = NeoForgePlayerInventory(isDeadPlayerProvider)
 }

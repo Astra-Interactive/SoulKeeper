@@ -1,3 +1,5 @@
+@file:Suppress("FunctionVerb")
+
 package ru.astrainteractive.soulkeeper.module.souls.service
 
 import kotlinx.coroutines.launch
@@ -9,7 +11,7 @@ import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.core.plugin.model.SoulsConfig
 import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
-import java.time.Instant
+import kotlin.time.Clock
 
 internal class FreeSoulWorker(
     private val soulRepository: SoulRepository,
@@ -23,7 +25,7 @@ internal class FreeSoulWorker(
             .orEmpty()
             .filter { soul -> !soul.isFree }
             .filter { soul ->
-                val diff = Instant.now().minusSeconds(config.soulFreeAfter.inWholeSeconds)
+                val diff = Clock.System.now().minus(config.soulFreeAfter)
                 soul.createdAt < diff
             }
         if (soulsToFree.isEmpty()) return

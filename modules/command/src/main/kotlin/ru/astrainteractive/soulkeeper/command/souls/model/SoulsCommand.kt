@@ -1,3 +1,5 @@
+@file:Suppress("BareIdentifier")
+
 package ru.astrainteractive.soulkeeper.command.souls.model
 
 import ru.astrainteractive.astralibs.command.api.brigadier.sender.KCommandSender

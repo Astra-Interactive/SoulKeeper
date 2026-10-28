@@ -1,11 +1,12 @@
 package ru.astrainteractive.soulkeeper.module.souls.service
 
+import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 internal class ThrottleExecutor(private val duration: Duration) {
     private val now: Duration
-        get() = System.currentTimeMillis().milliseconds
+        get() = Clock.System.now().toEpochMilliseconds().milliseconds
 
     private var lastSuspend = now
 

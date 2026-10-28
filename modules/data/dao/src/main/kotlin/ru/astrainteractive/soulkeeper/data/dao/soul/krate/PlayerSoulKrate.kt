@@ -9,9 +9,10 @@ import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.DefaultSoul
 import java.io.File
-import java.time.Instant
 import java.util.UUID
+import kotlin.time.Instant
 
+@Suppress("ImplementationVisibility")
 class PlayerSoulKrate(
     stringFormat: StringFormat,
     dataFolder: File,
@@ -25,7 +26,7 @@ class PlayerSoulKrate(
         loader = {
             val file = kratesFolder
                 .resolve("$ownerUUID")
-                .resolve("${createdAt.epochSecond}_$readIndex.yml")
+                .resolve("${createdAt.epochSeconds}_$readIndex.yml")
             stringFormat.parse<DefaultSoul>(file)
                 .onFailure { throwable -> error(throwable) { "Failed to load soul for $ownerUUID" } }
                 .getOrNull()
@@ -47,7 +48,7 @@ class PlayerSoulKrate(
         var index = 0
         var file: File
         do {
-            file = parentDir.resolve("${createdAt.epochSecond}_$index.yml")
+            file = parentDir.resolve("${createdAt.epochSeconds}_$index.yml")
             index++
         } while (file.exists())
         file.createNewFile()

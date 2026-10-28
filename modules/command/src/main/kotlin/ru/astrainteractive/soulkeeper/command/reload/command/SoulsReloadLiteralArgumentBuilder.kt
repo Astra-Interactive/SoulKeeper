@@ -20,7 +20,7 @@ internal class SoulsReloadLiteralArgumentBuilder(
     fun create(): LiteralArgumentBuilder<*> {
         return with(multiplatformCommand) {
             command("skreload") {
-                runs(onFailure = commandExceptionHandler::handle) { ctx ->
+                runs(onFailure = commandExceptionHandler::onFailure) { ctx ->
                     ctx.requirePermission(PluginPermission.Reload)
                     val audience = ctx.getSender()
                     audience.sendMessage(translation.reload.started)

@@ -52,7 +52,11 @@ object NeoForgeEffectEmitter : EffectEmitter {
                 val b = (color and 0xFF) / 255f
 
                 DustParticleOptions(
-                    Vector3f(r, g, b),
+                    Vector3f(
+                        r,
+                        g,
+                        b
+                    ),
                     dustOptions.size
                 )
             }
