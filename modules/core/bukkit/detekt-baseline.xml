@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ClassSignature:BukkitExperienced.kt:BukkitExperienced : Experienced</ID>
+    <ID>FunctionExpressionBody:BukkitEffectEmitter.kt:BukkitEffectEmitter${ return Sound.sound( Key.key(this.id), Sound.Source.AMBIENT, volume, pitch, ) }</ID>
+    <ID>FunctionExpressionBody:BukkitExperienced.kt:BukkitExperienced.OnlineMinecraftPlayerResolver${ return BukkitExperienced(owner) }</ID>
+    <ID>FunctionExpressionBody:BukkitIsDeadPlayerProvider.kt:BukkitIsDeadPlayerProvider${ return Bukkit.getPlayer(player.uuid)?.isDead == true }</ID>
+    <ID>FunctionExpressionBody:ItemStackSerializer.kt:ItemStackSerializer${ return runCatching { val configuration = YamlConfiguration() configuration.loadFromString(string) configuration.getItemStack(KEY) ?: error("Could not get item stack from string: $string") } }</ID>
+    <ID>FunctionSignature:BukkitEffectEmitter.kt:BukkitEffectEmitter$override fun playSoundForPlayer</ID>
+    <ID>TrailingCommaOnCallSite:BukkitCoreModule.kt:BukkitCoreModule$( onEnable = { inventoryClickEventListener.onEnable(plugin) eventListener.onEnable(plugin) @Suppress("MagicNumber") Metrics(plugin, 23714) }, onReload = { }, onDisable = { inventoryClickEventListener.onDisable() eventListener.onDisable() } )</ID>
+    <ID>TrailingCommaOnCallSite:BukkitEffectEmitter.kt:BukkitEffectEmitter$( 0.1, 0.1, 0.1 )</ID>
+    <ID>TrailingCommaOnCallSite:BukkitEffectEmitter.kt:BukkitEffectEmitter$( Color.fromRGB(localDustOptions.color), localDustOptions.size )</ID>
+    <ID>TrailingCommaOnCallSite:BukkitEffectEmitter.kt:BukkitEffectEmitter$( Particle.DustOptions( Color.fromRGB(localDustOptions.color), localDustOptions.size ) )</ID>
+    <ID>TrailingCommaOnCallSite:BukkitEffectEmitter.kt:BukkitEffectEmitter$( sound.toKyoriSound(), location.x, location.y, location.z )</ID>
+    <ID>TrailingCommaOnCallSite:ItemStackSerializer.kt:ItemStackSerializer$( serialName = "AstraLibs.ItemStack.Json", kind = PrimitiveKind.STRING )</ID>
+    <ID>TrailingCommaOnDeclarationSite:BukkitEffectEmitter.kt:BukkitEffectEmitter$( location: KLocation, player: OnlineKPlayer, config: SoulsConfig.Particles.Particle )</ID>
+    <ID>TrailingCommaOnDeclarationSite:BukkitEffectEmitter.kt:BukkitEffectEmitter$( location: KLocation, player: OnlineKPlayer, sound: SoulsConfig.Sounds.SoundConfig )</ID>
+    <ID>TrailingCommaOnDeclarationSite:BukkitExperienced.kt:BukkitExperienced$( private val player: OnlineKPlayer )</ID>
+  </CurrentIssues>
+</SmellBaseline>

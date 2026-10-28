@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ClassSignature:BukkitEventProvider.kt:BukkitEventProvider : EventProvider</ID>
+    <ID>ClassSignature:BukkitPlatformSoulsModule.kt:BukkitPlatformSoulsModule : PlatformSoulsModule</ID>
+    <ID>ClassSignature:PacketEventsArmorStandDisplay.kt:PacketEventsArmorStandDisplay : ArmorStandDisplay</ID>
+    <ID>FunctionExpressionBody:BukkitEventProvider.kt:BukkitEventProvider${ return flowEvent&lt;PlayerJoinEvent>(plugin) .filterIsInstance&lt;PlayerJoinEvent>() .map { event -> SharedPlayerJoinEvent(event.player.asOnlineMinecraftPlayer()) } }</ID>
+    <ID>FunctionExpressionBody:BukkitEventProvider.kt:BukkitEventProvider${ return flowEvent&lt;PlayerMoveEvent>(plugin) .filterIsInstance&lt;PlayerMoveEvent>() .map { event -> SharedPlayerMoveEvent( player = event.player.asOnlineMinecraftPlayer(), to = event.player.location.asKLocation() ) } }</ID>
+    <ID>FunctionExpressionBody:BukkitEventProvider.kt:BukkitEventProvider${ return flowEvent&lt;PlayerQuitEvent>(plugin) .filterIsInstance&lt;PlayerQuitEvent>() .map { event -> SharedPlayerLeaveEvent(event.player.asOnlineMinecraftPlayer()) } }</ID>
+    <ID>FunctionExpressionBody:BukkitPlayerInventory.kt:BukkitPlayerInventory${ return Bukkit.getPlayer(player.uuid) != null }</ID>
+    <ID>FunctionExpressionBody:BukkitPlayerInventory.kt:BukkitPlayerInventory${ return items .map(StringFormatObject::raw) .map(ItemStackSerializer::decodeFromString) .mapNotNull { itemStackResult -> itemStackResult .onFailure { throwable -> error(throwable) { "Failed to deserialize item stack" } } .getOrNull() } }</ID>
+    <ID>FunctionExpressionBody:PacketEventsArmorStandDisplay.kt:PacketEventsArmorStandDisplay${ return SpigotReflectionUtil.generateEntityId() }</ID>
+    <ID>FunctionSignature:PacketEventsArmorStandDisplay.kt:PacketEventsArmorStandDisplay$override fun destroy</ID>
+    <ID>FunctionSignature:PacketEventsArmorStandDisplay.kt:PacketEventsArmorStandDisplay$override fun show</ID>
+    <ID>OperatorBeforeTrailingCall:PacketEventsArmorStandDisplay.kt:PacketEventsArmorStandDisplay$(0x20 * 1)</ID>
+    <ID>TrailingCommaOnCallSite:BukkitEventProvider.kt:BukkitEventProvider$( player = event.player.asOnlineMinecraftPlayer(), to = event.player.location.asKLocation() )</ID>
+    <ID>TrailingCommaOnCallSite:BukkitPlatformSoulsModule.kt:BukkitPlatformSoulsModule$( plugin = bukkitCoreModule.plugin )</ID>
+    <ID>TrailingCommaOnCallSite:BukkitPlatformSoulsModule.kt:BukkitPlatformSoulsModule$( translationKrate = coreModule.translation )</ID>
+    <ID>TrailingCommaOnCallSite:BukkitPlayerInventory.kt:BukkitPlayerInventory$( leftovers = leftovers .map(ItemStackSerializer::encodeToString) .map(::StringFormatObject), isAnyItemAdded = leftovers.sumOf(ItemStack::getAmount) &lt; requestedAmount )</ID>
+    <ID>TrailingCommaOnCallSite:PacketEventsArmorStandDisplay.kt:PacketEventsArmorStandDisplay$( 0, EntityDataTypes.BYTE, (0x20 * 1).toByte() )</ID>
+    <ID>TrailingCommaOnCallSite:PacketEventsArmorStandDisplay.kt:PacketEventsArmorStandDisplay$( 2, EntityDataTypes.OPTIONAL_ADV_COMPONENT, Optional.of(translation.soul.name(soul.ownerLastName).toComponent(player.locale())) )</ID>
+    <ID>TrailingCommaOnCallSite:PacketEventsArmorStandDisplay.kt:PacketEventsArmorStandDisplay$( 3, EntityDataTypes.BOOLEAN, true )</ID>
+    <ID>TrailingCommaOnCallSite:PacketEventsArmorStandDisplay.kt:PacketEventsArmorStandDisplay$( 5, EntityDataTypes.BOOLEAN, true )</ID>
+    <ID>TrailingCommaOnCallSite:PacketEventsArmorStandDisplay.kt:PacketEventsArmorStandDisplay$( bukkitPlayer, ids )</ID>
+    <ID>TrailingCommaOnCallSite:PacketEventsArmorStandDisplay.kt:PacketEventsArmorStandDisplay$( id, bukkitPlayer, soul )</ID>
+    <ID>TrailingCommaOnCallSite:PacketEventsArmorStandDisplay.kt:PacketEventsArmorStandDisplay$( id, listOf( // Invisible EntityData( 0, EntityDataTypes.BYTE, (0x20 * 1).toByte() ), EntityData( 2, EntityDataTypes.OPTIONAL_ADV_COMPONENT, Optional.of(translation.soul.name(soul.ownerLastName).toComponent(player.locale())) ), // Show custom name EntityData( 3, EntityDataTypes.BOOLEAN, true ), // No Gravity EntityData( 5, EntityDataTypes.BOOLEAN, true ), ) )</ID>
+    <ID>TrailingCommaOnCallSite:PacketEventsArmorStandDisplay.kt:PacketEventsArmorStandDisplay$( vector3d.x, vector3d.y, vector3d.z )</ID>
+    <ID>TrailingCommaOnDeclarationSite:BukkitEventProvider.kt:BukkitEventProvider$( private val plugin: JavaPlugin )</ID>
+    <ID>TrailingCommaOnDeclarationSite:BukkitPlatformSoulsModule.kt:BukkitPlatformSoulsModule$( coreModule: CoreModule, bukkitCoreModule: BukkitCoreModule )</ID>
+    <ID>TrailingCommaOnDeclarationSite:PacketEventsArmorStandDisplay.kt:PacketEventsArmorStandDisplay$( id: Int, player: OnlineKPlayer, soul: Soul )</ID>
+    <ID>TrailingCommaOnDeclarationSite:PacketEventsArmorStandDisplay.kt:PacketEventsArmorStandDisplay$( player: OnlineKPlayer, ids: Collection&lt;Int> )</ID>
+    <ID>TrailingCommaOnDeclarationSite:PacketEventsArmorStandDisplay.kt:PacketEventsArmorStandDisplay$( translationKrate: CachedKrate&lt;PluginTranslation> )</ID>
+  </CurrentIssues>
+</SmellBaseline>

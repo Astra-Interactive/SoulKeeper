@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ClassSignature:DatabaseMigrator.kt:DatabaseMigrator : Logger</ID>
+    <ID>ClassSignature:ExposedSoulRepository.kt:ExposedSoulRepository : SoulRepositoryLogger</ID>
+    <ID>ClassSignature:H2ToSqliteMigration.kt:H2ToSqliteMigration : FileMigrationLogger</ID>
+    <ID>ClassSignature:KrateFolderMigration.kt:KrateFolderMigration : FileMigration</ID>
+    <ID>ClassSignature:SoulsDaoModule.kt:SoulsDaoModule$Default : SoulsDaoModuleLogger</ID>
+    <ID>ClassSignature:TestKotlinDispatchers.kt:TestKotlinDispatchers : KotlinDispatchers</ID>
+    <ID>FunctionExpressionBody:DatabaseMigrator.kt:DatabaseMigrator${ return transaction(database) { var exists = false exec("SELECT name FROM sqlite_master WHERE type='table' AND name='$tableName'") { rs -> exists = rs.next() } exists } }</ID>
+    <ID>FunctionExpressionBody:ExposedSoulRepository.kt:ExposedSoulRepository${ return DatabaseSoul( id = row[SoulTable.id].value, ownerUUID = UUID.fromString(row[SoulTable.ownerUUID]), ownerLastName = row[SoulTable.ownerLastName], createdAt = row[SoulTable.created_at], isFree = row[SoulTable.isFree], exp = row[SoulTable.exp], hasItems = hasItems, location = KLocation( x = row[SoulTable.locationX], y = row[SoulTable.locationY], z = row[SoulTable.locationZ], worldName = row[SoulTable.locationWorld] ) ) }</ID>
+    <ID>FunctionExpressionBody:ExposedSoulRepository.kt:ExposedSoulRepository${ return SoulItemsTable.selectAll() .where { SoulItemsTable.soulId eq soulId } .map { row -> row[SoulItemsTable.itemStack] } }</ID>
+    <ID>FunctionExpressionBody:ExposedSoulRepository.kt:ExposedSoulRepository${ return SoulTable.selectAll() .where { SoulTable.id eq id } .limit(1) .toDatabaseSouls() .firstOrNull() ?: throw SoulNotFoundException(id) }</ID>
+    <ID>FunctionExpressionBody:ExposedSoulRepository.kt:ExposedSoulRepository${ return runCatching { withContext(dispatchers.IO) { mutex.withLock { block.invoke() } } }.propagateCancellationException().onFailure { throwable -> error(throwable) { "#$tag error: ${throwable.message}" } } }</ID>
+    <ID>FunctionExpressionBody:ExposedSoulRepository.kt:ExposedSoulRepository${ return safeRun("deleteSoul") { transaction(databaseFlow.first()) { SoulItemsTable.deleteWhere { SoulItemsTable.soulId.eq(id) } SoulTable.deleteWhere { SoulTable.id.eq(id) } } }.onSuccess { soulsChangedSharedFlow.emit(Unit) }.map { } }</ID>
+    <ID>FunctionExpressionBody:ExposedSoulRepository.kt:ExposedSoulRepository${ return safeRun("getPlayerSouls") { transaction(databaseFlow.first()) { SoulTable.selectAll() .where { SoulTable.ownerUUID.eq(uuid.toString()) } .toDatabaseSouls() } } }</ID>
+    <ID>FunctionExpressionBody:ExposedSoulRepository.kt:ExposedSoulRepository${ return safeRun("getSoul") { transaction(databaseFlow.first()) { findSoulUnsafe(id) } } }</ID>
+    <ID>FunctionExpressionBody:ExposedSoulRepository.kt:ExposedSoulRepository${ return safeRun("getSouls") { transaction(databaseFlow.first()) { SoulTable.selectAll() .orderBy(SoulTable.created_at to SortOrder.DESC) .toDatabaseSouls() } } }</ID>
+    <ID>FunctionExpressionBody:ExposedSoulRepository.kt:ExposedSoulRepository${ return safeRun("getSoulsNear") { transaction(databaseFlow.first()) { SoulTable.selectAll() .where { SoulTable.locationWorld.eq(location.worldName) } .andWhere { SoulTable.locationX.between(location.x - radius, location.x + radius) } .andWhere { SoulTable.locationY.between(location.y - radius, location.y + radius) } .andWhere { SoulTable.locationZ.between(location.z - radius, location.z + radius) } .toDatabaseSouls() .filter { soul -> soul.location.dist(location) &lt; radius } } } }</ID>
+    <ID>FunctionExpressionBody:ExposedSoulRepository.kt:ExposedSoulRepository${ return safeRun("insertSoul") { transaction(databaseFlow.first()) { val soulId = SoulTable.insertAndGetId { statement -> statement[SoulTable.ownerUUID] = soul.ownerUUID.toString() statement[SoulTable.ownerLastName] = soul.ownerLastName statement[SoulTable.created_at] = soul.createdAt statement[SoulTable.isFree] = soul.isFree statement[SoulTable.locationWorld] = soul.location.worldName statement[SoulTable.exp] = soul.exp statement[SoulTable.locationX] = soul.location.x statement[SoulTable.locationY] = soul.location.y statement[SoulTable.locationZ] = soul.location.z } SoulItemsTable.batchInsert(soul.items) { item -> this[SoulItemsTable.soulId] = soulId this[SoulItemsTable.itemStack] = item } findSoulUnsafe(soulId.value) } }.onSuccess { soulsChangedSharedFlow.emit(Unit) } }</ID>
+    <ID>FunctionExpressionBody:ExposedSoulRepository.kt:ExposedSoulRepository${ return safeRun("toItemDatabaseSoul") { transaction(databaseFlow.first()) { val items = findSoulItems(soul.id) ItemDatabaseSoul( id = soul.id, ownerUUID = soul.ownerUUID, ownerLastName = soul.ownerLastName, createdAt = soul.createdAt, isFree = soul.isFree, location = soul.location, hasItems = items.isNotEmpty(), exp = soul.exp, items = items ) } } }</ID>
+    <ID>FunctionExpressionBody:ExposedSoulRepository.kt:ExposedSoulRepository${ return safeRun("updateSoul") { transaction(databaseFlow.first()) { SoulTable.update( where = { SoulTable.id.eq(soul.id) }, body = { statement -> statement[SoulTable.isFree] = soul.isFree statement[SoulTable.exp] = soul.exp } ) SoulItemsTable.deleteWhere { SoulItemsTable.soulId.eq(soul.id) } SoulItemsTable.batchInsert(soul.items) { item -> this[SoulItemsTable.soulId] = soul.id this[SoulItemsTable.itemStack] = item } } }.onSuccess { soulsChangedSharedFlow.emit(Unit) }.map { } }</ID>
+    <ID>FunctionExpressionBody:ExposedSoulRepository.kt:ExposedSoulRepository${ return safeRun("updateSoul") { transaction(databaseFlow.first()) { SoulTable.update( where = { SoulTable.id.eq(soul.id) }, body = { statement -> statement[SoulTable.isFree] = soul.isFree statement[SoulTable.exp] = soul.exp } ) } }.onSuccess { soulsChangedSharedFlow.emit(Unit) }.map { } }</ID>
+    <ID>FunctionExpressionBody:ExposedSoulRepository.kt:ExposedSoulRepository${ return soulsChangedSharedFlow.asSharedFlow() }</ID>
+    <ID>FunctionExpressionBody:ExposedSoulRepositoryTest.kt:ExposedSoulRepositoryTest${ return DefaultSoul( ownerUUID = ownerUUID, ownerLastName = "Steve", createdAt = createdAt, isFree = false, location = location, exp = 10, items = items ) }</ID>
+    <ID>FunctionExpressionBody:ExposedSoulRepositoryTest.kt:ExposedSoulRepositoryTest${ return ExposedSoulRepository( databaseFlow = flowOf(database), dispatchers = TestKotlinDispatchers(StandardTestDispatcher(testScheduler)) ) }</ID>
+    <ID>FunctionExpressionBody:ExposedSoulRepositoryTest.kt:ExposedSoulRepositoryTest${ return insertSoul(soul).getOrThrow() }</ID>
+    <ID>FunctionExpressionBody:ExposedSoulRepositoryTest.kt:ExposedSoulRepositoryTest${ return transaction(database) { SoulItemsTable.selectAll().count() } }</ID>
+    <ID>FunctionExpressionBody:KJavaInstantColumnType.kt:KJavaInstantColumnType${ return value.toEpochMilliseconds().toString() }</ID>
+    <ID>FunctionExpressionBody:KJavaInstantColumnType.kt:KJavaInstantColumnType${ return value?.toEpochMilliseconds() }</ID>
+    <ID>FunctionExpressionBody:KJavaInstantColumnType.kt:KJavaInstantColumnType${ return value?.toEpochMilliseconds()?.toString().orEmpty() }</ID>
+    <ID>FunctionExpressionBody:KJavaInstantColumnType.kt:KJavaInstantColumnType${ return when (value) { is Long -> Instant.fromEpochMilliseconds(value) is Number -> Instant.fromEpochMilliseconds(value.toLong()) is String -> Instant.fromEpochMilliseconds(value.toLong()) else -> error("Unexpected value of type Long: $value of ${value::class.qualifiedName}") } }</ID>
+    <ID>FunctionExpressionBody:SoulsDaoModule.kt:SoulsDaoModule.Default${ return configuration.connectAsFlow() }</ID>
+    <ID>FunctionExpressionBody:StringFormatObjectColumnType.kt:StringFormatObjectColumnType${ return StringFormatObject(value.toString()) }</ID>
+    <ID>FunctionExpressionBody:StringFormatObjectColumnType.kt:StringFormatObjectColumnType${ return value.raw }</ID>
+    <ID>FunctionExpressionBody:StringFormatObjectColumnType.kt:StringFormatObjectColumnType${ return value?.raw }</ID>
+    <ID>FunctionExpressionBody:StringFormatObjectColumnType.kt:StringFormatObjectColumnType${ return value?.raw.orEmpty() }</ID>
+    <ID>FunctionLiteral:DatabaseMigrator.kt:DatabaseMigrator$&lt;anonymous></ID>
+    <ID>FunctionSignature:DatabaseMigrator.kt:DatabaseMigrator$private suspend fun isTableExists: Boolean</ID>
+    <ID>FunctionSignature:ExposedSoulRepository.kt:ExposedSoulRepository$override suspend fun getPlayerSouls: Result&lt;List&lt;DatabaseSoul>></ID>
+    <ID>FunctionSignature:ExposedSoulRepository.kt:ExposedSoulRepository$override suspend fun getSoulsNear: Result&lt;List&lt;DatabaseSoul>></ID>
+    <ID>FunctionSignature:ExposedSoulRepository.kt:ExposedSoulRepository$override suspend fun insertSoul: Result&lt;DatabaseSoul></ID>
+    <ID>FunctionSignature:ExposedSoulRepository.kt:ExposedSoulRepository$override suspend fun toItemDatabaseSoul: Result&lt;ItemDatabaseSoul></ID>
+    <ID>FunctionSignature:ExposedSoulRepository.kt:ExposedSoulRepository$private suspend fun &lt;T> safeRun: Result&lt;T></ID>
+    <ID>PropertyName:TestKotlinDispatchers.kt:TestKotlinDispatchers$override val Default: CoroutineDispatcher = dispatcher</ID>
+    <ID>PropertyName:TestKotlinDispatchers.kt:TestKotlinDispatchers$override val IO: CoroutineDispatcher = dispatcher</ID>
+    <ID>PropertyName:TestKotlinDispatchers.kt:TestKotlinDispatchers$override val Unconfined: CoroutineDispatcher = dispatcher</ID>
+    <ID>TrailingCommaOnCallSite:DropBrokenCreatedAtMigration.kt:DropBrokenCreatedAtMigration$( stmt = """ UPDATE SOUL SET created_at_millis = created_at WHERE created_at_millis IS NULL AND created_at """.trimIndent() )</ID>
+    <ID>TrailingCommaOnCallSite:ExposedSoulRepository.kt:ExposedSoulRepository$( extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST )</ID>
+    <ID>TrailingCommaOnCallSite:ExposedSoulRepository.kt:ExposedSoulRepository$( id = row[SoulTable.id].value, ownerUUID = UUID.fromString(row[SoulTable.ownerUUID]), ownerLastName = row[SoulTable.ownerLastName], createdAt = row[SoulTable.created_at], isFree = row[SoulTable.isFree], exp = row[SoulTable.exp], hasItems = hasItems, location = KLocation( x = row[SoulTable.locationX], y = row[SoulTable.locationY], z = row[SoulTable.locationZ], worldName = row[SoulTable.locationWorld] ) )</ID>
+    <ID>TrailingCommaOnCallSite:ExposedSoulRepository.kt:ExposedSoulRepository$( id = soul.id, ownerUUID = soul.ownerUUID, ownerLastName = soul.ownerLastName, createdAt = soul.createdAt, isFree = soul.isFree, location = soul.location, hasItems = items.isNotEmpty(), exp = soul.exp, items = items )</ID>
+    <ID>TrailingCommaOnCallSite:ExposedSoulRepository.kt:ExposedSoulRepository$( row = row, hasItems = row[SoulTable.id].value in soulIdsWithItems )</ID>
+    <ID>TrailingCommaOnCallSite:ExposedSoulRepository.kt:ExposedSoulRepository$( where = { SoulTable.id.eq(soul.id) }, body = { statement -> statement[SoulTable.isFree] = soul.isFree statement[SoulTable.exp] = soul.exp } )</ID>
+    <ID>TrailingCommaOnCallSite:ExposedSoulRepository.kt:ExposedSoulRepository$( x = row[SoulTable.locationX], y = row[SoulTable.locationY], z = row[SoulTable.locationZ], worldName = row[SoulTable.locationWorld] )</ID>
+    <ID>TrailingCommaOnCallSite:ExposedSoulRepositoryTest.kt:ExposedSoulRepositoryTest$( StringFormatObject("sword"), StringFormatObject("shield"), StringFormatObject("apple") )</ID>
+    <ID>TrailingCommaOnCallSite:ExposedSoulRepositoryTest.kt:ExposedSoulRepositoryTest$( createSoul(items = listOf(StringFormatObject("shield"), StringFormatObject("apple"))) )</ID>
+    <ID>TrailingCommaOnCallSite:ExposedSoulRepositoryTest.kt:ExposedSoulRepositoryTest$( createSoul(items = listOf(StringFormatObject("sword"), StringFormatObject("shield"))) )</ID>
+    <ID>TrailingCommaOnCallSite:ExposedSoulRepositoryTest.kt:ExposedSoulRepositoryTest$( createSoul(ownerUUID = newerOwner, createdAt = Instant.parse("2026-02-01T00:00:00Z")) )</ID>
+    <ID>TrailingCommaOnCallSite:ExposedSoulRepositoryTest.kt:ExposedSoulRepositoryTest$( createSoul(ownerUUID = olderOwner, createdAt = Instant.parse("2026-01-01T00:00:00Z")) )</ID>
+    <ID>TrailingCommaOnCallSite:ExposedSoulRepositoryTest.kt:ExposedSoulRepositoryTest$( databaseFlow = flowOf(database), dispatchers = TestKotlinDispatchers(StandardTestDispatcher(testScheduler)) )</ID>
+    <ID>TrailingCommaOnCallSite:ExposedSoulRepositoryTest.kt:ExposedSoulRepositoryTest$( listOf( newest.id, middle.id, oldest.id ), souls.map { soul -> soul.id } )</ID>
+    <ID>TrailingCommaOnCallSite:ExposedSoulRepositoryTest.kt:ExposedSoulRepositoryTest$( newest.id, middle.id, oldest.id )</ID>
+    <ID>TrailingCommaOnCallSite:ExposedSoulRepositoryTest.kt:ExposedSoulRepositoryTest$( ownerUUID = ownerUUID, ownerLastName = "Steve", createdAt = createdAt, isFree = false, location = location, exp = 10, items = items )</ID>
+    <ID>TrailingCommaOnCallSite:ExposedSoulRepositoryTest.kt:ExposedSoulRepositoryTest$( url = "jdbc:sqlite:${databaseFile.absolutePath}", driver = "org.sqlite.JDBC" )</ID>
+    <ID>TrailingCommaOnCallSite:ExposedSoulRepositoryTest.kt:ExposedSoulRepositoryTest$( x = 0.0, y = 64.0, z = 0.0, worldName = "world" )</ID>
+    <ID>TrailingCommaOnCallSite:KrateFolderMigration.kt:KrateFolderMigration$( file.toPath(), kratesFolder.resolve(file.name).toPath() )</ID>
+    <ID>TrailingCommaOnCallSite:MakeCreatedAtNonNullMigration.kt:MakeCreatedAtNonNullMigration$( """ CREATE TABLE SOUL_TEMP ( id INTEGER PRIMARY KEY AUTOINCREMENT, owner_uuid TEXT NOT NULL, owner_last_name TEXT NOT NULL, created_at_millis BIGINT NOT NULL, is_free INTEGER NOT NULL, exp INTEGER NOT NULL, location_world TEXT NOT NULL, location_x REAL NOT NULL, location_y REAL NOT NULL, location_z REAL NOT NULL ) """.trimIndent() )</ID>
+    <ID>TrailingCommaOnCallSite:MakeCreatedAtNonNullMigration.kt:MakeCreatedAtNonNullMigration$( """ INSERT INTO SOUL_TEMP (id, owner_uuid, owner_last_name, created_at_millis, is_free, exp, location_world, location_x, location_y, location_z) SELECT id, owner_uuid, owner_last_name, COALESCE(created_at_millis, $nowMillis), is_free, exp, location_world, location_x, location_y, location_z FROM SOUL """.trimIndent() )</ID>
+    <ID>TrailingCommaOnCallSite:SoulItemsTable.kt:SoulItemsTable$( name = "soul_id", foreign = SoulTable, onDelete = ReferenceOption.CASCADE )</ID>
+    <ID>TrailingCommaOnCallSite:SoulsDaoModule.kt:SoulsDaoModule.Default$( H2ToSqliteMigration( dataFolder = dataFolder, createSchema = ::createSoulTables, createRepository = { database -> ExposedSoulRepository( databaseFlow = flowOf(database), dispatchers = dispatchers ) } ), KrateFolderMigration( dataFolder = dataFolder, kratesFolder = dataFolder.resolve(".deaths") ) )</ID>
+    <ID>TrailingCommaOnCallSite:SoulsDaoModule.kt:SoulsDaoModule.Default$( dataFolder = dataFolder, createSchema = ::createSoulTables, createRepository = { database -> ExposedSoulRepository( databaseFlow = flowOf(database), dispatchers = dispatchers ) } )</ID>
+    <ID>TrailingCommaOnCallSite:SoulsDaoModule.kt:SoulsDaoModule.Default$( dataFolder = dataFolder, kratesFolder = dataFolder.resolve(".deaths") )</ID>
+    <ID>TrailingCommaOnCallSite:SoulsDaoModule.kt:SoulsDaoModule.Default$( databaseFlow = databaseFlow, dispatchers = dispatchers )</ID>
+    <ID>TrailingCommaOnCallSite:SoulsDaoModule.kt:SoulsDaoModule.Default$( databaseFlow = flowOf(database), dispatchers = dispatchers )</ID>
+    <ID>TrailingCommaOnCallSite:SoulsDaoModule.kt:SoulsDaoModule.Default$( migrations = listOf( DropBrokenCreatedAtMigration(), MakeCreatedAtNonNullMigration(), ), latestDbVersion = 2 )</ID>
+    <ID>TrailingCommaOnCallSite:SoulsDaoModule.kt:SoulsDaoModule.Default$( onDisable = {} )</ID>
+    <ID>TrailingCommaOnCallSite:SoulsDaoModule.kt:SoulsDaoModule.Default$( scope = ioScope, started = SharingStarted.Eagerly, replay = 1 )</ID>
+    <ID>TrailingCommaOnDeclarationSite:DatabaseMigrator.kt:DatabaseMigrator$( database: Database, tableName: String )</ID>
+    <ID>TrailingCommaOnDeclarationSite:DatabaseMigrator.kt:DatabaseMigrator$( private val migrations: List&lt;DatabaseMigration>, private val latestDbVersion: Int )</ID>
+    <ID>TrailingCommaOnDeclarationSite:ExposedSoulRepository.kt:ExposedSoulRepository$( location: KLocation, radius: Int )</ID>
+    <ID>TrailingCommaOnDeclarationSite:ExposedSoulRepository.kt:ExposedSoulRepository$( private val databaseFlow: Flow&lt;Database>, private val dispatchers: KotlinDispatchers )</ID>
+    <ID>TrailingCommaOnDeclarationSite:ExposedSoulRepository.kt:ExposedSoulRepository$( soul: DatabaseSoul )</ID>
+    <ID>TrailingCommaOnDeclarationSite:ExposedSoulRepository.kt:ExposedSoulRepository$( tag: String, block: suspend () -> T )</ID>
+    <ID>TrailingCommaOnDeclarationSite:ExposedSoulRepository.kt:ExposedSoulRepository$( uuid: UUID )</ID>
+    <ID>TrailingCommaOnDeclarationSite:ExposedSoulRepositoryTest.kt:ExposedSoulRepositoryTest$( ownerUUID: UUID = UUID.randomUUID(), createdAt: Instant = Instant.parse("2026-01-01T00:00:00Z"), location: KLocation = KLocation( x = 0.0, y = 64.0, z = 0.0, worldName = "world" ), items: List&lt;StringFormatObject> = emptyList() )</ID>
+    <ID>TrailingCommaOnDeclarationSite:H2ToSqliteMigration.kt:H2ToSqliteMigration$( private val dataFolder: File, private val createSchema: (Database) -> Unit, private val createRepository: (Database) -> SoulRepository )</ID>
+    <ID>TrailingCommaOnDeclarationSite:KrateFolderMigration.kt:KrateFolderMigration$( private val dataFolder: File, private val kratesFolder: File )</ID>
+    <ID>TrailingCommaOnDeclarationSite:SoulsDaoModule.kt:SoulsDaoModule.Default$( private val dataFolder: File, private val ioScope: CoroutineScope, private val dispatchers: KotlinDispatchers )</ID>
+    <ID>TrailingCommaOnDeclarationSite:TestKotlinDispatchers.kt:TestKotlinDispatchers$( dispatcher: CoroutineDispatcher )</ID>
+  </CurrentIssues>
+</SmellBaseline>

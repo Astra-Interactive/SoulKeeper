@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ClassSignature:PlayerSoulKrate.kt:PlayerSoulKrate : SuspendMutableKrateLogger</ID>
+    <ID>ClassSignature:SoulNotFoundException.kt:SoulNotFoundException : Exception</ID>
+    <ID>FunctionExpressionBody:ItemDatabaseSoulExt.kt:{ return copy(items = items, hasItems = items.isNotEmpty()) }</ID>
+    <ID>FunctionExpressionBody:ItemDatabaseSoulTest.kt:ItemDatabaseSoulTest${ return ItemDatabaseSoul( id = 1L, ownerUUID = UUID.fromString("0f8fad5b-d9cb-469f-a165-70867728950e"), ownerLastName = "Owner", createdAt = Instant.fromEpochSeconds(0), isFree = false, location = KLocation( x = 0.0, y = 64.0, z = 0.0, worldName = "world" ), hasItems = items.isNotEmpty(), exp = exp, items = items ) }</ID>
+    <ID>FunctionExpressionBody:PlayerSoulKrate.kt:PlayerSoulKrate${ return krate.getValue() }</ID>
+    <ID>FunctionExpressionBody:PlayerSoulKrate.kt:PlayerSoulKrate${ return krate.resetAndGet() }</ID>
+    <ID>FunctionExpressionBody:PlayerSoulKrate.kt:PlayerSoulKrate${ return krate.saveAndGet(block) }</ID>
+    <ID>FunctionExpressionBody:SoulTest.kt:SoulTest${ return DatabaseSoul( id = 1L, ownerUUID = ownerUuid, ownerLastName = "Owner", createdAt = Instant.fromEpochSeconds(0), isFree = isFree, location = KLocation( x = 0.0, y = 64.0, z = 0.0, worldName = "world" ), hasItems = false, exp = 0 ) }</ID>
+    <ID>FunctionVerb:SoulRepository.kt:SoulRepository$fun getSoulsChangeFlow: Flow&lt;Unit></ID>
+    <ID>FunctionVerb:SoulRepository.kt:SoulRepository$suspend fun getPlayerSouls: Result&lt;List&lt;DatabaseSoul>></ID>
+    <ID>FunctionVerb:SoulRepository.kt:SoulRepository$suspend fun getSoul: Result&lt;DatabaseSoul></ID>
+    <ID>FunctionVerb:SoulRepository.kt:SoulRepository$suspend fun getSouls: Result&lt;List&lt;DatabaseSoul>></ID>
+    <ID>FunctionVerb:SoulRepository.kt:SoulRepository$suspend fun getSoulsNear: Result&lt;List&lt;DatabaseSoul>></ID>
+    <ID>ImportOrdering:ItemDatabaseSoulTest.kt:import ru.astrainteractive.astralibs.server.location.KLocation import ru.astrainteractive.soulkeeper.data.dao.soul.util.hasExp import ru.astrainteractive.soulkeeper.data.dao.soul.util.withItems import ru.astrainteractive.soulkeeper.data.dao.soul.util.withoutExp import java.util.UUID import kotlin.time.Instant import kotlin.test.Test import kotlin.test.assertEquals import kotlin.test.assertFalse import kotlin.test.assertTrue</ID>
+    <ID>ImportOrdering:SoulTest.kt:import ru.astrainteractive.astralibs.server.location.KLocation import java.util.UUID import kotlin.time.Instant import kotlin.test.Test import kotlin.test.assertFalse import kotlin.test.assertTrue</ID>
+    <ID>TrailingCommaOnCallSite:ItemDatabaseSoulTest.kt:ItemDatabaseSoulTest$( id = 1L, ownerUUID = UUID.fromString("0f8fad5b-d9cb-469f-a165-70867728950e"), ownerLastName = "Owner", createdAt = Instant.fromEpochSeconds(0), isFree = false, location = KLocation( x = 0.0, y = 64.0, z = 0.0, worldName = "world" ), hasItems = items.isNotEmpty(), exp = exp, items = items )</ID>
+    <ID>TrailingCommaOnCallSite:ItemDatabaseSoulTest.kt:ItemDatabaseSoulTest$( x = 0.0, y = 64.0, z = 0.0, worldName = "world" )</ID>
+    <ID>TrailingCommaOnCallSite:PlayerSoulKrate.kt:PlayerSoulKrate$( factory = { null }, loader = { val file = kratesFolder .resolve("$ownerUUID") .resolve("${createdAt.epochSeconds}_$readIndex.yml") stringFormat.parse&lt;DefaultSoul>(file) .onFailure { throwable -> error(throwable) { "Failed to load soul for $ownerUUID" } } .getOrNull() }, saver = saver@{ defaultSoul -> val file = createFile() if (defaultSoul == null) { file.renameTo(file.resolveSibling("${file.nameWithoutExtension}.deleted")) return@saver } stringFormat.writeIntoFile(defaultSoul, file) } )</ID>
+    <ID>TrailingCommaOnCallSite:SoulTest.kt:SoulTest$( id = 1L, ownerUUID = ownerUuid, ownerLastName = "Owner", createdAt = Instant.fromEpochSeconds(0), isFree = isFree, location = KLocation( x = 0.0, y = 64.0, z = 0.0, worldName = "world" ), hasItems = false, exp = 0 )</ID>
+    <ID>TrailingCommaOnCallSite:SoulTest.kt:SoulTest$( x = 0.0, y = 64.0, z = 0.0, worldName = "world" )</ID>
+    <ID>TrailingCommaOnDeclarationSite:DefaultSoul.kt:DefaultSoul$( @Serializable(with = JUuidSerializer::class) override val ownerUUID: UUID, override val ownerLastName: String, @Serializable(with = KInstantSerializer::class) override val createdAt: Instant, override val isFree: Boolean, override val location: KLocation, override val exp: Int, val items: List&lt;StringFormatObject> )</ID>
+    <ID>TrailingCommaOnDeclarationSite:ItemDatabaseSoul.kt:ItemDatabaseSoul$( val id: Long, override val ownerUUID: UUID, override val ownerLastName: String, override val createdAt: Instant, override val isFree: Boolean, override val location: KLocation, override val hasItems: Boolean, override val exp: Int, val items: List&lt;StringFormatObject> )</ID>
+    <ID>TrailingCommaOnDeclarationSite:PlayerSoulKrate.kt:PlayerSoulKrate$( stringFormat: StringFormat, dataFolder: File, private val createdAt: Instant, private val ownerUUID: UUID, private val readIndex: Int = 0 )</ID>
+    <ID>TrailingCommaOnDeclarationSite:SoulNotFoundException.kt:SoulNotFoundException$( soulId: Long )</ID>
+  </CurrentIssues>
+</SmellBaseline>

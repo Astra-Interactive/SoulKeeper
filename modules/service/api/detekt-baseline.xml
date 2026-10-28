@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ArgumentPerLine:ArmorStandRenderer.kt:ArmorStandRenderer$show(armorStandId, player, soul)</ID>
+    <ID>ArgumentPerLine:FlowCombineExt.kt:combineInstantly(flow, flow2, flow3) { array -> transform( array[0] as? T1, array[1] as? T2, array[2] as? T3 ) }</ID>
+    <ID>ArgumentPerLine:GetNearestSoulUseCaseTest.kt:GetNearestSoulUseCaseTest$KLocation(x = 0.0, y = 64.0, z = 0.0, worldName = "world")</ID>
+    <ID>ArgumentPerLine:GetNearestSoulUseCaseTest.kt:GetNearestSoulUseCaseTest$soul(id = 1L, owner = stranger, isFree = false)</ID>
+    <ID>ArgumentPerLine:GetNearestSoulUseCaseTest.kt:GetNearestSoulUseCaseTest$soul(id = 1L, owner = stranger, isFree = true)</ID>
+    <ID>ArgumentPerLine:GetNearestSoulUseCaseTest.kt:GetNearestSoulUseCaseTest$soul(id = 2L, owner = player.uuid, isFree = false)</ID>
+    <ID>ArgumentPerLine:PickUpSoulUseCaseTest.kt:PickUpSoulUseCaseTest$KLocation(x = 0.0, y = 64.0, z = 0.0, worldName = "world")</ID>
+    <ID>ArgumentPerLine:SoulCallWorker.kt:SoulCallWorker$shareIn(scope, SharingStarted.Eagerly, 1)</ID>
+    <ID>ArgumentPerLine:SoulCallWorker.kt:SoulCallWorker$shareIn(this, SharingStarted.Eagerly, 1)</ID>
+    <ID>ClassSignature:AddItemsResult.kt:AddItemsResult</ID>
+    <ID>ClassSignature:DeleteSoulWorker.kt:DeleteSoulWorker : ServiceTaskLogger</ID>
+    <ID>ClassSignature:FakeOnlineKPlayer.kt:FakeOnlineKPlayer : OnlineKPlayer</ID>
+    <ID>ClassSignature:FreeSoulWorker.kt:FreeSoulWorker : ServiceTaskLogger</ID>
+    <ID>ClassSignature:GetNearestSoulUseCase.kt:GetNearestSoulUseCase</ID>
+    <ID>ClassSignature:PickUpWorker.kt:PickUpWorker : ServiceTaskLogger</ID>
+    <ID>ClassSignature:SharedPlayerMoveEvent.kt:SharedPlayerMoveEvent</ID>
+    <ID>ClassSignature:SoulsModule.kt:SoulsModule</ID>
+    <ID>ClassSignature:TestKotlinDispatchers.kt:TestKotlinDispatchers : KotlinDispatchers</ID>
+    <ID>ExplicitInvoke:FlowCombineExt.kt:transform( array[0] as? T1, array[1] as? T2 )</ID>
+    <ID>ExplicitInvoke:FlowCombineExt.kt:transform( array[0] as? T1, array[1] as? T2, array[2] as? T3 )</ID>
+    <ID>ExplicitInvoke:GetNearestSoulUseCaseTest.kt:GetNearestSoulUseCaseTest$useCase(player)</ID>
+    <ID>ExplicitInvoke:PickUpSoulUseCaseTest.kt:PickUpSoulUseCaseTest$useCase(player, soul(exp = 0, items = emptyList()))</ID>
+    <ID>ExplicitInvoke:PickUpSoulUseCaseTest.kt:PickUpSoulUseCaseTest$useCase(player, soul(exp = 0, items = items))</ID>
+    <ID>ExplicitInvoke:PickUpSoulUseCaseTest.kt:PickUpSoulUseCaseTest$useCase(player, soul(exp = 0, items = listOf(StringFormatObject("stone"))))</ID>
+    <ID>ExplicitInvoke:PickUpSoulUseCaseTest.kt:PickUpSoulUseCaseTest$useCase(player, soul(exp = 12, items = emptyList()))</ID>
+    <ID>ExplicitInvoke:PickUpSoulUseCaseTest.kt:PickUpSoulUseCaseTest$useCase(player, soul(exp = 3, items = items))</ID>
+    <ID>ExplicitInvoke:PickUpWorker.kt:PickUpWorker$getNearestSoulUseCase(player)</ID>
+    <ID>ExplicitInvoke:PickUpWorker.kt:PickUpWorker$pickUpSoulUseCase(player, itemStackSoul)</ID>
+    <ID>ExpressionBodyOnOneLine:GetNearestSoulUseCaseTest.kt:GetNearestSoulUseCaseTest$@Test fun GIVEN_free_soul_of_stranger_WHEN_looked_up_THEN_returns_it</ID>
+    <ID>ExpressionBodyOnOneLine:GetNearestSoulUseCaseTest.kt:GetNearestSoulUseCaseTest$@Test fun GIVEN_only_private_souls_of_strangers_WHEN_looked_up_THEN_returns_nothing</ID>
+    <ID>ExpressionBodyOnOneLine:GetNearestSoulUseCaseTest.kt:GetNearestSoulUseCaseTest$@Test fun GIVEN_private_soul_of_stranger_and_own_soul_WHEN_looked_up_THEN_returns_own_soul</ID>
+    <ID>ExpressionBodyOnOneLine:GetNearestSoulUseCaseTest.kt:GetNearestSoulUseCaseTest$@Test fun GIVEN_storage_failure_WHEN_looked_up_THEN_returns_nothing</ID>
+    <ID>ExpressionBodyOnOneLine:GetNearestSoulUseCaseTest.kt:GetNearestSoulUseCaseTest$private fun soul: DatabaseSoul</ID>
+    <ID>ExpressionBodyOnOneLine:PickUpSoulUseCaseTest.kt:PickUpSoulUseCaseTest$@Test fun GIVEN_full_inventory_WHEN_picked_up_THEN_no_collect_sound_and_soul_stays</ID>
+    <ID>ExpressionBodyOnOneLine:PickUpSoulUseCaseTest.kt:PickUpSoulUseCaseTest$@Test fun GIVEN_full_inventory_for_some_items_WHEN_picked_up_THEN_leftovers_stay_in_soul</ID>
+    <ID>ExpressionBodyOnOneLine:PickUpSoulUseCaseTest.kt:PickUpSoulUseCaseTest$@Test fun GIVEN_items_that_fit_WHEN_picked_up_THEN_items_are_given_and_soul_is_gone</ID>
+    <ID>ExpressionBodyOnOneLine:PickUpSoulUseCaseTest.kt:PickUpSoulUseCaseTest$@Test fun GIVEN_player_who_cannot_pick_up_WHEN_picked_up_THEN_items_stay_in_soul</ID>
+    <ID>ExpressionBodyOnOneLine:PickUpSoulUseCaseTest.kt:PickUpSoulUseCaseTest$@Test fun GIVEN_soul_with_exp_only_WHEN_picked_up_THEN_player_gets_exp_and_soul_is_gone</ID>
+    <ID>ExpressionBodyOnOneLine:PickUpSoulUseCaseTest.kt:PickUpSoulUseCaseTest$@Test fun GIVEN_soul_without_exp_WHEN_picked_up_THEN_no_exp_is_given</ID>
+    <ID>ExpressionBodyOnOneLine:PickUpSoulUseCaseTest.kt:PickUpSoulUseCaseTest$private fun soul: ItemDatabaseSoul</ID>
+    <ID>ExpressionBodyOnOneLine:SoulCallWorker.kt:SoulCallWorker$private fun distancedPlayerMoveEvent</ID>
+    <ID>FunctionExpressionBody:FlowCombineExt.kt:{ return channelFlow { val array = arrayOfNulls&lt;T>(flows.size) flows.forEachIndexed { index, flow -> launch { flow.collect { value -> array[index] = value send(transform.invoke(array)) } } } } }</ID>
+    <ID>FunctionExpressionBody:FlowCombineExt.kt:{ return combineInstantly(flow, flow2) { array -> transform( array[0] as? T1, array[1] as? T2 ) } }</ID>
+    <ID>FunctionExpressionBody:FlowCombineExt.kt:{ return combineInstantly(flow, flow2, flow3) { array -> transform( array[0] as? T1, array[1] as? T2, array[2] as? T3 ) } }</ID>
+    <ID>FunctionExpressionBody:GetNearestSoulUseCase.kt:GetNearestSoulUseCase${ return soulRepository.getSoulsNear(player.getLocation(), PICK_UP_RADIUS) .getOrNull() .orEmpty() .firstOrNull { soul -> soul.isAvailableTo(player.uuid) } }</ID>
+    <ID>FunctionExpressionBody:SoulCallWorker.kt:SoulCallWorker${ return combineInstantly( flow = distancedPlayerMoveEvent(player).shareIn(scope, SharingStarted.Eagerly, 1), flow2 = soulRepository.getSoulsChangeFlow(), transform = { event, _ -> event } ).filterNotNull().map { event -> val location = event.player.getLocation() soulRepository.getSoulsNear(location, config.soulCallRadius) .getOrNull() .orEmpty() .filter { soul -> soul.isAvailableTo(player.uuid) } } }</ID>
+    <ID>FunctionExpressionBody:ThrottleExecutor.kt:ThrottleExecutor${ return lastSuspend.plus(duration) > now }</ID>
+    <ID>FunctionSignature:ArmorStandDisplay.kt:ArmorStandDisplay$fun destroy</ID>
+    <ID>FunctionSignature:ArmorStandDisplay.kt:ArmorStandDisplay$fun show</ID>
+    <ID>FunctionSignature:SoulCallWorker.kt:SoulCallWorker$private fun getPlayerVisibleSoulsFlow: Flow&lt;List&lt;DatabaseSoul>></ID>
+    <ID>FunctionVerb:DeleteSoulWorker.kt:DeleteSoulWorker$private suspend fun doWorkInternal</ID>
+    <ID>FunctionVerb:EventProvider.kt:EventProvider$fun getPlayerJoinEvent: Flow&lt;SharedPlayerJoinEvent></ID>
+    <ID>FunctionVerb:EventProvider.kt:EventProvider$fun getPlayerLeaveEvent: Flow&lt;SharedPlayerLeaveEvent></ID>
+    <ID>FunctionVerb:EventProvider.kt:EventProvider$fun getPlayerMoveEvent: Flow&lt;SharedPlayerMoveEvent></ID>
+    <ID>FunctionVerb:FreeSoulWorker.kt:FreeSoulWorker$private suspend fun doWorkInternal</ID>
+    <ID>FunctionVerb:PickUpWorker.kt:PickUpWorker$private suspend fun doWorkInternal</ID>
+    <ID>FunctionVerb:PickUpWorker.kt:PickUpWorker$private suspend fun processPickupSoulEvents</ID>
+    <ID>FunctionVerb:SoulCallWorker.kt:SoulCallWorker$private fun getPlayerVisibleSoulsFlow: Flow&lt;List&lt;DatabaseSoul>></ID>
+    <ID>PropertyName:TestKotlinDispatchers.kt:TestKotlinDispatchers$override val Default: CoroutineDispatcher = dispatcher</ID>
+    <ID>PropertyName:TestKotlinDispatchers.kt:TestKotlinDispatchers$override val IO: CoroutineDispatcher = dispatcher</ID>
+    <ID>PropertyName:TestKotlinDispatchers.kt:TestKotlinDispatchers$override val Unconfined: CoroutineDispatcher = dispatcher</ID>
+    <ID>RememberInName:ArmorStandRenderer.kt:ArmorStandRenderer$private fun rememberSoulArmorStandId</ID>
+    <ID>ReturnCount:PickUpSoulUseCase.kt:PickUpSoulUseCase$private suspend fun pickUpItems: List&lt;StringFormatObject></ID>
+    <ID>SystemTimeCall:ThrottleExecutor.kt:ThrottleExecutor$System.currentTimeMillis()</ID>
+    <ID>TrailingCommaOnCallSite:FakePlayerInventory.kt:FakePlayerInventory$( leftovers = items.drop(added.size), isAnyItemAdded = added.isNotEmpty() )</ID>
+    <ID>TrailingCommaOnCallSite:FlowCombineExt.kt:( array[0] as? T1, array[1] as? T2 )</ID>
+    <ID>TrailingCommaOnCallSite:FlowCombineExt.kt:( array[0] as? T1, array[1] as? T2, array[2] as? T3 )</ID>
+    <ID>TrailingCommaOnCallSite:GetNearestSoulUseCaseTest.kt:GetNearestSoulUseCaseTest$( id = id, ownerUUID = owner, ownerLastName = "Owner", createdAt = Instant.EPOCH, isFree = isFree, location = location, hasItems = true, exp = 0 )</ID>
+    <ID>TrailingCommaOnCallSite:GetNearestSoulUseCaseTest.kt:GetNearestSoulUseCaseTest$( uuid = UUID.fromString("0f8fad5b-d9cb-469f-a165-70867728950e"), location = location )</ID>
+    <ID>TrailingCommaOnCallSite:PickUpSoulUseCase.kt:PickUpSoulUseCase$( location = soul.location, player = player, config = soulsConfig.particles.soulContentLeft )</ID>
+    <ID>TrailingCommaOnCallSite:PickUpSoulUseCase.kt:PickUpSoulUseCase$( location = soul.location, player = player, config = soulsConfig.particles.soulGone )</ID>
+    <ID>TrailingCommaOnCallSite:PickUpSoulUseCase.kt:PickUpSoulUseCase$( location = soul.location, player = player, sound = soulsConfig.sounds.collectItem )</ID>
+    <ID>TrailingCommaOnCallSite:PickUpSoulUseCase.kt:PickUpSoulUseCase$( location = soul.location, player = player, sound = soulsConfig.sounds.collectXp )</ID>
+    <ID>TrailingCommaOnCallSite:PickUpSoulUseCase.kt:PickUpSoulUseCase$( location = soul.location, player = player, sound = soulsConfig.sounds.soulContentLeft )</ID>
+    <ID>TrailingCommaOnCallSite:PickUpSoulUseCase.kt:PickUpSoulUseCase$( location = soul.location, player = player, sound = soulsConfig.sounds.soulDisappear )</ID>
+    <ID>TrailingCommaOnCallSite:PickUpSoulUseCaseTest.kt:PickUpSoulUseCaseTest$( id = 7L, ownerUUID = player.uuid, ownerLastName = player.name, createdAt = Instant.EPOCH, isFree = false, location = location, hasItems = items.isNotEmpty(), exp = exp, items = items )</ID>
+    <ID>TrailingCommaOnCallSite:PickUpSoulUseCaseTest.kt:PickUpSoulUseCaseTest$( listOf(config.sounds.collectXp, config.sounds.soulDisappear), effectEmitter.playedSounds )</ID>
+    <ID>TrailingCommaOnCallSite:PickUpSoulUseCaseTest.kt:PickUpSoulUseCaseTest$( soulRepository = soulRepository, playerInventory = playerInventory, experiencedFactory = Experienced.Resolver&lt;OnlineKPlayer> { experienced }, effectEmitter = effectEmitter, dispatchers = TestKotlinDispatchers(dispatcher), soulsConfigKrate = DefaultMutableKrate(factory = { config }, loader = { null }).asCachedKrate() )</ID>
+    <ID>TrailingCommaOnCallSite:PickUpSoulUseCaseTest.kt:PickUpSoulUseCaseTest$( uuid = UUID.fromString("0f8fad5b-d9cb-469f-a165-70867728950e"), location = location )</ID>
+    <ID>TrailingCommaOnCallSite:SoulCallWorker.kt:SoulCallWorker$( async { particleThrottleExecutor.execute { soulParticleRenderer.renderOnce(player, souls) } }, async { soundThrottleExecutor.execute { soulSoundRenderer.renderOnce(player, souls) } }, async { soulArmorStandRenderer.renderOnce(player, souls) } )</ID>
+    <ID>TrailingCommaOnCallSite:SoulCallWorker.kt:SoulCallWorker$( flow = TickFlow(1.seconds), flow2 = getPlayerVisibleSoulsFlow(this, player).shareIn(this, SharingStarted.Eagerly, 1), transform = { _, souls -> souls } )</ID>
+    <ID>TrailingCommaOnCallSite:SoulCallWorker.kt:SoulCallWorker$( flow = distancedPlayerMoveEvent(player).shareIn(scope, SharingStarted.Eagerly, 1), flow2 = soulRepository.getSoulsChangeFlow(), transform = { event, _ -> event } )</ID>
+    <ID>TrailingCommaOnCallSite:SoulCallWorker.kt:SoulCallWorker$( x = Double.MIN_VALUE, y = Double.MIN_VALUE, z = Double.MIN_VALUE, worldName = player .getLocation() .worldName )</ID>
+    <ID>TrailingCommaOnCallSite:SoulParticleRenderer.kt:SoulParticleRenderer$( location = soul.location, player = player, config = soulsConfig.particles.soulItems )</ID>
+    <ID>TrailingCommaOnCallSite:SoulParticleRenderer.kt:SoulParticleRenderer$( location = soul.location, player = player, config = soulsConfig.particles.soulXp )</ID>
+    <ID>TrailingCommaOnCallSite:SoulSoundRenderer.kt:SoulSoundRenderer$( location = soul.location, player = player, sound = soulsConfig.sounds.calling )</ID>
+    <ID>TrailingCommaOnCallSite:SoulsModule.kt:SoulsModule$( dispatchers = coreModule.dispatchers, soulsConfigKrate = coreModule.soulsConfigKrate, effectEmitter = coreModule.effectEmitter )</ID>
+    <ID>TrailingCommaOnCallSite:SoulsModule.kt:SoulsModule$( interval = SOUL_CLEANUP_INTERVAL, scope = coreModule.ioScope, logger = JUtiltLogger("DeleteSoulService"), task = DeleteSoulWorker( soulRepository = soulRepository, configKrate = coreModule.soulsConfigKrate, ) )</ID>
+    <ID>TrailingCommaOnCallSite:SoulsModule.kt:SoulsModule$( interval = SOUL_CLEANUP_INTERVAL, scope = coreModule.ioScope, logger = JUtiltLogger("FreeSoulService"), task = FreeSoulWorker( soulRepository = soulRepository, configKrate = coreModule.soulsConfigKrate, ) )</ID>
+    <ID>TrailingCommaOnCallSite:SoulsModule.kt:SoulsModule$( interval = SOUL_PICK_UP_INTERVAL, scope = coreModule.ioScope, logger = JUtiltLogger("PickUpSoulService"), task = PickUpWorker( pickUpSoulUseCase = PickUpSoulUseCase( soulRepository = soulRepository, playerInventory = platformSoulsModule.playerInventory, experiencedFactory = platformSoulsModule.onlineMinecraftPlayerExperiencedFactory, effectEmitter = coreModule.effectEmitter, dispatchers = coreModule.dispatchers, soulsConfigKrate = coreModule.soulsConfigKrate ), getNearestSoulUseCase = GetNearestSoulUseCase( soulRepository = soulRepository, ), soulRepository = soulRepository, platformServer = platformSoulsModule.platformServer, isDeadPlayerProvider = platformSoulsModule.isDeadPlayerProvider, ) )</ID>
+    <ID>TrailingCommaOnCallSite:SoulsModule.kt:SoulsModule$( onEnable = { soulCallWorker.onEnable() pickUpSoulService.onEnable() deleteSoulService.onEnable() freeSoulService.onEnable() }, onDisable = { soulCallWorker.onDisable() pickUpSoulService.onDisable() deleteSoulService.onDisable() freeSoulService.onDisable() } )</ID>
+    <ID>TrailingCommaOnCallSite:SoulsModule.kt:SoulsModule$( soulRepository = soulRepository, playerInventory = platformSoulsModule.playerInventory, experiencedFactory = platformSoulsModule.onlineMinecraftPlayerExperiencedFactory, effectEmitter = coreModule.effectEmitter, dispatchers = coreModule.dispatchers, soulsConfigKrate = coreModule.soulsConfigKrate )</ID>
+    <ID>TrailingCommaOnCallSite:SoulsModule.kt:SoulsModule$( soulsConfigKrate = coreModule.soulsConfigKrate, armorStandDisplay = platformSoulsModule.armorStandDisplay, platformServer = platformSoulsModule.platformServer )</ID>
+    <ID>TrailingCommaOnCallSite:SoulsModule.kt:SoulsModule$( soulsConfigKrate = coreModule.soulsConfigKrate, dispatchers = coreModule.dispatchers, effectEmitter = coreModule.effectEmitter )</ID>
+    <ID>TrailingCommaOnDeclarationSite:AddItemsResult.kt:AddItemsResult$( val leftovers: List&lt;StringFormatObject>, val isAnyItemAdded: Boolean )</ID>
+    <ID>TrailingCommaOnDeclarationSite:ArmorStandDisplay.kt:ArmorStandDisplay$( id: Int, player: OnlineKPlayer, soul: Soul )</ID>
+    <ID>TrailingCommaOnDeclarationSite:ArmorStandDisplay.kt:ArmorStandDisplay$( player: OnlineKPlayer, ids: Collection&lt;Int> )</ID>
+    <ID>TrailingCommaOnDeclarationSite:ArmorStandRenderer.kt:ArmorStandRenderer$( soulsConfigKrate: CachedKrate&lt;SoulsConfig>, private val armorStandDisplay: ArmorStandDisplay, private val platformServer: PlatformServer )</ID>
+    <ID>TrailingCommaOnDeclarationSite:DeleteSoulWorker.kt:DeleteSoulWorker$( private val soulRepository: SoulRepository, configKrate: CachedKrate&lt;SoulsConfig> )</ID>
+    <ID>TrailingCommaOnDeclarationSite:FakeOnlineKPlayer.kt:FakeOnlineKPlayer$( override val uuid: UUID, private val location: KLocation )</ID>
+    <ID>TrailingCommaOnDeclarationSite:FlowCombineExt.kt:( vararg flows: Flow&lt;T>, crossinline transform: (Array&lt;T?>) -> R )</ID>
+    <ID>TrailingCommaOnDeclarationSite:FreeSoulWorker.kt:FreeSoulWorker$( private val soulRepository: SoulRepository, configKrate: CachedKrate&lt;SoulsConfig> )</ID>
+    <ID>TrailingCommaOnDeclarationSite:GetNearestSoulUseCase.kt:GetNearestSoulUseCase$( private val soulRepository: SoulRepository )</ID>
+    <ID>TrailingCommaOnDeclarationSite:PickUpSoulUseCase.kt:PickUpSoulUseCase$( private val soulRepository: SoulRepository, private val playerInventory: PlayerInventory, private val experiencedFactory: Experienced.Resolver&lt;OnlineKPlayer>, private val effectEmitter: EffectEmitter, private val dispatchers: KotlinDispatchers, soulsConfigKrate: CachedKrate&lt;SoulsConfig> )</ID>
+    <ID>TrailingCommaOnDeclarationSite:PickUpWorker.kt:PickUpWorker$( private val pickUpSoulUseCase: PickUpSoulUseCase, private val getNearestSoulUseCase: GetNearestSoulUseCase, private val soulRepository: SoulRepository, private val platformServer: PlatformServer, private val isDeadPlayerProvider: IsDeadPlayerProvider )</ID>
+    <ID>TrailingCommaOnDeclarationSite:SoulCallWorker.kt:SoulCallWorker$( scope: CoroutineScope, player: OnlineKPlayer )</ID>
+    <ID>TrailingCommaOnDeclarationSite:SoulParticleRenderer.kt:SoulParticleRenderer$( private val dispatchers: KotlinDispatchers, soulsConfigKrate: CachedKrate&lt;SoulsConfig>, private val effectEmitter: EffectEmitter )</ID>
+    <ID>TrailingCommaOnDeclarationSite:SoulSoundRenderer.kt:SoulSoundRenderer$( private val dispatchers: KotlinDispatchers, soulsConfigKrate: CachedKrate&lt;SoulsConfig>, private val effectEmitter: EffectEmitter )</ID>
+    <ID>TrailingCommaOnDeclarationSite:SoulsModule.kt:SoulsModule$( coreModule: CoreModule, soulRepository: SoulRepository, platformSoulsModule: PlatformSoulsModule )</ID>
+    <ID>TrailingCommaOnDeclarationSite:TestKotlinDispatchers.kt:TestKotlinDispatchers$( dispatcher: CoroutineDispatcher )</ID>
+  </CurrentIssues>
+</SmellBaseline>

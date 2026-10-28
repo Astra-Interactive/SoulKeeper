@@ -5,7 +5,8 @@ import ru.astrainteractive.astralibs.server.util.MinecraftUtil
 import ru.astrainteractive.astralibs.server.util.getOnlinePlayer
 import ru.astrainteractive.soulkeeper.core.platform.api.Experienced
 
-internal class NeoForgeExperienced(
+@Suppress("ImplementationVisibility")
+class NeoForgeExperienced(
     private val player: OnlineKPlayer
 ) : Experienced {
     override fun giveExperience(experience: Int) {

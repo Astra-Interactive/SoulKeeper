@@ -4,7 +4,8 @@ import org.bukkit.Bukkit
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.soulkeeper.core.platform.api.Experienced
 
-internal class BukkitExperienced(
+@Suppress("ImplementationVisibility")
+class BukkitExperienced(
     private val player: OnlineKPlayer
 ) : Experienced {
     override fun giveExperience(experience: Int) {

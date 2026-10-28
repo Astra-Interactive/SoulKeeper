@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>BlankLineBetweenWhenConditions:BukkitSoulEvents.kt:BukkitSoulEvents$when { event.keepInventory -> emptyList() else -> { event.drops .map(ItemStackSerializer::encodeToString) .map(::StringFormatObject) .also { event.drops.clear() } } }</ID>
+    <ID>ClassSignature:BukkitEventModule.kt:BukkitEventModule</ID>
+    <ID>ClassSignature:BukkitSoulEvents.kt:BukkitSoulEvents : EventListenerLogger</ID>
+    <ID>FunctionExpressionBody:BukkitSoulEvents.kt:BukkitSoulEvents${ return when { event.keepInventory -> emptyList() else -> { event.drops .map(ItemStackSerializer::encodeToString) .map(::StringFormatObject) .also { event.drops.clear() } } } }</ID>
+    <ID>FunctionExpressionBody:BukkitSoulEvents.kt:BukkitSoulEvents${ return when { event.keepLevel -> 0 else -> { val exp = event.droppedExp.times(soulsConfig.retainedXp).toInt() event.droppedExp = 0 exp } } }</ID>
+    <ID>FunctionExpressionBody:BukkitSoulEvents.kt:BukkitSoulEvents${ return when { event.player.location.world.environment == World.Environment.THE_END -> { val endLocation = event.player.location.clone() if (endLocation.y &lt; soulsConfig.endLocationLimitY) { endLocation.y = soulsConfig.endLocationLimitY } endLocation } else -> event.player.location }.asKLocation() }</ID>
+    <ID>TrailingCommaOnCallSite:BukkitEventModule.kt:BukkitEventModule$( onEnable = { event.onEnable(bukkitCoreModule.plugin) }, onDisable = { event.onDisable() HandlerList.unregisterAll(bukkitCoreModule.plugin) } )</ID>
+    <ID>TrailingCommaOnCallSite:BukkitEventModule.kt:BukkitEventModule$( soulRepository = soulRepository, soulsConfigKrate = coreModule.soulsConfigKrate, ioScope = coreModule.ioScope, dataFolder = coreModule.dataFolder, stringFormat = coreModule.yamlFormat, effectEmitter = coreModule.effectEmitter )</ID>
+    <ID>TrailingCommaOnCallSite:BukkitSoulEvents.kt:BukkitSoulEvents$( location = soul.location, player = player, config = soulsConfig.particles.soulCreated )</ID>
+    <ID>TrailingCommaOnCallSite:BukkitSoulEvents.kt:BukkitSoulEvents$( location = soul.location, player = player, sound = soulsConfig.sounds.soulDropped )</ID>
+    <ID>TrailingCommaOnDeclarationSite:BukkitEventModule.kt:BukkitEventModule$( coreModule: CoreModule, bukkitCoreModule: BukkitCoreModule, soulRepository: SoulRepository )</ID>
+  </CurrentIssues>
+</SmellBaseline>

@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ClassSignature:NeoForgePlayerInventory.kt:NeoForgePlayerInventory : PlayerInventoryLogger</ID>
+    <ID>FunctionExpressionBody:NeoForgePlayerInventory.kt:NeoForgePlayerInventory${ return items .map(StringFormatObject::raw) .map(ItemStackSerializer::decodeFromString) .mapNotNull { itemStackResult -> itemStackResult .onFailure { throwable -> error(throwable) { "Failed to deserialize item stack" } } .getOrNull() } }</ID>
+    <ID>FunctionExpressionBody:OnlineKPlayerExt.kt:{ return items .mapNotNull { stack -> if (!isDead.invoke(this)) { val inventory = MinecraftUtil.getOnlinePlayer(uuid)?.inventory inventory?.add(stack) inventory?.setChanged() } stack.copy() } .filterNot(ItemStack::isEmpty) }</ID>
+    <ID>FunctionSignature:OnlineKPlayerExt.kt:internal fun OnlineKPlayer.addItems: List&lt;ItemStack></ID>
+    <ID>ReturnCount:NeoForgePlayerInventory.kt:NeoForgePlayerInventory$override fun canPickUpItems: Boolean</ID>
+    <ID>TrailingCommaOnCallSite:NeoForgeEventProvider.kt:NeoForgeEventProvider$( player = serverPlayer.asOnlineMinecraftPlayer(), to = serverPlayer.asLocatable().getLocation() )</ID>
+    <ID>TrailingCommaOnCallSite:NeoForgePlayerInventory.kt:NeoForgePlayerInventory$( items = itemStacks, isDead = isDeadPlayerProvider::isDead )</ID>
+    <ID>TrailingCommaOnCallSite:NeoForgePlayerInventory.kt:NeoForgePlayerInventory$( leftovers = leftovers .map(ItemStackSerializer::encodeToString) .map(::StringFormatObject), isAnyItemAdded = leftovers.sumOf(ItemStack::getCount) &lt; requestedAmount )</ID>
+    <ID>TrailingCommaOnDeclarationSite:NeoForgePlayerInventory.kt:NeoForgePlayerInventory$( private val isDeadPlayerProvider: IsDeadPlayerProvider )</ID>
+    <ID>TrailingCommaOnDeclarationSite:OnlineKPlayerExt.kt:( items: List&lt;ItemStack>, isDead: (OnlineKPlayer) -> Boolean )</ID>
+  </CurrentIssues>
+</SmellBaseline>

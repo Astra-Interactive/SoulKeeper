@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ClassSignature:NeoForgeExperienced.kt:NeoForgeExperienced : Experienced</ID>
+    <ID>FunctionExpressionBody:ItemStackSerializer.kt:ItemStackSerializer${ return MinecraftUtil.serverOrNull ?.registryAccess() ?: error("Server is not running") }</ID>
+    <ID>FunctionExpressionBody:ItemStackSerializer.kt:ItemStackSerializer${ return decodeFromString(decoder.decodeString()).getOrThrow() }</ID>
+    <ID>FunctionExpressionBody:ItemStackSerializer.kt:ItemStackSerializer${ return itemStack.save(requireHolderLookup()).toString() }</ID>
+    <ID>FunctionExpressionBody:ItemStackSerializer.kt:ItemStackSerializer${ return runCatching { val nbt = CompoundTag() nbt.merge(parseNbt(string)) ItemStack.parse(requireHolderLookup(), nbt).get() } }</ID>
+    <ID>FunctionExpressionBody:ItemStackSerializer.kt:ItemStackSerializer${ return try { TagParser.parseTag(string) } catch (e: Exception) { throw IllegalArgumentException("Could not parse ItemStack string: $string", e) } }</ID>
+    <ID>FunctionExpressionBody:NeoForgeExperienced.kt:NeoForgeExperienced.OnlineMinecraftPlayerResolver${ return NeoForgeExperienced(owner) }</ID>
+    <ID>FunctionSignature:NeoForgeEffectEmitter.kt:NeoForgeEffectEmitter$override fun playSoundForPlayer</ID>
+    <ID>ReturnCount:NeoForgeIsDeadPlayerProvider.kt:NeoForgeIsDeadPlayerProvider$override fun isDead: Boolean</ID>
+    <ID>TooGenericExceptionCaught:ItemStackSerializer.kt:ItemStackSerializer$e: Exception</ID>
+    <ID>TrailingCommaOnCallSite:ItemStackSerializer.kt:ItemStackSerializer$( serialName = "AstraLibs.Forge.ItemStack.Json", kind = PrimitiveKind.STRING )</ID>
+    <ID>TrailingCommaOnCallSite:NeoForgeEffectEmitter.kt:NeoForgeEffectEmitter$( Vector3f( r, g, b ), dustOptions.size )</ID>
+    <ID>TrailingCommaOnCallSite:NeoForgeEffectEmitter.kt:NeoForgeEffectEmitter$( r, g, b )</ID>
+    <ID>TrailingCommaOnCallSite:NeoForgeEffectEmitter.kt:NeoForgeEffectEmitter$( serverPlayer, particleOptions, false, location.x, location.y, location.z, config.count, 0.0, 0.0, 0.0, 0.0 )</ID>
+    <ID>TrailingCommaOnCallSite:NeoForgeEffectEmitter.kt:NeoForgeEffectEmitter$( soundEvent, SoundSource.PLAYERS, sound.volume, sound.pitch )</ID>
+    <ID>TrailingCommaOnDeclarationSite:NeoForgeEffectEmitter.kt:NeoForgeEffectEmitter$( location: KLocation, player: OnlineKPlayer, config: SoulsConfig.Particles.Particle )</ID>
+    <ID>TrailingCommaOnDeclarationSite:NeoForgeEffectEmitter.kt:NeoForgeEffectEmitter$( location: KLocation, player: OnlineKPlayer, sound: SoulsConfig.Sounds.SoundConfig )</ID>
+    <ID>TrailingCommaOnDeclarationSite:NeoForgeExperienced.kt:NeoForgeExperienced$( private val player: OnlineKPlayer )</ID>
+  </CurrentIssues>
+</SmellBaseline>

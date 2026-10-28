@@ -14,6 +14,7 @@ dependencies {
     implementation(kotlin("stdlib"))
     compileOnly(libs.minecraft.paper.api)
 
+    implementation(libs.klibs.kstorage)
     implementation(libs.klibs.mikro.core)
     implementation(libs.kotlin.coroutines.core)
     implementation(libs.kotlin.serialization.json)

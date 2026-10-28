@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>BlankLineBetweenWhenConditions:ForgeEffectEmitter.kt:ForgeEffectEmitter$when (particleType) { ParticleTypes.DUST if dustOptions != null -> { val color = dustOptions.color val r = ((color shr 16) and 0xFF) / 255f val g = ((color shr 8) and 0xFF) / 255f val b = (color and 0xFF) / 255f DustParticleOptions( org.joml.Vector3f( r, g, b ), dustOptions.size ) } else -> particleType as ParticleOptions }</ID>
+    <ID>ClassSignature:ForgeExperienced.kt:ForgeExperienced : Experienced</ID>
+    <ID>FunctionExpressionBody:ForgeExperienced.kt:ForgeExperienced.OnlineMinecraftPlayerResolver${ return ForgeExperienced(owner) }</ID>
+    <ID>FunctionExpressionBody:ItemStackSerializer.kt:ItemStackSerializer${ return MinecraftUtil.serverOrNull ?.registryAccess() ?: error("Server is not running") }</ID>
+    <ID>FunctionExpressionBody:ItemStackSerializer.kt:ItemStackSerializer${ return decodeFromString(decoder.decodeString()).getOrThrow() }</ID>
+    <ID>FunctionExpressionBody:ItemStackSerializer.kt:ItemStackSerializer${ return itemStack.save(requireHolderLookup()).toString() }</ID>
+    <ID>FunctionExpressionBody:ItemStackSerializer.kt:ItemStackSerializer${ return runCatching { val nbt = CompoundTag() nbt.merge(parseNbt(string)) ItemStack.parse(requireHolderLookup(), nbt).get() } }</ID>
+    <ID>FunctionExpressionBody:ItemStackSerializer.kt:ItemStackSerializer${ return try { TagParser.parseTag(string) } catch (e: Exception) { throw IllegalArgumentException("Could not parse ItemStack string: $string", e) } }</ID>
+    <ID>FunctionSignature:ForgeEffectEmitter.kt:ForgeEffectEmitter$override fun playSoundForPlayer</ID>
+    <ID>ReturnCount:ForgeIsDeadPlayerProvider.kt:ForgeIsDeadPlayerProvider$override fun isDead: Boolean</ID>
+    <ID>TooGenericExceptionCaught:ItemStackSerializer.kt:ItemStackSerializer$e: Exception</ID>
+    <ID>TrailingCommaOnCallSite:ForgeEffectEmitter.kt:ForgeEffectEmitter$( org.joml.Vector3f( r, g, b ), dustOptions.size )</ID>
+    <ID>TrailingCommaOnCallSite:ForgeEffectEmitter.kt:ForgeEffectEmitter$( r, g, b )</ID>
+    <ID>TrailingCommaOnCallSite:ForgeEffectEmitter.kt:ForgeEffectEmitter$( serverPlayer, particleOptions, false, location.x, location.y, location.z, config.count, 0.0, 0.0, 0.0, 0.0 )</ID>
+    <ID>TrailingCommaOnCallSite:ForgeEffectEmitter.kt:ForgeEffectEmitter$( soundEvent, SoundSource.PLAYERS, sound.volume, sound.pitch )</ID>
+    <ID>TrailingCommaOnCallSite:ItemStackSerializer.kt:ItemStackSerializer$( serialName = "AstraLibs.Forge.ItemStack.Json", kind = PrimitiveKind.STRING )</ID>
+    <ID>TrailingCommaOnDeclarationSite:ForgeEffectEmitter.kt:ForgeEffectEmitter$( location: KLocation, player: OnlineKPlayer, config: SoulsConfig.Particles.Particle )</ID>
+    <ID>TrailingCommaOnDeclarationSite:ForgeEffectEmitter.kt:ForgeEffectEmitter$( location: KLocation, player: OnlineKPlayer, sound: SoulsConfig.Sounds.SoundConfig )</ID>
+    <ID>TrailingCommaOnDeclarationSite:ForgeExperienced.kt:ForgeExperienced$( private val player: OnlineKPlayer )</ID>
+  </CurrentIssues>
+</SmellBaseline>

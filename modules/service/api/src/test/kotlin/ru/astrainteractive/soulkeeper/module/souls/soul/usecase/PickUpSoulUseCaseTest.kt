@@ -22,13 +22,13 @@ import ru.astrainteractive.soulkeeper.data.dao.soul.model.StringFormatObject
 import ru.astrainteractive.soulkeeper.module.souls.soul.fake.FakeOnlineKPlayer
 import ru.astrainteractive.soulkeeper.module.souls.soul.fake.FakePlayerInventory
 import ru.astrainteractive.soulkeeper.module.souls.soul.model.PickUpSoulResult
-import java.time.Instant
 import java.util.UUID
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PickUpSoulUseCaseTest {
@@ -56,7 +56,7 @@ class PickUpSoulUseCaseTest {
         id = 7L,
         ownerUUID = player.uuid,
         ownerLastName = player.name,
-        createdAt = Instant.EPOCH,
+        createdAt = Instant.fromEpochSeconds(0),
         isFree = false,
         location = location,
         hasItems = items.isNotEmpty(),
