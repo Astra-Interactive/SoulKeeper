@@ -6,14 +6,7 @@ plugins {
     `java-test-fixtures`
 }
 
-configurations.api {
-    dependencies.removeIf { dependency ->
-        dependency.group == "org.jetbrains.kotlin" && dependency.name == "kotlin-stdlib"
-    }
-}
-
 dependencies {
-    implementation(kotlin("stdlib"))
     implementation(libs.klibs.kstorage)
 
     compileOnly(libs.minecraft.brigadier)
