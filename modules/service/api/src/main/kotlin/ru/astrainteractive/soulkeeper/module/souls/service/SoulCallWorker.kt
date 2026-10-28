@@ -1,3 +1,5 @@
+@file:Suppress("FunctionVerb", "ExpressionBodyOnOneLine")
+
 package ru.astrainteractive.soulkeeper.module.souls.service
 
 import kotlinx.coroutines.CoroutineScope
@@ -86,7 +88,11 @@ internal class SoulCallWorker(
         player: OnlineKPlayer
     ): Flow<List<DatabaseSoul>> {
         return combineInstantly(
-            flow = distancedPlayerMoveEvent(player).shareIn(scope, SharingStarted.Eagerly, 1),
+            flow = distancedPlayerMoveEvent(player).shareIn(
+                scope,
+                SharingStarted.Eagerly,
+                1
+            ),
             flow2 = soulRepository.getSoulsChangeFlow(),
             transform = { event, _ -> event }
         ).filterNotNull().map { event ->
@@ -105,7 +111,11 @@ internal class SoulCallWorker(
             val particleThrottleExecutor = throttleExecutorFactory.invoke(2.seconds)
             combineInstantly(
                 flow = TickFlow(1.seconds),
-                flow2 = getPlayerVisibleSoulsFlow(this, player).shareIn(this, SharingStarted.Eagerly, 1),
+                flow2 = getPlayerVisibleSoulsFlow(this, player).shareIn(
+                    this,
+                    SharingStarted.Eagerly,
+                    1
+                ),
                 transform = { _, souls -> souls }
             ).filterNotNull().onEach { souls ->
                 listOf(

@@ -1,4 +1,4 @@
-@file:Suppress("FunctionNaming")
+@file:Suppress("FunctionNaming", "ExpressionBodyOnOneLine", "ArgumentPerLine", "ExplicitInvoke")
 
 package ru.astrainteractive.soulkeeper.module.souls.soul.usecase
 

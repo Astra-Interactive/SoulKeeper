@@ -18,6 +18,7 @@ internal class ArmorStandRenderer(
 
     private val soulByArmorStandId = HashMap<Long, Int>()
 
+    @Suppress("RememberInName")
     private fun rememberSoulArmorStandId(soul: DatabaseSoul) {
         if (soulsConfig.displaySoulTitles) return
         soulByArmorStandId.getOrPut(soul.id) { armorStandDisplay.generateEntityId() }
@@ -29,7 +30,11 @@ internal class ArmorStandRenderer(
             .onEach(::rememberSoulArmorStandId)
             .forEach { soul ->
                 val armorStandId = soulByArmorStandId[soul.id] ?: return@forEach
-                armorStandDisplay.show(armorStandId, player, soul)
+                armorStandDisplay.show(
+                    armorStandId,
+                    player,
+                    soul
+                )
             }
     }
 

@@ -7,11 +7,11 @@ import ru.astrainteractive.soulkeeper.data.dao.soul.util.hasExp
 import ru.astrainteractive.soulkeeper.data.dao.soul.util.withItems
 import ru.astrainteractive.soulkeeper.data.dao.soul.util.withoutExp
 import java.util.UUID
-import kotlin.time.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.time.Instant
 
 class ItemDatabaseSoulTest {
     private fun soul(exp: Int, items: List<StringFormatObject>): ItemDatabaseSoul {

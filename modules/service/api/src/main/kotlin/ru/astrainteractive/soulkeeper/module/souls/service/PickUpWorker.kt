@@ -1,3 +1,5 @@
+@file:Suppress("FunctionVerb")
+
 package ru.astrainteractive.soulkeeper.module.souls.service
 
 import kotlinx.coroutines.launch
@@ -29,9 +31,9 @@ internal class PickUpWorker(
         platformServer.getOnlinePlayers()
             .filter { player -> !isDeadPlayerProvider.isDead(player) }
             .forEach { player ->
-                val databaseSoul = getNearestSoulUseCase(player) ?: return@forEach
+                val databaseSoul = getNearestSoulUseCase.invoke(player) ?: return@forEach
                 val itemStackSoul = soulRepository.toItemDatabaseSoul(databaseSoul).getOrNull() ?: return@forEach
-                pickUpSoulUseCase(player, itemStackSoul)
+                pickUpSoulUseCase.invoke(player, itemStackSoul)
             }
     }
 

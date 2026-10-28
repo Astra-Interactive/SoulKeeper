@@ -1,3 +1,5 @@
+@file:Suppress("FunctionVerb")
+
 package ru.astrainteractive.soulkeeper.module.souls.service
 
 import kotlinx.coroutines.launch

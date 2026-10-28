@@ -4,10 +4,10 @@ package ru.astrainteractive.soulkeeper.data.dao.soul.model
 
 import ru.astrainteractive.astralibs.server.location.KLocation
 import java.util.UUID
-import kotlin.time.Instant
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.time.Instant
 
 class SoulTest {
     private val ownerUuid = UUID.fromString("0f8fad5b-d9cb-469f-a165-70867728950e")
