@@ -187,7 +187,7 @@ internal class ForgeSoulEvents(
                 .asLocatable()
                 .getLocation()
 
-            val existingSoul = soulRepository.getSoulsNear(location, 1)
+            val existingSoul = soulRepository.loadSoulsNear(location, 1)
                 .getOrNull()
                 .orEmpty()
                 .firstOrNull { soul -> soul.ownerUUID == serverPlayer.uuid }

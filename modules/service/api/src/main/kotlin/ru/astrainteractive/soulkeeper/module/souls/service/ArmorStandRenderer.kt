@@ -6,6 +6,7 @@ import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.soulkeeper.core.plugin.model.SoulsConfig
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.DatabaseSoul
+import ru.astrainteractive.soulkeeper.data.dao.soul.model.SoulId
 import ru.astrainteractive.soulkeeper.module.souls.armorstand.api.ArmorStandDisplay
 import ru.astrainteractive.soulkeeper.module.souls.renderer.api.SoulEffectRenderer
 
@@ -16,7 +17,7 @@ internal class ArmorStandRenderer(
 ) : SoulEffectRenderer {
     private val soulsConfig by soulsConfigKrate
 
-    private val soulByArmorStandId = HashMap<Long, Int>()
+    private val soulByArmorStandId = HashMap<SoulId, Int>()
 
     @Suppress("RememberInName")
     private fun rememberSoulArmorStandId(soul: DatabaseSoul) {

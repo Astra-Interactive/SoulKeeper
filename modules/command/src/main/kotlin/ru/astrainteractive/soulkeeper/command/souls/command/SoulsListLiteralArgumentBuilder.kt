@@ -7,6 +7,7 @@ import ru.astrainteractive.astralibs.command.api.brigadier.command.Multiplatform
 import ru.astrainteractive.soulkeeper.command.error.CommandExceptionHandler
 import ru.astrainteractive.soulkeeper.command.souls.model.SoulsCommand
 import ru.astrainteractive.soulkeeper.core.plugin.model.PluginPermission
+import ru.astrainteractive.soulkeeper.data.dao.soul.model.SoulId
 
 internal class SoulsListLiteralArgumentBuilder(
     private val multiplatformCommand: MultiplatformCommand,
@@ -32,7 +33,7 @@ internal class SoulsListLiteralArgumentBuilder(
                         runs(commandExceptionHandler::onFailure) { ctx ->
                             SoulsCommand.Intent.Free(
                                 sender = ctx.getSender(),
-                                soulId = ctx.requireArgument(idArg)
+                                soulId = SoulId(ctx.requireArgument(idArg))
                             ).run(soulsCommandExecutor::execute)
                         }
                     }
@@ -43,7 +44,7 @@ internal class SoulsListLiteralArgumentBuilder(
                             ctx.requirePermission(PluginPermission.TeleportToSouls)
                             SoulsCommand.Intent.TeleportToSoul(
                                 player = ctx.requirePlayer(),
-                                soulId = ctx.requireArgument(idArg)
+                                soulId = SoulId(ctx.requireArgument(idArg))
                             ).run(soulsCommandExecutor::execute)
                         }
                     }

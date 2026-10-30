@@ -93,11 +93,11 @@ internal class SoulCallWorker(
                 SharingStarted.Eagerly,
                 1
             ),
-            flow2 = soulRepository.getSoulsChangeFlow(),
+            flow2 = soulRepository.soulsChangeFlow,
             transform = { event, _ -> event }
         ).filterNotNull().map { event ->
             val location = event.player.getLocation()
-            soulRepository.getSoulsNear(location, config.soulCallRadius)
+            soulRepository.loadSoulsNear(location, config.soulCallRadius)
                 .getOrNull()
                 .orEmpty()
                 .filter { soul -> soul.isAvailableTo(player.uuid) }

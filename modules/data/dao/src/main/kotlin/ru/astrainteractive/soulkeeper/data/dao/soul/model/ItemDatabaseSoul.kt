@@ -1,5 +1,3 @@
-@file:Suppress("BareIdentifier")
-
 package ru.astrainteractive.soulkeeper.data.dao.soul.model
 
 import ru.astrainteractive.astralibs.server.location.KLocation
@@ -7,7 +5,7 @@ import java.util.UUID
 import kotlin.time.Instant
 
 data class ItemDatabaseSoul(
-    val id: Long,
+    val id: SoulId,
     override val ownerUUID: UUID,
     override val ownerLastName: String,
     override val createdAt: Instant,

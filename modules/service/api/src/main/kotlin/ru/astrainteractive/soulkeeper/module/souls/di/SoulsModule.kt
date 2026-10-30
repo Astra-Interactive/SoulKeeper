@@ -13,7 +13,7 @@ import ru.astrainteractive.soulkeeper.module.souls.service.SoulCallWorker
 import ru.astrainteractive.soulkeeper.module.souls.service.SoulParticleRenderer
 import ru.astrainteractive.soulkeeper.module.souls.service.SoulSoundRenderer
 import ru.astrainteractive.soulkeeper.module.souls.service.ThrottleExecutor
-import ru.astrainteractive.soulkeeper.module.souls.soul.usecase.GetNearestSoulUseCase
+import ru.astrainteractive.soulkeeper.module.souls.soul.usecase.FindNearestSoulUseCase
 import ru.astrainteractive.soulkeeper.module.souls.soul.usecase.PickUpSoulUseCase
 import kotlin.time.Duration.Companion.seconds
 
@@ -84,7 +84,7 @@ class SoulsModule(
                 dispatchers = coreModule.dispatchers,
                 soulsConfigKrate = coreModule.soulsConfigKrate
             ),
-            getNearestSoulUseCase = GetNearestSoulUseCase(
+            findNearestSoulUseCase = FindNearestSoulUseCase(
                 soulRepository = soulRepository,
             ),
             soulRepository = soulRepository,

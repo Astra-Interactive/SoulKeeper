@@ -20,7 +20,7 @@ internal class DeleteSoulWorker(
     private val config by configKrate
 
     private suspend fun doWorkInternal() {
-        val soulsToDelete = soulRepository.getSouls()
+        val soulsToDelete = soulRepository.loadSouls()
             .getOrNull()
             .orEmpty()
             .filter { soul ->

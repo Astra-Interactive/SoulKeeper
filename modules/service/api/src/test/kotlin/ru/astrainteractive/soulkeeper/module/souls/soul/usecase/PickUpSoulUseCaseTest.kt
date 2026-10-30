@@ -18,6 +18,7 @@ import ru.astrainteractive.soulkeeper.core.platform.fake.FakeExperienced
 import ru.astrainteractive.soulkeeper.core.plugin.model.SoulsConfig
 import ru.astrainteractive.soulkeeper.data.dao.soul.fake.FakeSoulRepository
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.ItemDatabaseSoul
+import ru.astrainteractive.soulkeeper.data.dao.soul.model.SoulId
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.StringFormatObject
 import ru.astrainteractive.soulkeeper.module.souls.soul.fake.FakeOnlineKPlayer
 import ru.astrainteractive.soulkeeper.module.souls.soul.fake.FakePlayerInventory
@@ -53,7 +54,7 @@ class PickUpSoulUseCaseTest {
     )
 
     private fun soul(exp: Int, items: List<StringFormatObject>): ItemDatabaseSoul = ItemDatabaseSoul(
-        id = 7L,
+        id = SoulId(7L),
         ownerUUID = player.uuid,
         ownerLastName = player.name,
         createdAt = Instant.fromEpochSeconds(0),
@@ -80,7 +81,7 @@ class PickUpSoulUseCaseTest {
 
         assertEquals(PickUpSoulResult.AllPickedUp, result)
         assertEquals(listOf(12), experienced.givenExperience)
-        assertEquals(listOf(7L), soulRepository.deletedSoulIds)
+        assertEquals(listOf(SoulId(7L)), soulRepository.deletedSoulIds)
         assertEquals(
             listOf(config.sounds.collectXp, config.sounds.soulDisappear),
             effectEmitter.playedSounds
@@ -104,7 +105,7 @@ class PickUpSoulUseCaseTest {
 
         assertEquals(PickUpSoulResult.AllPickedUp, result)
         assertEquals(items, playerInventory.receivedItems)
-        assertEquals(listOf(7L), soulRepository.deletedSoulIds)
+        assertEquals(listOf(SoulId(7L)), soulRepository.deletedSoulIds)
         assertTrue(config.sounds.collectItem in effectEmitter.playedSounds)
     }
 

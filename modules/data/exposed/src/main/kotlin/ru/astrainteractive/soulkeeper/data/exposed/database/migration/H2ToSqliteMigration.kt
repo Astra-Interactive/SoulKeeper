@@ -36,7 +36,7 @@ internal class H2ToSqliteMigration(
 
             val sqliteSoulRepository = createRepository.invoke(sqliteDatabase)
             val h2SoulRepository = createRepository.invoke(h2Database)
-            h2SoulRepository.getSouls()
+            h2SoulRepository.loadSouls()
                 .onFailure { throwable ->
                     error(throwable) { "Could not convert souls from H2 to SQLite" }
                     return@coroutineScope

@@ -55,7 +55,7 @@ internal class SoulsCommandExecutor(
     }
 
     private suspend fun loadFilteredSouls(sender: KCommandSender): List<DatabaseSoul> {
-        val souls = soulRepository.getSouls()
+        val souls = soulRepository.loadSouls()
             .getOrNull()
             .orEmpty()
         return when (sender) {
@@ -192,7 +192,7 @@ internal class SoulsCommandExecutor(
 
     private fun executeFree(input: SoulsCommand.Intent.Free) {
         ioScope.launch {
-            val soul = soulRepository.getSoul(input.soulId).getOrNull()
+            val soul = soulRepository.loadSoul(input.soulId).getOrNull()
             if (soul == null) {
                 input.sender.sendMessage(translation.soul.notFound)
                 return@launch
@@ -213,7 +213,7 @@ internal class SoulsCommandExecutor(
 
     private fun executeTeleport(input: SoulsCommand.Intent.TeleportToSoul) {
         ioScope.launch {
-            val location = soulRepository.getSoul(input.soulId)
+            val location = soulRepository.loadSoul(input.soulId)
                 .getOrNull()
                 ?.location
             if (location == null) {

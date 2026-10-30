@@ -20,7 +20,7 @@ internal class FreeSoulWorker(
     private val config by configKrate
 
     private suspend fun doWorkInternal() {
-        val soulsToFree = soulRepository.getSouls()
+        val soulsToFree = soulRepository.loadSouls()
             .getOrNull()
             .orEmpty()
             .filter { soul -> !soul.isFree }
