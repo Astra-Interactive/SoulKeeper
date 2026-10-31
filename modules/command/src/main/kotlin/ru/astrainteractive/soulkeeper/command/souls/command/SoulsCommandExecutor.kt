@@ -1,6 +1,10 @@
 package ru.astrainteractive.soulkeeper.command.souls.command
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.kyori.adventure.text.Component
@@ -38,18 +42,22 @@ internal class SoulsCommandExecutor(
 ) {
     private val translation by translationKrate
 
+    private val clickedIntents = MutableSharedFlow<SoulsCommand.Intent>(
+        extraBufferCapacity = CLICK_BUFFER_CAPACITY,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+
     private fun createPagingMessage(
         input: SoulsCommand.Intent.List,
-        maxPages: Int,
-        onClick: (SoulsCommand.Intent) -> Unit
+        maxPages: Int
     ): Component {
         val locale = input.sender.locale
         val nextPageComponent = translation.soulList.nextPage.toComponent(locale)
-            .clickable { onClick.invoke(input.copy(page = input.page.plus(1))) }
+            .clickable { clickedIntents.tryEmit(input.copy(page = input.page.plus(1))) }
             .takeIf { input.page < maxPages }
             .orEmpty()
         val prevPageComponent = translation.soulList.previousPage.toComponent(locale)
-            .clickable { onClick.invoke(input.copy(page = input.page.plus(-1))) }
+            .clickable { clickedIntents.tryEmit(input.copy(page = input.page.plus(-1))) }
             .appendSpace().takeIf { input.page > 0 }
             .orEmpty()
         return nextPageComponent.append(prevPageComponent, true)
@@ -119,27 +127,25 @@ internal class SoulsCommandExecutor(
 
     private fun createFreeSoulComponent(
         sender: KCommandSender,
-        soul: DatabaseSoul,
-        onClick: (SoulsCommand.Intent) -> Unit
+        soul: DatabaseSoul
     ): Component? {
         if (soul.isFree) return null
         if (!sender.canFreeSoul(soul)) return null
         return translation.soulList.freeButton
             .toComponent(sender.locale)
             .appendSpace()
-            .clickable { onClick.invoke(SoulsCommand.Intent.Free(sender, soul.id)) }
+            .clickable { clickedIntents.tryEmit(SoulsCommand.Intent.Free(sender, soul.id)) }
     }
 
     private fun createTeleportSoulComponent(
         sender: KCommandSender,
-        soul: DatabaseSoul,
-        onClick: (SoulsCommand.Intent) -> Unit
+        soul: DatabaseSoul
     ): Component? {
         if (sender !is KPlayerKCommandSender) return null
         if (!sender.canTeleportToSoul()) return null
         return translation.soulList.teleportButton
             .toComponent(sender.locale)
-            .clickable { onClick.invoke(SoulsCommand.Intent.TeleportToSoul(sender.instance, soul.id)) }
+            .clickable { clickedIntents.tryEmit(SoulsCommand.Intent.TeleportToSoul(sender.instance, soul.id)) }
     }
 
     private fun executeList(input: SoulsCommand.Intent.List) {
@@ -168,15 +174,13 @@ internal class SoulsCommandExecutor(
                     addSpace = true,
                     other = createFreeSoulComponent(
                         sender = input.sender,
-                        soul = soul,
-                        onClick = ::execute
+                        soul = soul
                     )
                 ).append(
                     addSpace = true,
                     other = createTeleportSoulComponent(
                         sender = input.sender,
-                        soul = soul,
-                        onClick = ::execute
+                        soul = soul
                     )
                 )
                 input.sender.sendMessage(component)
@@ -184,8 +188,7 @@ internal class SoulsCommandExecutor(
             input.sender.sendMessage(
                 createPagingMessage(
                     input = input,
-                    maxPages = maxPages,
-                    onClick = ::execute
+                    maxPages = maxPages
                 )
             )
         }
@@ -233,5 +236,15 @@ internal class SoulsCommandExecutor(
             is SoulsCommand.Intent.Free -> executeFree(input)
             is SoulsCommand.Intent.TeleportToSoul -> executeTeleport(input)
         }
+    }
+
+    init {
+        clickedIntents
+            .onEach(::execute)
+            .launchIn(ioScope)
+    }
+
+    companion object {
+        private const val CLICK_BUFFER_CAPACITY = 16
     }
 }
