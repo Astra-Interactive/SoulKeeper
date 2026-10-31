@@ -37,9 +37,6 @@ import java.util.UUID
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-/**
- * This worker is required to display soul particles near players
- */
 @Suppress("LongParameterList")
 internal class SoulCallWorker(
     private val soulRepository: SoulRepository,
@@ -55,9 +52,6 @@ internal class SoulCallWorker(
 
     private val playerRendererJobMap = mutableMapOf<UUID, Job>()
 
-    /**
-     * Emit event only when player moved distance away from previous location
-     */
     private fun distancedPlayerMoveEvent(player: OnlineKPlayer) = flow {
         var savedLocation = KLocation(
             x = Double.MIN_VALUE,

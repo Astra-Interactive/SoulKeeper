@@ -15,9 +15,6 @@ import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import ru.astrainteractive.soulkeeper.module.souls.soul.usecase.FindNearestSoulUseCase
 import ru.astrainteractive.soulkeeper.module.souls.soul.usecase.PickUpSoulUseCase
 
-/**
- * This worker is required to pick up items
- */
 internal class PickUpWorker(
     private val pickUpSoulUseCase: PickUpSoulUseCase,
     private val findNearestSoulUseCase: FindNearestSoulUseCase,
