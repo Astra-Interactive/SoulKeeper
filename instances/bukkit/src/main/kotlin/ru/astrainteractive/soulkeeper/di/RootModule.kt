@@ -61,7 +61,7 @@ class RootModule(plugin: LifecyclePlugin) {
     )
 
     private val lifecycles: List<Lifecycle>
-        get() = listOfNotNull(
+        get() = listOf(
             coreModule.lifecycle,
             bukkitCoreModule.lifecycle,
             soulsDaoModule.lifecycle,

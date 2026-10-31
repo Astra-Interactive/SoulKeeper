@@ -73,7 +73,7 @@ class RootModule(private val plugin: Lifecycle) {
     }
 
     private val lifecycles: List<Lifecycle>
-        get() = listOfNotNull(
+        get() = listOf(
             coreModule.lifecycle,
             soulsDaoModule.lifecycle,
             forgeEventModule.lifecycle,

@@ -13,10 +13,10 @@ import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import ru.astrainteractive.soulkeeper.module.souls.di.SoulsModule
 
 class CommandModule(
-    private val coreModule: CoreModule,
+    coreModule: CoreModule,
     soulRepository: SoulRepository,
     soulsModule: SoulsModule,
-    private val commandRegistrarContext: CommandRegistrarContext,
+    commandRegistrarContext: CommandRegistrarContext,
     lifecyclePlugin: Lifecycle
 ) {
     private val commandExceptionHandler = CommandExceptionHandler(
