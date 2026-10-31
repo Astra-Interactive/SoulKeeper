@@ -18,7 +18,7 @@ import ru.astrainteractive.soulkeeper.event.bukkit.di.BukkitEventModule
 import ru.astrainteractive.soulkeeper.service.api.di.SoulsModule
 import ru.astrainteractive.soulkeeper.service.bukkit.di.BukkitPlatformSoulsModule
 
-class RootModule(plugin: LifecyclePlugin) {
+internal class RootModule(plugin: LifecyclePlugin) {
     private val coreModule: CoreModule = CoreModule(
         dispatchers = DefaultBukkitDispatchers(plugin),
         dataFolder = plugin.dataFolder,

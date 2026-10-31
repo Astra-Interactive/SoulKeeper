@@ -17,7 +17,7 @@ import ru.astrainteractive.soulkeeper.service.api.di.SoulsModule
 import ru.astrainteractive.soulkeeper.service.forge.di.ForgePlatformSoulsModule
 import java.io.File
 
-class RootModule(private val plugin: Lifecycle) {
+internal class RootModule(private val plugin: Lifecycle) {
 
     private val dataFolder by lazy {
         FMLPaths.CONFIGDIR.get()
