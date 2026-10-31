@@ -15,7 +15,7 @@ class SoulTest {
 
     private fun soul(isFree: Boolean): DatabaseSoul {
         return DatabaseSoul(
-            id = 1L,
+            id = SoulId(1L),
             ownerUUID = ownerUuid,
             ownerLastName = "Owner",
             createdAt = Instant.fromEpochSeconds(0),

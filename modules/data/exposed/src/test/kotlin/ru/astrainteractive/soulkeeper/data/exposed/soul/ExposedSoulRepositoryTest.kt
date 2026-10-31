@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -19,6 +20,7 @@ import ru.astrainteractive.astralibs.server.location.KLocation
 import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.DefaultSoul
+import ru.astrainteractive.soulkeeper.data.dao.soul.model.SoulId
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.SoulNotFoundException
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.StringFormatObject
 import ru.astrainteractive.soulkeeper.data.exposed.soul.table.SoulItemsTable
@@ -31,6 +33,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
@@ -94,7 +97,7 @@ class ExposedSoulRepositoryTest {
     private fun TestScope.collectChangeEvents(dao: SoulRepository): List<Unit> {
         val events = mutableListOf<Unit>()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-            dao.getSoulsChangeFlow().toList(events)
+            dao.soulsChangeFlow.toList(events)
         }
         return events
     }
@@ -110,8 +113,8 @@ class ExposedSoulRepositoryTest {
     }
 
     @Test
-    fun GIVEN_two_souls_WHEN_get_soul_by_id_THEN_returns_soul_with_requested_id() {
-        runTest {
+    fun GIVEN_two_souls_WHEN_load_soul_by_id_THEN_returns_soul_with_requested_id(): TestResult {
+        return runTest {
             val dao = createDao()
             val olderOwner = UUID.randomUUID()
             val newerOwner = UUID.randomUUID()
@@ -122,8 +125,8 @@ class ExposedSoulRepositoryTest {
                 createSoul(ownerUUID = newerOwner, createdAt = Instant.parse("2026-02-01T00:00:00Z"))
             )
 
-            val olderResult = dao.getSoul(older.id).getOrThrow()
-            val newerResult = dao.getSoul(newer.id).getOrThrow()
+            val olderResult = dao.loadSoul(older.id).getOrThrow()
+            val newerResult = dao.loadSoul(newer.id).getOrThrow()
 
             assertEquals(older.id, olderResult.id)
             assertEquals(olderOwner, olderResult.ownerUUID)
@@ -133,20 +136,20 @@ class ExposedSoulRepositoryTest {
     }
 
     @Test
-    fun GIVEN_no_soul_with_id_WHEN_get_soul_THEN_returns_soul_not_found_failure() {
-        runTest {
+    fun GIVEN_no_soul_with_id_WHEN_load_soul_THEN_returns_soul_not_found_failure(): TestResult {
+        return runTest {
             val dao = createDao()
             dao.insertSoulOrFail(createSoul())
 
-            val result = dao.getSoul(id = 9999L)
+            val result = dao.loadSoul(id = SoulId(9999L))
 
             assertIs<SoulNotFoundException>(result.exceptionOrNull())
         }
     }
 
     @Test
-    fun GIVEN_souls_with_and_without_items_WHEN_read_THEN_has_items_reflects_stored_items() {
-        runTest {
+    fun GIVEN_souls_with_and_without_items_WHEN_read_THEN_has_items_reflects_stored_items(): TestResult {
+        return runTest {
             val dao = createDao()
             val withItems = dao.insertSoulOrFail(
                 createSoul(items = listOf(StringFormatObject("sword"), StringFormatObject("shield")))
@@ -156,17 +159,17 @@ class ExposedSoulRepositoryTest {
             assertTrue(withItems.hasItems)
             assertFalse(withoutItems.hasItems)
 
-            val soulsById = dao.getSouls().getOrThrow().associateBy { soul -> soul.id }
+            val soulsById = dao.loadSouls().getOrThrow().associateBy(DatabaseSoul::id)
             assertEquals(true, soulsById.getValue(withItems.id).hasItems)
             assertEquals(false, soulsById.getValue(withoutItems.id).hasItems)
-            assertTrue(dao.getSoul(withItems.id).getOrThrow().hasItems)
-            assertFalse(dao.getSoul(withoutItems.id).getOrThrow().hasItems)
+            assertTrue(dao.loadSoul(withItems.id).getOrThrow().hasItems)
+            assertFalse(dao.loadSoul(withoutItems.id).getOrThrow().hasItems)
         }
     }
 
     @Test
-    fun GIVEN_soul_with_items_WHEN_to_item_database_soul_THEN_returns_stored_items_in_order() {
-        runTest {
+    fun GIVEN_soul_with_items_WHEN_to_item_database_soul_THEN_returns_stored_items_in_order(): TestResult {
+        return runTest {
             val dao = createDao()
             val items = listOf(
                 StringFormatObject("sword"),
@@ -184,16 +187,16 @@ class ExposedSoulRepositoryTest {
     }
 
     @Test
-    fun GIVEN_change_flow_collector_WHEN_souls_are_read_THEN_no_change_event_is_emitted() {
-        runTest {
+    fun GIVEN_change_flow_collector_WHEN_souls_are_read_THEN_no_change_event_is_emitted(): TestResult {
+        return runTest {
             val dao = createDao()
             val soul = dao.insertSoulOrFail(createSoul(items = listOf(StringFormatObject("sword"))))
             val events = collectChangeEvents(dao)
 
-            dao.getSouls().getOrThrow()
-            dao.getSoul(soul.id).getOrThrow()
-            dao.getPlayerSouls(soul.ownerUUID).getOrThrow()
-            dao.getSoulsNear(soul.location, radius = 5).getOrThrow()
+            dao.loadSouls().getOrThrow()
+            dao.loadSoul(soul.id).getOrThrow()
+            dao.loadPlayerSouls(soul.ownerUUID).getOrThrow()
+            dao.loadSoulsNear(soul.location, radius = 5).getOrThrow()
             dao.toItemDatabaseSoul(soul).getOrThrow()
             advanceUntilIdle()
 
@@ -202,8 +205,8 @@ class ExposedSoulRepositoryTest {
     }
 
     @Test
-    fun GIVEN_change_flow_collector_WHEN_soul_is_written_THEN_change_event_is_emitted_per_write() {
-        runTest {
+    fun GIVEN_change_flow_collector_WHEN_soul_is_written_THEN_change_event_is_emitted_per_write(): TestResult {
+        return runTest {
             val dao = createDao()
             val events = collectChangeEvents(dao)
 
@@ -227,8 +230,8 @@ class ExposedSoulRepositoryTest {
     }
 
     @Test
-    fun GIVEN_souls_in_several_worlds_WHEN_get_souls_near_THEN_returns_same_world_souls_within_radius() {
-        runTest {
+    fun GIVEN_souls_in_several_worlds_WHEN_load_souls_near_THEN_returns_same_world_souls_within_radius(): TestResult {
+        return runTest {
             val dao = createDao()
             val center = KLocation(
                 x = 0.0,
@@ -242,21 +245,21 @@ class ExposedSoulRepositoryTest {
             dao.insertSoulOrFail(createSoul(location = center.copy(x = 4.0, z = 4.0)))
             dao.insertSoulOrFail(createSoul(location = center.copy(worldName = "world_nether")))
 
-            val nearSouls = dao.getSoulsNear(center, radius = 5).getOrThrow()
+            val nearSouls = dao.loadSoulsNear(center, radius = 5).getOrThrow()
 
-            assertEquals(setOf(atCenter.id, nearby.id), nearSouls.map { soul -> soul.id }.toSet())
+            assertEquals(setOf(atCenter.id, nearby.id), nearSouls.map(DatabaseSoul::id).toSet())
         }
     }
 
     @Test
-    fun GIVEN_souls_with_different_created_at_WHEN_get_souls_THEN_newest_comes_first() {
-        runTest {
+    fun GIVEN_souls_with_different_created_at_WHEN_load_souls_THEN_newest_comes_first(): TestResult {
+        return runTest {
             val dao = createDao()
             val oldest = dao.insertSoulOrFail(createSoul(createdAt = Instant.parse("2026-01-01T00:00:00Z")))
             val newest = dao.insertSoulOrFail(createSoul(createdAt = Instant.parse("2026-03-01T00:00:00Z")))
             val middle = dao.insertSoulOrFail(createSoul(createdAt = Instant.parse("2026-02-01T00:00:00Z")))
 
-            val souls = dao.getSouls().getOrThrow()
+            val souls = dao.loadSouls().getOrThrow()
 
             assertEquals(
                 listOf(
@@ -264,14 +267,14 @@ class ExposedSoulRepositoryTest {
                     middle.id,
                     oldest.id
                 ),
-                souls.map { soul -> soul.id }
+                souls.map(DatabaseSoul::id)
             )
         }
     }
 
     @Test
-    fun GIVEN_souls_of_two_players_WHEN_get_player_souls_THEN_returns_only_requested_player_souls() {
-        runTest {
+    fun GIVEN_souls_of_two_players_WHEN_load_player_souls_THEN_returns_only_requested_player_souls(): TestResult {
+        return runTest {
             val dao = createDao()
             val steve = UUID.randomUUID()
             val alex = UUID.randomUUID()
@@ -279,30 +282,30 @@ class ExposedSoulRepositoryTest {
             val steveSecond = dao.insertSoulOrFail(createSoul(ownerUUID = steve))
             dao.insertSoulOrFail(createSoul(ownerUUID = alex))
 
-            val steveSouls = dao.getPlayerSouls(steve).getOrThrow()
+            val steveSouls = dao.loadPlayerSouls(steve).getOrThrow()
 
-            assertEquals(setOf(steveFirst.id, steveSecond.id), steveSouls.map { soul -> soul.id }.toSet())
+            assertEquals(setOf(steveFirst.id, steveSecond.id), steveSouls.map(DatabaseSoul::id).toSet())
             assertTrue(steveSouls.all { soul -> soul.ownerUUID == steve })
         }
     }
 
     @Test
-    fun GIVEN_soul_WHEN_free_flag_and_exp_updated_THEN_get_soul_returns_updated_values() {
-        runTest {
+    fun GIVEN_soul_WHEN_free_flag_and_exp_updated_THEN_load_soul_returns_updated_values(): TestResult {
+        return runTest {
             val dao = createDao()
             val soul = dao.insertSoulOrFail(createSoul())
 
             dao.updateSoul(soul.copy(isFree = true, exp = 0)).getOrThrow()
 
-            val updated = dao.getSoul(soul.id).getOrThrow()
+            val updated = dao.loadSoul(soul.id).getOrThrow()
             assertTrue(updated.isFree)
             assertEquals(0, updated.exp)
         }
     }
 
     @Test
-    fun GIVEN_soul_with_items_WHEN_items_updated_THEN_items_are_replaced_and_has_items_follows() {
-        runTest {
+    fun GIVEN_soul_with_items_WHEN_items_updated_THEN_items_are_replaced_and_has_items_follows(): TestResult {
+        return runTest {
             val dao = createDao()
             val soul = dao.insertSoulOrFail(
                 createSoul(items = listOf(StringFormatObject("sword"), StringFormatObject("shield")))
@@ -311,17 +314,17 @@ class ExposedSoulRepositoryTest {
 
             dao.updateSoul(itemSoul.copy(items = listOf(StringFormatObject("apple")))).getOrThrow()
             assertEquals(listOf(StringFormatObject("apple")), dao.toItemDatabaseSoul(soul).getOrThrow().items)
-            assertTrue(dao.getSoul(soul.id).getOrThrow().hasItems)
+            assertTrue(dao.loadSoul(soul.id).getOrThrow().hasItems)
 
             dao.updateSoul(itemSoul.copy(items = emptyList())).getOrThrow()
             assertEquals(emptyList(), dao.toItemDatabaseSoul(soul).getOrThrow().items)
-            assertFalse(dao.getSoul(soul.id).getOrThrow().hasItems)
+            assertFalse(dao.loadSoul(soul.id).getOrThrow().hasItems)
         }
     }
 
     @Test
-    fun GIVEN_two_souls_with_items_WHEN_one_deleted_THEN_only_its_items_and_row_are_removed() {
-        runTest {
+    fun GIVEN_two_souls_with_items_WHEN_one_deleted_THEN_only_its_items_and_row_are_removed(): TestResult {
+        return runTest {
             val dao = createDao()
             val deleted = dao.insertSoulOrFail(createSoul(items = listOf(StringFormatObject("sword"))))
             val kept = dao.insertSoulOrFail(
@@ -330,26 +333,22 @@ class ExposedSoulRepositoryTest {
 
             dao.deleteSoul(deleted.id).getOrThrow()
 
-            assertEquals(listOf(kept.id), dao.getSouls().getOrThrow().map { soul -> soul.id })
-            assertIs<SoulNotFoundException>(dao.getSoul(deleted.id).exceptionOrNull())
+            assertEquals(listOf(kept.id), dao.loadSouls().getOrThrow().map(DatabaseSoul::id))
+            assertIs<SoulNotFoundException>(dao.loadSoul(deleted.id).exceptionOrNull())
             assertEquals(2L, countStoredItems())
             assertEquals(2, dao.toItemDatabaseSoul(kept).getOrThrow().items.size)
         }
     }
 
     @Test
-    fun GIVEN_cancelled_caller_WHEN_get_souls_THEN_cancellation_is_propagated_instead_of_failure_result() {
-        runTest {
+    fun GIVEN_cancelled_caller_WHEN_load_souls_THEN_cancellation_is_propagated_instead_of_failure_result(): TestResult {
+        return runTest {
             val dao = createDao()
             var propagated: Throwable? = null
 
             val job = launch {
                 cancelSelf()
-                try {
-                    dao.getSouls()
-                } catch (cancellation: CancellationException) {
-                    propagated = cancellation
-                }
+                propagated = assertFailsWith<CancellationException> { dao.loadSouls() }
             }
             job.join()
 

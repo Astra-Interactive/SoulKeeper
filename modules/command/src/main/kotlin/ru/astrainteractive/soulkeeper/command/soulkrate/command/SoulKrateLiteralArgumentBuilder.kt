@@ -12,11 +12,11 @@ import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
-import ru.astrainteractive.soulkeeper.command.error.CommandExceptionHandler
+import ru.astrainteractive.soulkeeper.command.api.CommandExceptionHandler
 import ru.astrainteractive.soulkeeper.core.plugin.model.PluginPermission
 import ru.astrainteractive.soulkeeper.core.plugin.model.PluginTranslation
 import ru.astrainteractive.soulkeeper.data.dao.soul.krate.PlayerSoulKrate
-import ru.astrainteractive.soulkeeper.module.souls.soul.api.PlayerInventory
+import ru.astrainteractive.soulkeeper.service.api.soul.api.PlayerInventory
 import java.io.File
 import kotlin.time.Instant
 
@@ -37,9 +37,18 @@ internal class SoulKrateLiteralArgumentBuilder(
     fun create(): LiteralArgumentBuilder<*> {
         return with(multiplatformCommand) {
             command("soulkrate") {
-                argument("uuid", StringArgumentType.string()) { uuidArg ->
-                    argument("instant", instantArgumentType) { instantArg ->
-                        argument("index", IntegerArgumentType.integer()) { indexArg ->
+                argument(
+                    "uuid",
+                    StringArgumentType.string()
+                ) { uuidArg ->
+                    argument(
+                        "instant",
+                        instantArgumentType
+                    ) { instantArg ->
+                        argument(
+                            "index",
+                            IntegerArgumentType.integer()
+                        ) { indexArg ->
                             runs(commandExceptionHandler::onFailure) { ctx ->
                                 ctx.requirePermission(PluginPermission.LoadSouls)
                                 val player = ctx.requirePlayer()

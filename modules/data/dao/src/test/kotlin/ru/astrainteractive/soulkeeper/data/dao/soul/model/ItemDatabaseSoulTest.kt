@@ -16,7 +16,7 @@ import kotlin.time.Instant
 class ItemDatabaseSoulTest {
     private fun soul(exp: Int, items: List<StringFormatObject>): ItemDatabaseSoul {
         return ItemDatabaseSoul(
-            id = 1L,
+            id = SoulId(1L),
             ownerUUID = UUID.fromString("0f8fad5b-d9cb-469f-a165-70867728950e"),
             ownerLastName = "Owner",
             createdAt = Instant.fromEpochSeconds(0),
