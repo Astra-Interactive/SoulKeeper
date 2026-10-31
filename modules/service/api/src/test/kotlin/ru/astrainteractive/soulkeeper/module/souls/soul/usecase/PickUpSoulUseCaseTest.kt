@@ -4,6 +4,7 @@ package ru.astrainteractive.soulkeeper.module.souls.soul.usecase
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -76,77 +77,89 @@ class PickUpSoulUseCaseTest {
     }
 
     @Test
-    fun GIVEN_soul_with_exp_only_WHEN_picked_up_THEN_player_gets_exp_and_soul_is_gone() = runTest(dispatcher) {
-        val result = useCase(player, soul(exp = 12, items = emptyList()))
+    fun GIVEN_soul_with_exp_only_WHEN_picked_up_THEN_player_gets_exp_and_soul_is_gone(): TestResult {
+        return runTest(dispatcher) {
+            val result = useCase(player, soul(exp = 12, items = emptyList()))
 
-        assertEquals(PickUpSoulResult.AllPickedUp, result)
-        assertEquals(listOf(12), experienced.givenExperience)
-        assertEquals(listOf(SoulId(7L)), soulRepository.deletedSoulIds)
-        assertEquals(
-            listOf(config.sounds.collectXp, config.sounds.soulDisappear),
-            effectEmitter.playedSounds
-        )
-        assertEquals(listOf(config.particles.soulGone), effectEmitter.spawnedParticles)
+            assertEquals(PickUpSoulResult.AllPickedUp, result)
+            assertEquals(listOf(12), experienced.givenExperience)
+            assertEquals(listOf(SoulId(7L)), soulRepository.deletedSoulIds)
+            assertEquals(
+                listOf(config.sounds.collectXp, config.sounds.soulDisappear),
+                effectEmitter.playedSounds
+            )
+            assertEquals(listOf(config.particles.soulGone), effectEmitter.spawnedParticles)
+        }
     }
 
     @Test
-    fun GIVEN_soul_without_exp_WHEN_picked_up_THEN_no_exp_is_given() = runTest(dispatcher) {
-        useCase(player, soul(exp = 0, items = emptyList()))
+    fun GIVEN_soul_without_exp_WHEN_picked_up_THEN_no_exp_is_given(): TestResult {
+        return runTest(dispatcher) {
+            useCase(player, soul(exp = 0, items = emptyList()))
 
-        assertTrue(experienced.givenExperience.isEmpty())
-        assertTrue(config.sounds.collectXp !in effectEmitter.playedSounds)
+            assertTrue(experienced.givenExperience.isEmpty())
+            assertTrue(config.sounds.collectXp !in effectEmitter.playedSounds)
+        }
     }
 
     @Test
-    fun GIVEN_items_that_fit_WHEN_picked_up_THEN_items_are_given_and_soul_is_gone() = runTest(dispatcher) {
-        val items = listOf(StringFormatObject("stone"), StringFormatObject("dirt"))
+    fun GIVEN_items_that_fit_WHEN_picked_up_THEN_items_are_given_and_soul_is_gone(): TestResult {
+        return runTest(dispatcher) {
+            val items = listOf(StringFormatObject("stone"), StringFormatObject("dirt"))
 
-        val result = useCase(player, soul(exp = 0, items = items))
+            val result = useCase(player, soul(exp = 0, items = items))
 
-        assertEquals(PickUpSoulResult.AllPickedUp, result)
-        assertEquals(items, playerInventory.receivedItems)
-        assertEquals(listOf(SoulId(7L)), soulRepository.deletedSoulIds)
-        assertTrue(config.sounds.collectItem in effectEmitter.playedSounds)
+            assertEquals(PickUpSoulResult.AllPickedUp, result)
+            assertEquals(items, playerInventory.receivedItems)
+            assertEquals(listOf(SoulId(7L)), soulRepository.deletedSoulIds)
+            assertTrue(config.sounds.collectItem in effectEmitter.playedSounds)
+        }
     }
 
     @Test
-    fun GIVEN_full_inventory_for_some_items_WHEN_picked_up_THEN_leftovers_stay_in_soul() = runTest(dispatcher) {
-        playerInventory.freeSlots = 1
-        val items = listOf(StringFormatObject("stone"), StringFormatObject("dirt"))
+    fun GIVEN_full_inventory_for_some_items_WHEN_picked_up_THEN_leftovers_stay_in_soul(): TestResult {
+        return runTest(dispatcher) {
+            playerInventory.freeSlots = 1
+            val items = listOf(StringFormatObject("stone"), StringFormatObject("dirt"))
 
-        val result = useCase(player, soul(exp = 3, items = items))
+            val result = useCase(player, soul(exp = 3, items = items))
 
-        assertEquals(PickUpSoulResult.SomethingRest, result)
-        assertEquals(listOf(StringFormatObject("dirt")), soulRepository.updatedSouls.last().items)
-        assertEquals(0, soulRepository.updatedSouls.last().exp)
-        assertTrue(soulRepository.deletedSoulIds.isEmpty())
-        assertTrue(config.sounds.collectItem in effectEmitter.playedSounds)
-        assertTrue(config.sounds.soulContentLeft in effectEmitter.playedSounds)
-        assertEquals(listOf(config.particles.soulContentLeft), effectEmitter.spawnedParticles)
+            assertEquals(PickUpSoulResult.SomethingRest, result)
+            assertEquals(listOf(StringFormatObject("dirt")), soulRepository.updatedSouls.last().items)
+            assertEquals(0, soulRepository.updatedSouls.last().exp)
+            assertTrue(soulRepository.deletedSoulIds.isEmpty())
+            assertTrue(config.sounds.collectItem in effectEmitter.playedSounds)
+            assertTrue(config.sounds.soulContentLeft in effectEmitter.playedSounds)
+            assertEquals(listOf(config.particles.soulContentLeft), effectEmitter.spawnedParticles)
+        }
     }
 
     @Test
-    fun GIVEN_full_inventory_WHEN_picked_up_THEN_no_collect_sound_and_soul_stays() = runTest(dispatcher) {
-        playerInventory.freeSlots = 0
-        val items = listOf(StringFormatObject("stone"))
+    fun GIVEN_full_inventory_WHEN_picked_up_THEN_no_collect_sound_and_soul_stays(): TestResult {
+        return runTest(dispatcher) {
+            playerInventory.freeSlots = 0
+            val items = listOf(StringFormatObject("stone"))
 
-        val result = useCase(player, soul(exp = 0, items = items))
+            val result = useCase(player, soul(exp = 0, items = items))
 
-        assertEquals(PickUpSoulResult.SomethingRest, result)
-        assertTrue(config.sounds.collectItem !in effectEmitter.playedSounds)
-        assertTrue(soulRepository.updatedSouls.isEmpty())
-        assertTrue(soulRepository.deletedSoulIds.isEmpty())
+            assertEquals(PickUpSoulResult.SomethingRest, result)
+            assertTrue(config.sounds.collectItem !in effectEmitter.playedSounds)
+            assertTrue(soulRepository.updatedSouls.isEmpty())
+            assertTrue(soulRepository.deletedSoulIds.isEmpty())
+        }
     }
 
     @Test
-    fun GIVEN_player_who_cannot_pick_up_WHEN_picked_up_THEN_items_stay_in_soul() = runTest(dispatcher) {
-        playerInventory.canPickUp = false
+    fun GIVEN_player_who_cannot_pick_up_WHEN_picked_up_THEN_items_stay_in_soul(): TestResult {
+        return runTest(dispatcher) {
+            playerInventory.canPickUp = false
 
-        val result = useCase(player, soul(exp = 0, items = listOf(StringFormatObject("stone"))))
+            val result = useCase(player, soul(exp = 0, items = listOf(StringFormatObject("stone"))))
 
-        assertEquals(PickUpSoulResult.SomethingRest, result)
-        assertTrue(playerInventory.receivedItems.isEmpty())
-        assertTrue(soulRepository.deletedSoulIds.isEmpty())
-        assertEquals(listOf(config.sounds.soulContentLeft), effectEmitter.playedSounds)
+            assertEquals(PickUpSoulResult.SomethingRest, result)
+            assertTrue(playerInventory.receivedItems.isEmpty())
+            assertTrue(soulRepository.deletedSoulIds.isEmpty())
+            assertEquals(listOf(config.sounds.soulContentLeft), effectEmitter.playedSounds)
+        }
     }
 }
