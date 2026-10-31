@@ -1,6 +1,6 @@
 @file:Suppress("FunctionNaming")
 
-package ru.astrainteractive.soulkeeper.command.error
+package ru.astrainteractive.soulkeeper.command.api
 
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.CommandDispatcher

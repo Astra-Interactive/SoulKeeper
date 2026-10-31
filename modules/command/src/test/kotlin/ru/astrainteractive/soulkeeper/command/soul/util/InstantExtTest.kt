@@ -1,8 +1,8 @@
 @file:Suppress("FunctionNaming")
 
-package ru.astrainteractive.soulkeeper.command.souls.util
+package ru.astrainteractive.soulkeeper.command.soul.util
 
-import ru.astrainteractive.soulkeeper.command.souls.model.TimeAgo
+import ru.astrainteractive.soulkeeper.command.soul.model.TimeAgo
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Duration

@@ -1,11 +1,11 @@
-package ru.astrainteractive.soulkeeper.command.souls.command
+package ru.astrainteractive.soulkeeper.command.soul.command
 
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.LongArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
-import ru.astrainteractive.soulkeeper.command.error.CommandExceptionHandler
-import ru.astrainteractive.soulkeeper.command.souls.model.SoulsCommand
+import ru.astrainteractive.soulkeeper.command.api.CommandExceptionHandler
+import ru.astrainteractive.soulkeeper.command.soul.api.SoulsCommand
 import ru.astrainteractive.soulkeeper.core.plugin.model.PluginPermission
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.SoulId
 

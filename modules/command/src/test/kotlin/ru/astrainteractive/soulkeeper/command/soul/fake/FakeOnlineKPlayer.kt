@@ -1,18 +1,34 @@
-package ru.astrainteractive.soulkeeper.command.souls.fake
+package ru.astrainteractive.soulkeeper.command.soul.fake
 
 import net.kyori.adventure.text.Component
-import ru.astrainteractive.astralibs.command.api.brigadier.sender.ConsoleKCommandSender
+import ru.astrainteractive.astralibs.server.annotation.InternalPlatformApi
+import ru.astrainteractive.astralibs.server.location.KLocation
 import ru.astrainteractive.astralibs.server.permission.Permission
+import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
+import java.net.InetSocketAddress
 import java.util.Locale
+import java.util.UUID
 
-internal class FakeConsoleKCommandSender(
+@OptIn(InternalPlatformApi::class)
+internal class FakeOnlineKPlayer(
+    override val uuid: UUID,
     private val grantedPermissions: Set<Permission>
-) : ConsoleKCommandSender {
+) : OnlineKPlayer {
+    override val name: String = "Player"
+
+    override val address: InetSocketAddress = InetSocketAddress.createUnresolved("localhost", 0)
+
     override val locale: Locale = Locale.ROOT
 
     private fun notUsed(): Nothing = error("The tests do not call this")
 
+    override fun hasPlayedBefore(): Boolean = true
+
     override fun sendMessage(component: Component) = notUsed()
+
+    override fun getLocation(): KLocation = notUsed()
+
+    override fun teleport(kLocation: KLocation) = notUsed()
 
     override fun hasPermission(permission: Permission): Boolean = permission in grantedPermissions
 

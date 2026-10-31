@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.command.souls.command
+package ru.astrainteractive.soulkeeper.command.soul.command
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.BufferOverflow
@@ -19,12 +19,12 @@ import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.util.tryCast
-import ru.astrainteractive.soulkeeper.command.souls.model.SoulsCommand
-import ru.astrainteractive.soulkeeper.command.souls.util.append
-import ru.astrainteractive.soulkeeper.command.souls.util.canFreeSoul
-import ru.astrainteractive.soulkeeper.command.souls.util.canTeleportToSoul
-import ru.astrainteractive.soulkeeper.command.souls.util.format
-import ru.astrainteractive.soulkeeper.command.souls.util.timeAgo
+import ru.astrainteractive.soulkeeper.command.soul.api.SoulsCommand
+import ru.astrainteractive.soulkeeper.command.soul.util.append
+import ru.astrainteractive.soulkeeper.command.soul.util.canFreeSoul
+import ru.astrainteractive.soulkeeper.command.soul.util.canTeleportToSoul
+import ru.astrainteractive.soulkeeper.command.soul.util.format
+import ru.astrainteractive.soulkeeper.command.soul.util.timeAgo
 import ru.astrainteractive.soulkeeper.core.plugin.model.PluginPermission
 import ru.astrainteractive.soulkeeper.core.plugin.model.PluginTranslation
 import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository

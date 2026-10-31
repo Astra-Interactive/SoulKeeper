@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.command.souls.util
+package ru.astrainteractive.soulkeeper.command.soul.util
 
 import net.kyori.adventure.text.Component
 import ru.astrainteractive.astralibs.localization.component.isEmpty

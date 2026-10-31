@@ -1,7 +1,7 @@
-package ru.astrainteractive.soulkeeper.command.souls.util
+package ru.astrainteractive.soulkeeper.command.soul.util
 
 import ru.astrainteractive.astralibs.localization.component.LocalizableComponent
-import ru.astrainteractive.soulkeeper.command.souls.model.TimeAgo
+import ru.astrainteractive.soulkeeper.command.soul.model.TimeAgo
 import ru.astrainteractive.soulkeeper.core.plugin.model.PluginTranslation
 
 internal fun PluginTranslation.format(elapsed: TimeAgo): LocalizableComponent {

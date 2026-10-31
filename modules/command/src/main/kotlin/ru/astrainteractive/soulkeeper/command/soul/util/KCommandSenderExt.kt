@@ -1,4 +1,4 @@
-package ru.astrainteractive.soulkeeper.command.souls.util
+package ru.astrainteractive.soulkeeper.command.soul.util
 
 import ru.astrainteractive.astralibs.command.api.brigadier.sender.ConsoleKCommandSender
 import ru.astrainteractive.astralibs.command.api.brigadier.sender.KCommandSender

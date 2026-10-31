@@ -1,12 +1,12 @@
 @file:Suppress("FunctionNaming")
 
-package ru.astrainteractive.soulkeeper.command.souls.util
+package ru.astrainteractive.soulkeeper.command.soul.util
 
 import ru.astrainteractive.astralibs.command.api.brigadier.sender.KPlayerKCommandSender
 import ru.astrainteractive.astralibs.server.location.KLocation
 import ru.astrainteractive.astralibs.server.permission.Permission
-import ru.astrainteractive.soulkeeper.command.souls.fake.FakeConsoleKCommandSender
-import ru.astrainteractive.soulkeeper.command.souls.fake.FakeOnlineKPlayer
+import ru.astrainteractive.soulkeeper.command.soul.fake.FakeConsoleKCommandSender
+import ru.astrainteractive.soulkeeper.command.soul.fake.FakeOnlineKPlayer
 import ru.astrainteractive.soulkeeper.core.plugin.model.PluginPermission
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.DatabaseSoul
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.SoulId

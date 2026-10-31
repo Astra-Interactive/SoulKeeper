@@ -1,9 +1,9 @@
 @file:Suppress("FunctionNaming")
 
-package ru.astrainteractive.soulkeeper.command.souls.util
+package ru.astrainteractive.soulkeeper.command.soul.util
 
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
-import ru.astrainteractive.soulkeeper.command.souls.model.TimeAgo
+import ru.astrainteractive.soulkeeper.command.soul.model.TimeAgo
 import ru.astrainteractive.soulkeeper.core.plugin.model.PluginTranslation
 import java.util.Locale
 import kotlin.test.Test
