@@ -16,7 +16,7 @@ import ru.astrainteractive.soulkeeper.command.api.CommandExceptionHandler
 import ru.astrainteractive.soulkeeper.core.plugin.model.PluginPermission
 import ru.astrainteractive.soulkeeper.core.plugin.model.PluginTranslation
 import ru.astrainteractive.soulkeeper.data.dao.soul.krate.PlayerSoulKrate
-import ru.astrainteractive.soulkeeper.module.souls.soul.api.PlayerInventory
+import ru.astrainteractive.soulkeeper.service.api.soul.api.PlayerInventory
 import java.io.File
 import kotlin.time.Instant
 

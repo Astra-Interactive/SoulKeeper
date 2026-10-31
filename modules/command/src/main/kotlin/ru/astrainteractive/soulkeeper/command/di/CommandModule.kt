@@ -10,7 +10,7 @@ import ru.astrainteractive.soulkeeper.command.soul.command.SoulsListLiteralArgum
 import ru.astrainteractive.soulkeeper.command.soulkrate.command.SoulKrateLiteralArgumentBuilder
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
-import ru.astrainteractive.soulkeeper.module.souls.di.SoulsModule
+import ru.astrainteractive.soulkeeper.service.api.di.SoulsModule
 
 class CommandModule(
     coreModule: CoreModule,

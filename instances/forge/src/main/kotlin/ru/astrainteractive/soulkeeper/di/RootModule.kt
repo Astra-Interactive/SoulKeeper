@@ -12,9 +12,9 @@ import ru.astrainteractive.soulkeeper.command.di.CommandModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.core.platform.ForgeEffectEmitter
 import ru.astrainteractive.soulkeeper.data.exposed.di.SoulsDaoModule
-import ru.astrainteractive.soulkeeper.module.event.di.ForgeEventModule
-import ru.astrainteractive.soulkeeper.module.souls.di.ForgePlatformSoulsModule
-import ru.astrainteractive.soulkeeper.module.souls.di.SoulsModule
+import ru.astrainteractive.soulkeeper.event.forge.di.ForgeEventModule
+import ru.astrainteractive.soulkeeper.service.api.di.SoulsModule
+import ru.astrainteractive.soulkeeper.service.forge.di.ForgePlatformSoulsModule
 import java.io.File
 
 class RootModule(private val plugin: Lifecycle) {
