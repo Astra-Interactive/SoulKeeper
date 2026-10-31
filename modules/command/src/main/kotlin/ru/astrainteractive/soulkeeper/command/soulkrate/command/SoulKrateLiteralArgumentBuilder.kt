@@ -37,9 +37,18 @@ internal class SoulKrateLiteralArgumentBuilder(
     fun create(): LiteralArgumentBuilder<*> {
         return with(multiplatformCommand) {
             command("soulkrate") {
-                argument("uuid", StringArgumentType.string()) { uuidArg ->
-                    argument("instant", instantArgumentType) { instantArg ->
-                        argument("index", IntegerArgumentType.integer()) { indexArg ->
+                argument(
+                    "uuid",
+                    StringArgumentType.string()
+                ) { uuidArg ->
+                    argument(
+                        "instant",
+                        instantArgumentType
+                    ) { instantArg ->
+                        argument(
+                            "index",
+                            IntegerArgumentType.integer()
+                        ) { indexArg ->
                             runs(commandExceptionHandler::onFailure) { ctx ->
                                 ctx.requirePermission(PluginPermission.LoadSouls)
                                 val player = ctx.requirePlayer()

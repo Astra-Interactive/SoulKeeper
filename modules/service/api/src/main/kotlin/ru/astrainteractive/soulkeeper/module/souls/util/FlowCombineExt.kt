@@ -26,7 +26,10 @@ internal inline fun <reified T1, reified T2, R> combineInstantly(
     flow2: Flow<T2>,
     crossinline transform: (T1?, T2?) -> R,
 ): Flow<R> {
-    return combineInstantly(flow, flow2) { array ->
+    return combineInstantly(
+        flow,
+        flow2
+    ) { array ->
         transform.invoke(
             array[0] as? T1,
             array[1] as? T2

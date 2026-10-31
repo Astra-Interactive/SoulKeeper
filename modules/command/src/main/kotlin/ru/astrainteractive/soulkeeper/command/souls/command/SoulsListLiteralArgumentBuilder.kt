@@ -18,7 +18,10 @@ internal class SoulsListLiteralArgumentBuilder(
         return with(multiplatformCommand) {
             command("souls") {
                 literal("page") {
-                    argument("page", IntegerArgumentType.integer(0)) { pageArg ->
+                    argument(
+                        "page",
+                        IntegerArgumentType.integer(0)
+                    ) { pageArg ->
                         runs(commandExceptionHandler::onFailure) { ctx ->
                             val page = ctx.requireArgument(pageArg)
                             SoulsCommand.Intent.List(
@@ -29,7 +32,10 @@ internal class SoulsListLiteralArgumentBuilder(
                     }
                 }
                 literal("free") {
-                    argument("soul_id", LongArgumentType.longArg(0)) { idArg ->
+                    argument(
+                        "soul_id",
+                        LongArgumentType.longArg(0)
+                    ) { idArg ->
                         runs(commandExceptionHandler::onFailure) { ctx ->
                             SoulsCommand.Intent.Free(
                                 sender = ctx.getSender(),
@@ -39,7 +45,10 @@ internal class SoulsListLiteralArgumentBuilder(
                     }
                 }
                 literal("teleport") {
-                    argument("soul_id", LongArgumentType.longArg(0)) { idArg ->
+                    argument(
+                        "soul_id",
+                        LongArgumentType.longArg(0)
+                    ) { idArg ->
                         runs(commandExceptionHandler::onFailure) { ctx ->
                             ctx.requirePermission(PluginPermission.TeleportToSouls)
                             SoulsCommand.Intent.TeleportToSoul(

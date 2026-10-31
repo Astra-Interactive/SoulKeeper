@@ -94,7 +94,10 @@ class CommandExceptionHandlerTest {
     fun GIVEN_argument_that_is_not_a_number_WHEN_command_converts_it_THEN_sender_reads_invalid_argument() {
         val command = with(multiplatformCommand) {
             command("souls") {
-                argument("page", StringArgumentType.string()) { pageArg ->
+                argument(
+                    "page",
+                    StringArgumentType.string()
+                ) { pageArg ->
                     runs(handler::onFailure) { ctx -> ctx.requireArgument(pageArg, IntArgumentConverter) }
                 }
             }
