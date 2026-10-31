@@ -34,11 +34,12 @@ internal class BukkitPlayerInventory :
             ?: return AddItemsResult(leftovers = items, isAnyItemAdded = false)
         val itemStacks = decode(items)
         val requestedAmount = itemStacks.sumOf(ItemStack::getAmount)
-        val leftovers = itemStacks.flatMap { itemStack ->
-            bukkitPlayer.inventory
-                .addItem(itemStack)
-                .values
-        }
+
+        @Suppress("SpreadOperator")
+        val leftovers = bukkitPlayer.inventory
+            .addItem(*itemStacks.toTypedArray())
+            .values
+            .toList()
         return AddItemsResult(
             leftovers = leftovers
                 .map(ItemStackSerializer::encodeToString)

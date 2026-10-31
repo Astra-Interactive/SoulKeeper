@@ -30,11 +30,10 @@ internal class PacketEventsArmorStandDisplay(
         return SpigotReflectionUtil.generateEntityId()
     }
 
+    @Suppress("SpreadOperator")
     private fun destroy(player: Player, ids: Collection<Int>) {
-        ids.forEach { id ->
-            val packet = WrapperPlayServerDestroyEntities(id)
-            PacketEvents.getAPI().playerManager.sendPacket(player, packet)
-        }
+        val packet = WrapperPlayServerDestroyEntities(*ids.toIntArray())
+        PacketEvents.getAPI().playerManager.sendPacket(player, packet)
     }
 
     @Suppress("MagicNumber")
