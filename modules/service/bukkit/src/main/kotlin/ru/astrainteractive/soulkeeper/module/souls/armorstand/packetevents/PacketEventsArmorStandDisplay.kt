@@ -31,8 +31,10 @@ internal class PacketEventsArmorStandDisplay(
     }
 
     private fun destroy(player: Player, ids: Collection<Int>) {
-        val packet = WrapperPlayServerDestroyEntities(*ids.toIntArray())
-        PacketEvents.getAPI().playerManager.sendPacket(player, packet)
+        ids.forEach { id ->
+            val packet = WrapperPlayServerDestroyEntities(id)
+            PacketEvents.getAPI().playerManager.sendPacket(player, packet)
+        }
     }
 
     @Suppress("MagicNumber")
