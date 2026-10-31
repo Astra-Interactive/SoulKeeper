@@ -1,5 +1,6 @@
 package ru.astrainteractive.soulkeeper.data.exposed.soul
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,7 +26,6 @@ import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.jdbc.update
 import ru.astrainteractive.astralibs.server.location.KLocation
 import ru.astrainteractive.astralibs.server.location.dist
-import ru.astrainteractive.klibs.mikro.core.coroutines.propagateCancellationException
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
@@ -58,14 +58,18 @@ internal class ExposedSoulRepository(
         tag: String,
         block: suspend () -> T
     ): Result<T> {
-        return runCatching {
-            withContext(dispatchers.IO) {
+        return try {
+            val value = withContext(dispatchers.IO) {
                 mutex.withLock {
                     block.invoke()
                 }
             }
-        }.propagateCancellationException().onFailure { throwable ->
+            Result.success(value)
+        } catch (cancellation: CancellationException) {
+            throw cancellation
+        } catch (throwable: Exception) {
             error(throwable) { "#$tag error: ${throwable.message}" }
+            Result.failure(throwable)
         }
     }
 
@@ -127,7 +131,10 @@ internal class ExposedSoulRepository(
         return safeRun("loadSouls") {
             transaction(databaseFlow.first()) {
                 SoulTable.selectAll()
-                    .orderBy(SoulTable.created_at to SortOrder.DESC)
+                    .orderBy(
+                        column = SoulTable.created_at,
+                        order = SortOrder.DESC
+                    )
                     .toDatabaseSouls()
             }
         }
