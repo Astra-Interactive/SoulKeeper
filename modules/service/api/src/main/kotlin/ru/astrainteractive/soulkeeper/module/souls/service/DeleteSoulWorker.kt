@@ -15,6 +15,7 @@ import kotlin.time.Clock
 
 internal class DeleteSoulWorker(
     private val soulRepository: SoulRepository,
+    private val clock: Clock,
     configKrate: CachedKrate<SoulsConfig>
 ) : ServiceTask, Logger by JUtiltLogger("SoulKeeper-DeleteSoulWorker") {
     private val config by configKrate
@@ -24,7 +25,7 @@ internal class DeleteSoulWorker(
             .getOrNull()
             .orEmpty()
             .filter { soul ->
-                val diff = Clock.System.now().minus(config.soulFadeAfter)
+                val diff = clock.now().minus(config.soulFadeAfter)
                 soul.createdAt < diff
             }
         if (soulsToDelete.isEmpty()) return

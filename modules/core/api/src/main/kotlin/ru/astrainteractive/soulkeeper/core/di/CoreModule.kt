@@ -20,6 +20,7 @@ import ru.astrainteractive.soulkeeper.core.platform.api.EffectEmitter
 import ru.astrainteractive.soulkeeper.core.plugin.model.PluginTranslation
 import ru.astrainteractive.soulkeeper.core.plugin.model.SoulsConfig
 import java.io.File
+import kotlin.time.Clock
 
 class CoreModule(
     val dispatchers: KotlinDispatchers,
@@ -27,6 +28,8 @@ class CoreModule(
     val effectEmitter: EffectEmitter,
     val multiplatformCommand: MultiplatformCommand
 ) : Logger by JUtiltLogger("CoreModule").withoutParentHandlers() {
+
+    val clock: Clock = Clock.System
 
     val ioScope = CoroutineFeature.IO.withTimings()
     val unconfinedScope = CoroutineFeature.Unconfined.withTimings()

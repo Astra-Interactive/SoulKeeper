@@ -46,6 +46,7 @@ import kotlin.time.Duration.Companion.seconds
 @Suppress("LongParameterList")
 internal class ForgeSoulEvents(
     private val soulRepository: SoulRepository,
+    private val clock: Clock,
     private val effectEmitter: EffectEmitter,
     private val dispatchers: KotlinDispatchers,
     private val dataFolder: File,
@@ -152,7 +153,7 @@ internal class ForgeSoulEvents(
             exp = droppedXp ?: 0,
             ownerUUID = serverPlayer.uuid,
             ownerLastName = serverPlayer.name,
-            createdAt = Clock.System.now(),
+            createdAt = clock.now(),
             isFree = soulsConfig.soulFreeAfter == 0.seconds,
             location = when (dimension) {
                 Level.END -> {

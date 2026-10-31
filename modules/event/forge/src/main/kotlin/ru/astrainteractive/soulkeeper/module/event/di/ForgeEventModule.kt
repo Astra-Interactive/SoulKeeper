@@ -14,6 +14,7 @@ class ForgeEventModule(
     @Suppress("UnusedPrivateProperty")
     private val event = ForgeSoulEvents(
         soulRepository = soulRepository,
+        clock = coreModule.clock,
         soulsConfigKrate = coreModule.soulsConfigKrate,
         effectEmitter = effectEmitter,
         mainScope = coreModule.mainScope,

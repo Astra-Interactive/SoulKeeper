@@ -15,6 +15,7 @@ import kotlin.time.Clock
 
 internal class FreeSoulWorker(
     private val soulRepository: SoulRepository,
+    private val clock: Clock,
     configKrate: CachedKrate<SoulsConfig>
 ) : ServiceTask, Logger by JUtiltLogger("SoulKeeper-FreeSoulWorker") {
     private val config by configKrate
@@ -25,7 +26,7 @@ internal class FreeSoulWorker(
             .orEmpty()
             .filter { soul -> !soul.isFree }
             .filter { soul ->
-                val diff = Clock.System.now().minus(config.soulFreeAfter)
+                val diff = clock.now().minus(config.soulFreeAfter)
                 soul.createdAt < diff
             }
         if (soulsToFree.isEmpty()) return

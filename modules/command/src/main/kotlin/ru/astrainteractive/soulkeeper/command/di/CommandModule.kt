@@ -31,6 +31,7 @@ class CommandModule(
             soulsCommandExecutor = SoulsCommandExecutor(
                 ioScope = coreModule.ioScope,
                 soulRepository = soulRepository,
+                clock = coreModule.clock,
                 translationKrate = coreModule.translation,
                 dispatchers = coreModule.dispatchers,
             ),

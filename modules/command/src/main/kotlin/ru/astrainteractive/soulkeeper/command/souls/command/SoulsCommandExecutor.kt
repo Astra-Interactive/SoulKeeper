@@ -32,6 +32,7 @@ import kotlin.time.Clock
 internal class SoulsCommandExecutor(
     private val ioScope: CoroutineScope,
     private val soulRepository: SoulRepository,
+    private val clock: Clock,
     private val dispatchers: KotlinDispatchers,
     translationKrate: CachedKrate<PluginTranslation>
 ) {
@@ -100,7 +101,7 @@ internal class SoulsCommandExecutor(
         location: KLocation?,
         locale: Locale
     ): Component {
-        val timeAgoFormatted = translation.format(soul.createdAt.timeAgo(now = Clock.System.now()))
+        val timeAgoFormatted = translation.format(soul.createdAt.timeAgo(now = clock.now()))
         val pageOffset = page.times(SoulsCommand.PAGE_SIZE)
         return translation.soulList.entry(
             index = pageOffset.plus(i.plus(1)),

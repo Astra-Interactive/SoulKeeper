@@ -29,6 +29,7 @@ import kotlin.time.Duration.Companion.seconds
 
 internal class BukkitSoulEvents(
     private val soulRepository: SoulRepository,
+    private val clock: Clock,
     private val ioScope: CoroutineScope,
     private val dataFolder: File,
     private val stringFormat: StringFormat,
@@ -99,7 +100,7 @@ internal class BukkitSoulEvents(
             exp = soulExp,
             ownerUUID = event.player.uniqueId,
             ownerLastName = event.player.name,
-            createdAt = Clock.System.now(),
+            createdAt = clock.now(),
             isFree = soulsConfig.soulFreeAfter == 0.seconds,
             location = resolveSoulLocation(event),
             items = soulItems,

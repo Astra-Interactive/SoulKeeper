@@ -47,6 +47,7 @@ class SoulsModule(
         logger = JUtiltLogger("DeleteSoulService"),
         task = DeleteSoulWorker(
             soulRepository = soulRepository,
+            clock = coreModule.clock,
             configKrate = coreModule.soulsConfigKrate,
         )
     )
@@ -57,6 +58,7 @@ class SoulsModule(
         logger = JUtiltLogger("FreeSoulService"),
         task = FreeSoulWorker(
             soulRepository = soulRepository,
+            clock = coreModule.clock,
             configKrate = coreModule.soulsConfigKrate,
         )
     )
@@ -68,7 +70,12 @@ class SoulsModule(
         soulSoundRenderer = soulSoundRenderer,
         soulArmorStandRenderer = armorStandRenderer,
         eventProvider = platformSoulsModule.eventProvider,
-        throttleExecutorFactory = ::ThrottleExecutor,
+        throttleExecutorFactory = { duration ->
+            ThrottleExecutor(
+                duration = duration,
+                clock = coreModule.clock
+            )
+        },
     )
 
     private val pickUpSoulService = IntervalService(

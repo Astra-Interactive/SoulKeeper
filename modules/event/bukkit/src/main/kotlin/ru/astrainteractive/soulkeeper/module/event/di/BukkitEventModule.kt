@@ -14,6 +14,7 @@ class BukkitEventModule(
 ) {
     private val event = BukkitSoulEvents(
         soulRepository = soulRepository,
+        clock = coreModule.clock,
         soulsConfigKrate = coreModule.soulsConfigKrate,
         ioScope = coreModule.ioScope,
         dataFolder = coreModule.dataFolder,
