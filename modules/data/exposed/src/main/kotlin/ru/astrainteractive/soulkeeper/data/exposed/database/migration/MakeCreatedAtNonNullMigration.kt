@@ -7,14 +7,14 @@ import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.data.exposed.database.api.DatabaseMigration
 import java.time.Instant
 
-internal class MakeCreatedAtNonNullMigration :
+internal class MakeCreatedAtNonNullMigration(private val database: Database) :
     DatabaseMigration,
     Logger by JUtiltLogger("SoulKeeper-MakeCreatedAtNonNullMigration") {
 
     override val requiredDbVersion: Int = 1
 
     @Suppress("LoopWithTooManyJumpStatements")
-    override suspend fun migrate(database: Database) {
+    override suspend fun migrate() {
         val isNullable = transaction(database) {
             var nullable = false
             exec("PRAGMA table_info(SOUL)") { rs ->

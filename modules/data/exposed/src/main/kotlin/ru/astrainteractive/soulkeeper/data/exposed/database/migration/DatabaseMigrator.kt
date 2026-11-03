@@ -7,6 +7,7 @@ import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.data.exposed.database.api.DatabaseMigration
 
 internal class DatabaseMigrator(
+    private val database: Database,
     private val migrations: List<DatabaseMigration>,
     private val latestDbVersion: Int
 ) : Logger by JUtiltLogger("SoulKeeper-DatabaseMigrator") {
@@ -71,7 +72,7 @@ internal class DatabaseMigrator(
         }
     }
 
-    suspend fun migrate(database: Database) {
+    suspend fun migrate() {
         val currentDbVersion = loadCurrentVersion(database)
         if (latestDbVersion == currentDbVersion) {
             info { "#migrate database is up to date" }
@@ -83,14 +84,14 @@ internal class DatabaseMigrator(
             .filter { migration -> migration.requiredDbVersion == currentDbVersion }
             .forEach { migration ->
                 info { "#migrate running migration to version $currentDbVersion..." }
-                migration.migrate(database)
+                migration.migrate()
             }
 
         val newVersion = currentDbVersion + 1
         info { "#migrate migrated to version $newVersion" }
         setVersion(database, newVersion)
 
-        migrate(database)
+        migrate()
     }
 
     companion object {

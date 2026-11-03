@@ -63,15 +63,6 @@ interface SoulsDaoModule {
                     kratesFolder = dataFolder.resolve(".deaths")
                 )
             )
-        private val databaseMigrator: DatabaseMigrator
-            get() = DatabaseMigrator(
-                migrations = listOf(
-                    DropBrokenCreatedAtMigration(),
-                    MakeCreatedAtNonNullMigration(),
-                ),
-                latestDbVersion = 2
-            )
-
         private val dbConfigurationFlow = flow {
             if (!dataFolder.exists()) dataFolder.mkdirs()
             val configuration = dataFolder.resolve("souls_v3")
@@ -82,7 +73,7 @@ interface SoulsDaoModule {
         override val databaseFlow: Flow<Database> = dbConfigurationFlow
             .onStart { runFileMigrations() }
             .flatMapLatest(::connectDatabase)
-            .onEach(databaseMigrator::migrate)
+            .onEach { database -> createDatabaseMigrator(database).migrate() }
             .onEach { database ->
                 TransactionManager.manager.defaultIsolationLevel = java.sql.Connection.TRANSACTION_SERIALIZABLE
                 createSoulTables(database)
@@ -106,6 +97,17 @@ interface SoulsDaoModule {
         override val lifecycle: Lifecycle = Lifecycle.Lambda(
             onDisable = {}
         )
+
+        private fun createDatabaseMigrator(database: Database): DatabaseMigrator {
+            return DatabaseMigrator(
+                database = database,
+                migrations = listOf(
+                    DropBrokenCreatedAtMigration(database),
+                    MakeCreatedAtNonNullMigration(database)
+                ),
+                latestDbVersion = 2
+            )
+        }
 
         private fun createSoulTables(database: Database) {
             transaction(database) {
