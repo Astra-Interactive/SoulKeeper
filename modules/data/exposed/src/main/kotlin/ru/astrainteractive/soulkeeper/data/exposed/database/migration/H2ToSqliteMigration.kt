@@ -11,6 +11,7 @@ import ru.astrainteractive.klibs.mikro.exposed.model.DatabaseConfiguration
 import ru.astrainteractive.klibs.mikro.exposed.util.connect
 import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
 import ru.astrainteractive.soulkeeper.data.dao.soul.model.DefaultSoul
+import ru.astrainteractive.soulkeeper.data.dao.soul.model.ItemDatabaseSoul
 import ru.astrainteractive.soulkeeper.data.exposed.database.api.FileMigration
 import java.io.File
 
@@ -36,7 +37,7 @@ internal class H2ToSqliteMigration(
 
             val sqliteSoulRepository = createRepository.invoke(sqliteDatabase)
             val h2SoulRepository = createRepository.invoke(h2Database)
-            h2SoulRepository.getSouls()
+            h2SoulRepository.loadSouls()
                 .onFailure { throwable ->
                     error(throwable) { "Could not convert souls from H2 to SQLite" }
                     return@coroutineScope
@@ -45,7 +46,7 @@ internal class H2ToSqliteMigration(
                 .orEmpty()
                 .map { dbSoul -> async { h2SoulRepository.toItemDatabaseSoul(dbSoul) } }
                 .awaitAll()
-                .mapNotNull { soul -> soul.getOrNull() }
+                .mapNotNull(Result<ItemDatabaseSoul>::getOrNull)
                 .map { soul ->
                     DefaultSoul(
                         ownerUUID = soul.ownerUUID,

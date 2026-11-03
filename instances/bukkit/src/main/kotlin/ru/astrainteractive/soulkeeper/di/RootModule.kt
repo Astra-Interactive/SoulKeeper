@@ -14,11 +14,11 @@ import ru.astrainteractive.soulkeeper.core.di.BukkitCoreModule
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.core.platform.BukkitEffectEmitter
 import ru.astrainteractive.soulkeeper.data.exposed.di.SoulsDaoModule
-import ru.astrainteractive.soulkeeper.module.event.di.BukkitEventModule
-import ru.astrainteractive.soulkeeper.module.souls.di.BukkitPlatformSoulsModule
-import ru.astrainteractive.soulkeeper.module.souls.di.SoulsModule
+import ru.astrainteractive.soulkeeper.event.bukkit.di.BukkitEventModule
+import ru.astrainteractive.soulkeeper.service.api.di.SoulsModule
+import ru.astrainteractive.soulkeeper.service.bukkit.di.BukkitPlatformSoulsModule
 
-class RootModule(plugin: LifecyclePlugin) {
+internal class RootModule(plugin: LifecyclePlugin) {
     private val coreModule: CoreModule = CoreModule(
         dispatchers = DefaultBukkitDispatchers(plugin),
         dataFolder = plugin.dataFolder,
@@ -61,7 +61,7 @@ class RootModule(plugin: LifecyclePlugin) {
     )
 
     private val lifecycles: List<Lifecycle>
-        get() = listOfNotNull(
+        get() = listOf(
             coreModule.lifecycle,
             bukkitCoreModule.lifecycle,
             soulsDaoModule.lifecycle,

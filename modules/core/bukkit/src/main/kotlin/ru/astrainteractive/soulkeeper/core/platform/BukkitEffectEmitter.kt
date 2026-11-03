@@ -29,12 +29,12 @@ object BukkitEffectEmitter : EffectEmitter {
         sound: SoulsConfig.Sounds.SoundConfig
     ) {
         val bukkitPlayer = Bukkit.getPlayer(player.uuid) ?: return
-        val location = location.asBukkitLocation()
+        val bukkitLocation = location.asBukkitLocation()
         bukkitPlayer.playSound(
             sound.toKyoriSound(),
-            location.x,
-            location.y,
-            location.z
+            bukkitLocation.x,
+            bukkitLocation.y,
+            bukkitLocation.z
         )
     }
 

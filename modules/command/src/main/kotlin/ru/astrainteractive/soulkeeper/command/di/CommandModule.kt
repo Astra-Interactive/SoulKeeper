@@ -3,20 +3,20 @@ package ru.astrainteractive.soulkeeper.command.di
 import ru.astrainteractive.astralibs.command.api.registrar.CommandRegistrarContext
 import ru.astrainteractive.astralibs.command.api.registrar.registerWhenReady
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
-import ru.astrainteractive.soulkeeper.command.error.CommandExceptionHandler
+import ru.astrainteractive.soulkeeper.command.api.CommandExceptionHandler
 import ru.astrainteractive.soulkeeper.command.reload.command.SoulsReloadLiteralArgumentBuilder
+import ru.astrainteractive.soulkeeper.command.soul.command.SoulsCommandExecutor
+import ru.astrainteractive.soulkeeper.command.soul.command.SoulsListLiteralArgumentBuilder
 import ru.astrainteractive.soulkeeper.command.soulkrate.command.SoulKrateLiteralArgumentBuilder
-import ru.astrainteractive.soulkeeper.command.souls.command.SoulsCommandExecutor
-import ru.astrainteractive.soulkeeper.command.souls.command.SoulsListLiteralArgumentBuilder
 import ru.astrainteractive.soulkeeper.core.di.CoreModule
 import ru.astrainteractive.soulkeeper.data.dao.soul.api.SoulRepository
-import ru.astrainteractive.soulkeeper.module.souls.di.SoulsModule
+import ru.astrainteractive.soulkeeper.service.api.di.SoulsModule
 
 class CommandModule(
-    private val coreModule: CoreModule,
+    coreModule: CoreModule,
     soulRepository: SoulRepository,
     soulsModule: SoulsModule,
-    private val commandRegistrarContext: CommandRegistrarContext,
+    commandRegistrarContext: CommandRegistrarContext,
     lifecyclePlugin: Lifecycle
 ) {
     private val commandExceptionHandler = CommandExceptionHandler(
@@ -31,6 +31,7 @@ class CommandModule(
             soulsCommandExecutor = SoulsCommandExecutor(
                 ioScope = coreModule.ioScope,
                 soulRepository = soulRepository,
+                clock = coreModule.clock,
                 translationKrate = coreModule.translation,
                 dispatchers = coreModule.dispatchers,
             ),

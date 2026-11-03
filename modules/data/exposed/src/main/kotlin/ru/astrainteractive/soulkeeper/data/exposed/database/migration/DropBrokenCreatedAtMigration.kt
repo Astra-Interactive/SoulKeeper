@@ -6,12 +6,12 @@ import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.data.exposed.database.api.DatabaseMigration
 
-internal class DropBrokenCreatedAtMigration :
+internal class DropBrokenCreatedAtMigration(private val database: Database) :
     DatabaseMigration,
     Logger by JUtiltLogger("SoulKeeper-DropBrokenCreatedAtMigration") {
 
     override val requiredDbVersion: Int = 1
-    override suspend fun migrate(database: Database) {
+    override suspend fun migrate() {
         val columnExists = transaction(database) {
             buildList {
                 exec("PRAGMA table_info(SOUL)") { rs ->

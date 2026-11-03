@@ -18,7 +18,7 @@ class PlayerSoulKrate(
     dataFolder: File,
     private val createdAt: Instant,
     private val ownerUUID: UUID,
-    private val readIndex: Int = 0
+    readIndex: Int = 0
 ) : SuspendMutableKrate<DefaultSoul?>, Logger by JUtiltLogger("SoulKeeper-PlayerSoulKrate") {
     private val kratesFolder = dataFolder.resolve(".deaths")
     private val krate = DefaultSuspendMutableKrate(

@@ -7,11 +7,12 @@ import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.soulkeeper.data.exposed.database.api.DatabaseMigration
 
 internal class DatabaseMigrator(
+    private val database: Database,
     private val migrations: List<DatabaseMigration>,
     private val latestDbVersion: Int
 ) : Logger by JUtiltLogger("SoulKeeper-DatabaseMigrator") {
 
-    private suspend fun isTableExists(
+    private fun isTableExists(
         database: Database,
         tableName: String
     ): Boolean {
@@ -24,7 +25,7 @@ internal class DatabaseMigrator(
         }
     }
 
-    private suspend fun hasAnyUserTables(database: Database): Boolean {
+    private fun hasAnyUserTables(database: Database): Boolean {
         return transaction(database) {
             var count = 0
             exec("SELECT COUNT(*) AS cnt FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'") { rs ->
@@ -35,7 +36,7 @@ internal class DatabaseMigrator(
         }
     }
 
-    private suspend fun setVersion(database: Database, version: Int) {
+    private fun setVersion(database: Database, version: Int) {
         transaction(database) {
             exec("CREATE TABLE IF NOT EXISTS DB_VERSION (version INTEGER NOT NULL)")
             var hasRow = false
@@ -52,7 +53,7 @@ internal class DatabaseMigrator(
     }
 
     @Suppress("MaxLineLength", "MaximumLineLength")
-    private suspend fun loadCurrentVersion(database: Database): Int {
+    private fun loadCurrentVersion(database: Database): Int {
         val versionTableExists = isTableExists(database, "DB_VERSION")
         if (!versionTableExists) {
             val isFreshDatabase = !hasAnyUserTables(database)
@@ -71,7 +72,7 @@ internal class DatabaseMigrator(
         }
     }
 
-    suspend fun migrate(database: Database) {
+    suspend fun migrate() {
         val currentDbVersion = loadCurrentVersion(database)
         if (latestDbVersion == currentDbVersion) {
             info { "#migrate database is up to date" }
@@ -83,14 +84,14 @@ internal class DatabaseMigrator(
             .filter { migration -> migration.requiredDbVersion == currentDbVersion }
             .forEach { migration ->
                 info { "#migrate running migration to version $currentDbVersion..." }
-                migration.migrate(database)
+                migration.migrate()
             }
 
         val newVersion = currentDbVersion + 1
         info { "#migrate migrated to version $newVersion" }
         setVersion(database, newVersion)
 
-        migrate(database)
+        migrate()
     }
 
     companion object {

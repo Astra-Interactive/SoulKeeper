@@ -12,10 +12,6 @@ import ru.astrainteractive.astralibs.localization.locale.MinecraftLocales
 import ru.astrainteractive.astralibs.localization.text.LocalizedText
 import kotlin.time.Duration
 
-/**
- * Texts of the plugin, grouped by the feature that sends them. Every text has a default, so the plugin works
- * without `translations.yml` and a missing key keeps its default.
- */
 @Serializable
 data class PluginTranslation(
     @SerialName("command_error")
@@ -29,7 +25,6 @@ data class PluginTranslation(
     @SerialName("soul")
     val soul: Soul = Soul()
 ) {
-    /** Failures any command can report. */
     @Serializable
     data class CommandError(
         @SerialName("no_permission")
@@ -94,7 +89,6 @@ data class PluginTranslation(
         )
     )
 
-    /** Sent by `/souls`: one page of the souls a sender can see, with buttons next to each soul. */
     @Serializable
     class SoulList(
         @SerialName("title")
@@ -153,7 +147,6 @@ data class PluginTranslation(
         }
     }
 
-    /** How long ago a soul appeared, shown in its [SoulList] entry. */
     @Serializable
     class TimeAgo(
         @SerialName("seconds")
@@ -194,7 +187,6 @@ data class PluginTranslation(
         fun months(time: Duration): LocalizableComponent = months.replace("%time%", time.inWholeDays.div(30).toString())
     }
 
-    /** Results of actions on one soul, and the name shown above it. */
     @Serializable
     class Soul(
         @SerialName("freed")

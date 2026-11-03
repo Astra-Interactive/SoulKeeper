@@ -6,10 +6,6 @@ import java.io.File
 import java.nio.file.Files
 import java.util.UUID
 
-/**
- * Previously, krates were stored in [dataFolder]
- * Now we want to store them inside [kratesFolder]
- */
 internal class KrateFolderMigration(
     private val dataFolder: File,
     private val kratesFolder: File
@@ -19,7 +15,7 @@ internal class KrateFolderMigration(
         if (kratesFolder.exists()) return
         if (!kratesFolder.exists()) kratesFolder.mkdirs()
         dataFolder.listFiles().orEmpty()
-            .filter { file -> file.isDirectory }
+            .filter(File::isDirectory)
             .filter { file ->
                 val uuidOrNull = runCatching {
                     file.nameWithoutExtension
