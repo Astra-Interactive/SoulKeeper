@@ -4,6 +4,10 @@ plugins {
     id("ru.astrainteractive.gradleplugin.java.version")
 }
 
+linter {
+    unit(ru.astrainteractive.klibs.rules.core.unit.model.UnitRole.Platform())
+}
+
 dependencies {
     compileOnly(libs.minecraft.paper.api)
 

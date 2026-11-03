@@ -7,6 +7,10 @@ plugins {
     id("ru.astrainteractive.gradleplugin.java.version")
 }
 
+linter {
+    unit(ru.astrainteractive.klibs.rules.core.unit.model.UnitRole.Platform())
+}
+
 dependencies {
     implementation(libs.klibs.kstorage)
     implementation(libs.klibs.mikro.core)
