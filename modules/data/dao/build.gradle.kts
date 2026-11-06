@@ -6,6 +6,11 @@ plugins {
     `java-test-fixtures`
 }
 
+linter {
+    unit(ru.astrainteractive.klibs.rules.core.unit.model.UnitRole.StorageContract())
+    rootPackage.set("ru.astrainteractive.soulkeeper.data.dao")
+}
+
 dependencies {
     implementation(libs.klibs.kstorage)
     implementation(libs.klibs.mikro.core)
