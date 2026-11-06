@@ -10,6 +10,11 @@ plugins {
     alias(libs.plugins.klibs.minecraft.resource.processor)
 }
 
+linter {
+    unit(ru.astrainteractive.klibs.rules.core.unit.model.UnitRole.EntryPoint())
+    rootPackage.set("ru.astrainteractive.soulkeeper")
+}
+
 dependencies {
     compileOnly(libs.driver.h2)
     compileOnly(libs.driver.jdbc)

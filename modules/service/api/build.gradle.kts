@@ -5,6 +5,11 @@ plugins {
     id("ru.astrainteractive.gradleplugin.java.version")
 }
 
+linter {
+    unit(ru.astrainteractive.klibs.rules.core.unit.model.UnitRole.Api())
+    rootPackage.set("ru.astrainteractive.soulkeeper.service.api")
+}
+
 dependencies {
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)

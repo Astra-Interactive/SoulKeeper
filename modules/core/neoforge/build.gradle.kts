@@ -9,6 +9,7 @@ plugins {
 
 linter {
     unit(ru.astrainteractive.klibs.rules.core.unit.model.UnitRole.CorePlatform())
+    rootPackage.set("ru.astrainteractive.soulkeeper.core")
 }
 
 dependencies {

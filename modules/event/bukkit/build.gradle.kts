@@ -6,6 +6,7 @@ plugins {
 
 linter {
     unit(ru.astrainteractive.klibs.rules.core.unit.model.UnitRole.Platform())
+    rootPackage.set("ru.astrainteractive.soulkeeper.event.bukkit")
 }
 
 dependencies {
