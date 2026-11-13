@@ -13,11 +13,11 @@ import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
-class PluginTranslationExtTest {
+class TimeAgoFormatTest {
     private val translation = PluginTranslation()
 
     private fun plain(elapsed: TimeAgo): String {
-        val component = translation.format(elapsed).toComponent(Locale.US)
+        val component = formatTimeAgo(translation, elapsed).toComponent(Locale.US)
         return PlainTextComponentSerializer.plainText().serialize(component)
     }
 

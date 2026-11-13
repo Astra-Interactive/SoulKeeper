@@ -23,7 +23,7 @@ import ru.astrainteractive.soulkeeper.command.soul.api.SoulsCommand
 import ru.astrainteractive.soulkeeper.command.soul.util.append
 import ru.astrainteractive.soulkeeper.command.soul.util.canFreeSoul
 import ru.astrainteractive.soulkeeper.command.soul.util.canTeleportToSoul
-import ru.astrainteractive.soulkeeper.command.soul.util.format
+import ru.astrainteractive.soulkeeper.command.soul.util.formatTimeAgo
 import ru.astrainteractive.soulkeeper.command.soul.util.timeAgo
 import ru.astrainteractive.soulkeeper.core.plugin.model.PluginPermission
 import ru.astrainteractive.soulkeeper.core.plugin.model.PluginTranslation
@@ -109,7 +109,7 @@ internal class SoulsCommandExecutor(
         location: KLocation?,
         locale: Locale
     ): Component {
-        val timeAgoFormatted = translation.format(soul.createdAt.timeAgo(now = clock.now()))
+        val timeAgoFormatted = formatTimeAgo(translation, soul.createdAt.timeAgo(now = clock.now()))
         val pageOffset = page.times(SoulsCommand.PAGE_SIZE)
         return translation.soulList.entry(
             index = pageOffset.plus(i.plus(1)),
